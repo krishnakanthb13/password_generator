@@ -1,0 +1,67 @@
+{
+  "random": {
+    "length": 16,
+    "uppercase": true,
+    "lowercase": true,
+    "digits": true,
+    "symbols": true,
+    "easy_read": false,
+    "easy_say": false
+  },
+  "passphrase": {
+    "words": 4,
+    "separator": "-",
+    "capitalize": false
+  },
+  "leetspeak": {
+    "words": 3,
+    "separator": "-"
+  },
+  "pin": {
+    "length": 6
+  },
+  "pronounceable": {
+    "length": 12
+  },
+  "uuid": {
+    "uppercase": false
+  },
+  "base64": {
+    "bytes": 32,
+    "url_safe": true
+  },
+  "jwt": {
+    "bits": 256,
+    "output_hex": false
+  },
+  "wifi": {
+    "length": 16,
+    "simple": false
+  },
+  "license": {
+    "segments": 4,
+    "segment_length": 4
+  },
+  "recovery": {
+    "count": 10,
+    "use_words": false
+  },
+  "otp": {
+    "digits": 6,
+    "period": 30
+  },
+  "pattern": {
+    "grid_size": 3,
+    "path_length": 5
+  },
+  "output": {
+    "show_entropy": false,
+    "json": false,
+    "no_color": false,
+    "log": false
+  },
+  "history": {
+    "enabled": true,
+    "max_entries": 1000
+  }
+}

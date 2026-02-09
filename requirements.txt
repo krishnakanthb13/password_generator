@@ -1,0 +1,12 @@
+# PassForge - All-in-One Password Generator CLI
+# Requirements
+
+# Core dependencies
+colorama>=0.4.6          # Cross-platform colored terminal output
+
+# Optional dependencies (uncomment as needed)
+# pyperclip>=1.8.2       # Clipboard support
+# qrcode>=7.4.2          # QR code generation for OTP secrets
+# pillow>=10.0.0         # Image support for QR codes
+# pyyaml>=6.0            # YAML config file support
+# zxcvbn>=4.4.28         # Password strength estimation
