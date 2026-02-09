@@ -16,19 +16,20 @@ class InteractiveMenu:
     MENU_OPTIONS = [
         ("1", "Random Password", "random"),
         ("2", "Passphrase", "phrase"),
-        ("3", "Leetspeak Passphrase", "leet"),
-        ("4", "PIN", "pin"),
-        ("5", "Pronounceable Password", "pronounce"),
-        ("6", "UUID Token", "uuid"),
-        ("7", "Base64 Secret", "base64"),
-        ("8", "JWT Secret", "jwt"),
-        ("9", "WiFi/WPA Key", "wifi"),
-        ("10", "License Key", "license"),
-        ("11", "Recovery Codes", "recovery"),
-        ("12", "OTP Secret", "otp"),
-        ("13", "Pattern Password", "pattern"),
-        ("14", "NATO Phonetic Alphabet", "phonetic"),
-        ("15", "View History", "history"),
+        ("3", "Themed Passphrase", "themed_phrase"),
+        ("4", "Leetspeak Passphrase", "leet"),
+        ("5", "PIN", "pin"),
+        ("6", "Pronounceable Password", "pronounce"),
+        ("7", "UUID Token", "uuid"),
+        ("8", "Base64 Secret", "base64"),
+        ("9", "JWT Secret", "jwt"),
+        ("10", "WiFi/WPA Key", "wifi"),
+        ("11", "License Key", "license"),
+        ("12", "Recovery Codes", "recovery"),
+        ("13", "OTP Secret", "otp"),
+        ("14", "Pattern Password", "pattern"),
+        ("15", "NATO Phonetic Alphabet", "phonetic"),
+        ("16", "View History", "history"),
         ("0", "Exit", "exit"),
     ]
     
@@ -103,6 +104,37 @@ class InteractiveMenu:
         
         print(f"{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}✓ Saved to history{Style.RESET_ALL}")
+        
+        from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
+        from .output.qrcode_gen import is_available as qr_available, generate_terminal_qr
+        
+        prompt = f"\n{Style.BRIGHT}> Press [C]opy"
+        if qr_available():
+            prompt += ", [Q]R Code"
+        prompt += f", or Enter to return... {Style.RESET_ALL}"
+        
+        choice = input(prompt).strip().lower()
+        
+        if choice in ['c', 'q']:
+            if ClipboardManager.is_available():
+                if ClipboardManager.copy(result.password, timeout=DEFAULT_CLIPBOARD_TIMEOUT):
+                    print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}Clipboard module not available{Style.RESET_ALL}")
+                
+        if choice == 'q':
+            if qr_available():
+                qr_output = generate_terminal_qr(result.password)
+                if qr_output:
+                    print(f"\n{Fore.CYAN}Scan with any QR reader:{Style.RESET_ALL}")
+                    print(qr_output)
+                    input(f"\nPress Enter to return... ")
+            else:
+                print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
+        elif choice == 'c':
+            input(f"\nPress Enter to return... ")
     
     def handle_random(self):
         """Handle random password generation."""
@@ -151,6 +183,60 @@ class InteractiveMenu:
             )
             self.print_result(result)
     
+    def handle_themed_phrase(self):
+        """Handle themed passphrase generation using custom wordlists."""
+        import os
+        from .generators.passphrase import PassphraseGenerator
+        
+        print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Themed Passphrase ==={Style.RESET_ALL}")
+        
+        # Scan for wordlists
+        wordlist_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "data", "wordlists")
+        wordlists = []
+        if os.path.exists(wordlist_dir):
+            wordlists = [f for f in os.listdir(wordlist_dir) if f.endswith('.txt')]
+        
+        if not wordlists:
+            print(f"{Fore.RED}No wordlists found in data/wordlists/{Style.RESET_ALL}")
+            return
+            
+        print(f"\n{Style.BRIGHT}{Fore.YELLOW}Available Themes:{Style.RESET_ALL}")
+        
+        # Display in 3 columns
+        col_width = 25
+        for i in range(0, len(wordlists), 3):
+            cols = wordlists[i:i+3]
+            row_str = ""
+            for j, name in enumerate(cols):
+                idx = i + j + 1
+                display_name = name.replace('.txt', '').capitalize()
+                base_str = f"[{idx}] {display_name}"
+                row_str += f"{base_str:<{col_width}}"
+            print(f"  {Fore.GREEN}{row_str}{Style.RESET_ALL}")
+            
+        print("")
+        
+        choice = self.get_int("Select theme", 1, 1, len(wordlists))
+        selected_file = os.path.join(wordlist_dir, wordlists[choice-1])
+        
+        print(f"\n{Fore.CYAN}Selected: {wordlists[choice-1]}{Style.RESET_ALL}\n")
+        
+        words = self.get_int("Number of words", 4, 2, 12)
+        separator = self.get_input("Separator", "-")
+        capitalize = self.get_bool("Capitalize words", True)
+        count = self.get_int("How many to generate", 1, 1, 10)
+        
+        generator = PassphraseGenerator()
+        
+        for i in range(count):
+            result = generator.generate(
+                word_count=words,
+                separator=separator,
+                capitalize=capitalize,
+                wordlist_path=selected_file
+            )
+            self.print_result(result)
+
     def handle_leet(self):
         """Handle leetspeak passphrase generation."""
         from .generators.leetspeak import LeetspeakGenerator
@@ -381,6 +467,7 @@ class InteractiveMenu:
         handlers = {
             "random": self.handle_random,
             "phrase": self.handle_phrase,
+            "themed_phrase": self.handle_themed_phrase,
             "leet": self.handle_leet,
             "pin": self.handle_pin,
             "pronounce": self.handle_pronounce,

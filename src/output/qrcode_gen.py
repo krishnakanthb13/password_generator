@@ -32,33 +32,15 @@ def generate_terminal_qr(data: str, border: int = 1) -> Optional[str]:
         return None
         
     try:
-        # Create QR code with low error correction (smaller size)
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=1,
-            border=border,
-        )
+        qr = qrcode.QRCode()
         qr.add_data(data)
-        qr.make(fit=True)
+        qr.make()
         
-        # Get the matrix
-        matrix = qr.get_matrix()
-        
-        # Convert to ASCII output using inverted colors
-        # Dark background with light modules is more scannable
-        # Using single chars for compactness
-        lines = []
-        for row in matrix:
-            line = ""
-            for cell in row:
-                if cell:
-                    line += "@@"  # Black module (filled)
-                else:
-                    line += "  "  # White module (empty)
-            lines.append(line)
-            
-        return "\n".join(lines)
+        # Use StringIO to capture the output of print_ascii
+        import io
+        f = io.StringIO()
+        qr.print_ascii(out=f)
+        return f.getvalue()
         
     except Exception:
         return None

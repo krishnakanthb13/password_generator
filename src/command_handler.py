@@ -501,17 +501,34 @@ def output_result(result: Any, args: Any) -> None:
     # Confirm Copy (Interactive Post-Generation Flow)
     if getattr(args, 'confirm_copy', False):
         from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
-        print("")
-        choice = input(f"{Style.BRIGHT}> Press [C] to Copy to Clipboard, or Enter to return... {Style.RESET_ALL}").strip().lower()
-        if choice == 'c':
+        from .output.qrcode_gen import is_available as qr_available, generate_terminal_qr
+        
+        prompt = f"\n{Style.BRIGHT}> Press [C]opy"
+        if qr_available():
+            prompt += ", [Q]R Code"
+        prompt += f", or Enter to return... {Style.RESET_ALL}"
+        
+        choice = input(prompt).strip().lower()
+        
+        if choice in ['c', 'q']:
             if ClipboardManager.is_available():
                 timeout = getattr(args, 'clipboard_timeout', DEFAULT_CLIPBOARD_TIMEOUT)
                 if ClipboardManager.copy(result.password, timeout=timeout):
                     print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
-                    input(f"\nPress Enter to return to menu... ")
                 else:
                     print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
-                    input(f"\nPress Enter to return to menu... ")
             else:
-                print(f"{Fore.YELLOW}Clipboard requires 'pyperclip' package{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}Clipboard module not available{Style.RESET_ALL}")
+                
+        if choice == 'q':
+            if qr_available():
+                qr_output = generate_terminal_qr(result.password)
+                if qr_output:
+                    print(f"\n{Fore.CYAN}Scan with any QR reader:{Style.RESET_ALL}")
+                    print(qr_output)
+                    input(f"\nPress Enter to return... ")
+            else:
+                print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
+        elif choice == 'c':
+            input(f"\nPress Enter to return... ")
 
