@@ -30,6 +30,7 @@ call pyinstaller --onefile ^
     --hidden-import base64 ^
     --hidden-import math ^
     --hidden-import uuid ^
+    --add-data "data;data" ^
     --icon NONE ^
     main.py
 
@@ -66,6 +67,7 @@ copy LICENSE "%RELEASE_DIR%\" >nul
 copy passforge.example.json "%RELEASE_DIR%\" >nul
 copy passforge_quick.bat "%RELEASE_DIR%\" >nul
 copy passforge_launch.bat "%RELEASE_DIR%\" >nul
+xcopy /E /I /Y data "%RELEASE_DIR%\data" >nul
 
 if errorlevel 1 (
     echo [ERROR] Failed to copy files to release directory.

@@ -21,6 +21,7 @@ pyinstaller --onefile \
     --name passforge \
     --console \
     --add-data "src:src" \
+    --add-data "data:data" \
     --hidden-import colorama \
     --hidden-import json \
     --hidden-import secrets \
@@ -62,6 +63,7 @@ cp LICENSE "$RELEASE_DIR/"
 cp passforge.example.json "$RELEASE_DIR/"
 cp passforge_quick.sh "$RELEASE_DIR/"
 cp passforge_launch.sh "$RELEASE_DIR/"
+cp -r data "$RELEASE_DIR/"
 
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to copy files to release directory."

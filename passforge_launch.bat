@@ -31,19 +31,21 @@ echo  ==========================================================================
 echo.
 echo  QUICK GENERATE                         ADVANCED / PRESETS
 echo  ------------------------------         ----------------------------------
-echo  [1] Random Password (16 chars)          [7]  JWT Secret
-echo  [2] Random Password (custom)            [8]  UUID Token
-echo  [3] Passphrase (4 words)                [9]  WiFi Key
-echo  [4] Passphrase (custom)                [10] License Key
-echo  [5] Leetspeak Password                 [11] Recovery Codes
-echo  [6] PIN Code                           [12] OTP Secret
+echo  [1] Random Password (16 chars)          [8]  JWT Secret
+echo  [2] Random Password (custom)            [9]  UUID Token
+echo  [3] Passphrase (4 words)               [10] WiFi Key
+echo  [4] Passphrase (custom)                [11] License Key
+echo  [5] Themed Passphrase                  [12] Recovery Codes
+echo  [6] Leetspeak Password                 [13] OTP Secret
+echo  [7] PIN Code
+
 echo.
 echo  PRESET PROFILES (One-Click)            TOOLS ^& SYSTEM
 echo  ------------------------------         ----------------------------------
-echo  [P1] Strong (32 chars)                 [13] Interactive Mode
-echo  [P2] Memorable (Easy Say)              [14] NATO Phonetic
-echo  [P3] Developer (40 char)               [15] View History
-echo  [P4] Web Account (16 chars)            [16] Show Help
+echo  [P1] Strong (32 chars)                 [14] Interactive Mode
+echo  [P2] Memorable (Easy Say)              [15] NATO Phonetic
+echo  [P3] Developer (40 char)               [16] View History
+echo  [P4] Web Account (16 chars)            [17] Show Help
 echo  [P5] WiFi Key (20 chars)               [0]  Exit
 echo  [P6] License Key (5x5)
 echo.
@@ -55,18 +57,19 @@ if "%choice%"=="1" goto random_default
 if "%choice%"=="2" goto random_custom
 if "%choice%"=="3" goto phrase_default
 if "%choice%"=="4" goto phrase_custom
-if "%choice%"=="5" goto leet
-if "%choice%"=="6" goto pin
-if "%choice%"=="7" goto jwt
-if "%choice%"=="8" goto uuid
-if "%choice%"=="9" goto wifi
-if "%choice%"=="10" goto license
-if "%choice%"=="11" goto recovery
-if "%choice%"=="12" goto otp
-if "%choice%"=="13" goto interactive
-if "%choice%"=="14" goto phonetic
-if "%choice%"=="15" goto history
-if "%choice%"=="16" goto help
+if "%choice%"=="5" goto themed_phrase
+if "%choice%"=="6" goto leet
+if "%choice%"=="7" goto pin
+if "%choice%"=="8" goto jwt
+if "%choice%"=="9" goto uuid
+if "%choice%"=="10" goto wifi
+if "%choice%"=="11" goto license
+if "%choice%"=="12" goto recovery
+if "%choice%"=="13" goto otp
+if "%choice%"=="14" goto interactive
+if "%choice%"=="15" goto phonetic
+if "%choice%"=="16" goto history
+if "%choice%"=="17" goto help
 if /i "%choice%"=="P1" goto preset_strong
 if /i "%choice%"=="P2" goto preset_memorable
 if /i "%choice%"=="P3" goto preset_dev
@@ -123,6 +126,41 @@ if /i "%cap%"=="Y" (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
 ) else (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep%
+)
+goto menu
+
+:themed_phrase
+cls
+echo.
+echo  Themed Passphrase
+echo  =================
+echo.
+echo  Available Themes:
+echo  -----------------
+setlocal enabledelayedexpansion
+set "i=1"
+for %%f in (data\wordlists\*.txt) do (
+    echo  [!i!] %%~nf
+    set "theme_!i!=%%~nf"
+    set /a i+=1
+)
+set /a count=i-1
+echo.
+call :read_int "Select theme number" 1 1 %count% choice
+set theme=!theme_%choice%!
+endlocal & set theme=%theme%
+
+echo.
+echo  Selected: %theme%
+echo.
+call :read_int "Number of words" 4 2 12 words
+set /p sep="Separator (default -): "
+if "%sep%"=="" set sep=-
+set /p cap="Capitalize words? (Y/N) [N]: "
+if /i "%cap%"=="Y" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize --wordlist "data\wordlists\%theme%.txt"
+) else (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --wordlist "data\wordlists\%theme%.txt"
 )
 goto menu
 

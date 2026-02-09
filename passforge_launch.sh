@@ -64,19 +64,20 @@ show_menu() {
     echo ""
     echo -e "  ${YELLOW}QUICK GENERATE${NC}                         ${YELLOW}ADVANCED / PRESETS${NC}"
     echo -e "  ------------------------------         ----------------------------------"
-    echo -e "  [1] Random Password (16 chars)          [7]  JWT Secret"
-    echo -e "  [2] Random Password (custom)            [8]  UUID Token"
-    echo -e "  [3] Passphrase (4 words)                [9]  WiFi Key"
-    echo -e "  [4] Passphrase (custom)                [10] License Key"
-    echo -e "  [5] Leetspeak Password                 [11] Recovery Codes"
-    echo -e "  [6] PIN Code                           [12] OTP Secret"
+    echo -e "  [1] Random Password (16 chars)          [8]  JWT Secret"
+    echo -e "  [2] Random Password (custom)            [9]  UUID Token"
+    echo -e "  [3] Passphrase (4 words)               [10] WiFi Key"
+    echo -e "  [4] Passphrase (custom)                [11] License Key"
+    echo -e "  [5] Themed Passphrase                  [12] Recovery Codes"
+    echo -e "  [6] Leetspeak Password                 [13] OTP Secret"
+    echo -e "  [7] PIN Code"
     echo ""
     echo -e "  ${YELLOW}PRESET PROFILES (One-Click)${NC}            ${YELLOW}TOOLS & SYSTEM${NC}"
     echo -e "  ------------------------------         ----------------------------------"
-    echo -e "  [P1] Strong (32 chars)                 [13] Interactive Mode"
-    echo -e "  [P2] Memorable (Easy Say)              [14] NATO Phonetic"
-    echo -e "  [P3] Developer (40 char)               [15] View History"
-    echo -e "  [P4] Web Account (16 chars)            [16] Show Help"
+    echo -e "  [P1] Strong (32 chars)                 [14] Interactive Mode"
+    echo -e "  [P2] Memorable (Easy Say)              [15] NATO Phonetic"
+    echo -e "  [P3] Developer (40 char)               [16] View History"
+    echo -e "  [P4] Web Account (16 chars)            [17] Show Help"
     echo -e "  [P5] WiFi Key (20 chars)               [0]  Exit"
     echo -e "  [P6] License Key (5x5)"
     echo ""
@@ -144,6 +145,45 @@ while true; do
         5)
             clear
             echo ""
+            echo "Themed Passphrase"
+            echo "================="
+            echo ""
+            echo "Available Themes:"
+            echo "-----------------"
+            i=1
+            wordlists=()
+            for f in data/wordlists/*.txt; do
+                name=$(basename "$f" .txt)
+                echo "  [$i] $name"
+                wordlists+=("$name")
+                i=$((i+1))
+            done
+            count=${#wordlists[@]}
+            
+            echo ""
+            read_int "Select theme number" 1 1 "$count" choice
+            
+            # Array index is 0-based
+            idx=$((choice-1))
+            theme="${wordlists[$idx]}"
+            
+            echo ""
+            echo "Selected: $theme"
+            read_int "Number of words" 4 2 12 words
+            read -p "Separator (default -): " sep
+            [[ -z "$sep" ]] && sep="-"
+            read -p "Capitalize words? (y/n) [n]: " cap
+            
+            if [[ "$cap" == "y" || "$cap" == "Y" ]]; then
+                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize --wordlist "data/wordlists/$theme.txt"
+            else
+                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --wordlist "data/wordlists/$theme.txt"
+            fi
+            echo ""
+            ;;
+        6)
+            clear
+            echo ""
             echo "Leetspeak Password"
             echo "=================="
             echo ""
@@ -151,7 +191,7 @@ while true; do
             $PYTHON main.py --log --confirm-copy --show-entropy leet -w "$words"
             echo ""
             ;;
-        6)
+        7)
             clear
             echo ""
             echo "PIN Generator"
@@ -161,7 +201,11 @@ while true; do
             $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
             echo ""
             ;;
-        7)
+            echo ""
+            $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
+            echo ""
+            ;;
+        8)
             clear
             echo "JWT Secret Generator"
             echo "===================="
@@ -178,14 +222,14 @@ while true; do
             $PYTHON main.py --log --confirm-copy --show-entropy jwt --bits "$bits"
             echo ""
             ;;
-        8)
+        9)
             clear
             echo "UUID v4 Token"
             echo "============="
             $PYTHON main.py --log --confirm-copy --show-entropy uuid
             echo ""
             ;;
-        9)
+        10)
             clear
             echo ""
             echo "WiFi Key Generator"
@@ -200,7 +244,7 @@ while true; do
             fi
             echo ""
             ;;
-        10)
+        11)
             clear
             echo "License Key Generator (AXB)"
             echo "==========================="
@@ -211,7 +255,7 @@ while true; do
             $PYTHON main.py --log --confirm-copy --show-entropy license --segments "$segments" --segment-length "$length"
             echo ""
             ;;
-        11)
+        12)
             clear
             echo ""
             echo "Recovery Codes"
@@ -226,20 +270,20 @@ while true; do
             fi
             echo ""
             ;;
-        12)
+        13)
             clear
             echo "OTP Secret (for 2FA apps)"
             echo "========================="
             $PYTHON main.py --log --confirm-copy --show-entropy otp
             echo ""
             ;;
-        13)
+        14)
             clear
             echo "Interactive Mode"
             echo "================"
             $PYTHON main.py --log --confirm-copy --interactive
             ;;
-        14)
+        15)
             clear
             echo "NATO Phonetic Alphabet"
             echo "======================"
@@ -254,7 +298,7 @@ while true; do
             echo ""
             pause
             ;;
-        15)
+        16)
             clear
             echo "Generation History"
             echo "=================="
@@ -264,7 +308,7 @@ while true; do
             echo ""
             pause
             ;;
-        16)
+        17)
             clear
             echo "Command Line Help"
             echo "================="
