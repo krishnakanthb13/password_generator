@@ -36,7 +36,7 @@ Existing solutions often fall into two categories:
 *   **Ubiquity**: Python is pre-installed on most modern developer environments.
 
 ### Why Interactive Mode & Launchers?
-*   CLI flags are powerful but hard to discover. The interactive menu (`--interactive`) and platform-specific launchers (`passforge.bat/sh`) serve as a self-documenting "wizard" that guides users through complex configurations.
+*   CLI flags are powerful but hard to discover. The interactive menu (`--interactive`) and platform-specific launchers (`passforge_launch.bat/sh`) serve as a self-documenting "wizard" that guides users through complex configurations.
 
 ### Security Profiles (Presets)
 *   Manual configuration of 15+ flags is error-prone. We provide `PRESETS` (`--preset strong`) to codify industry-standard security patterns (e.g., 32 chars for "strong", 40 char alphanumeric for "dev"). This ensures users can generate high-quality credentials with zero cognitive load.

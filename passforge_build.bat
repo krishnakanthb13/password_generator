@@ -65,6 +65,7 @@ copy README.md "%RELEASE_DIR%\" >nul
 copy LICENSE "%RELEASE_DIR%\" >nul
 copy passforge.example.json "%RELEASE_DIR%\" >nul
 copy passforge_quick.bat "%RELEASE_DIR%\" >nul
+copy passforge_launch.bat "%RELEASE_DIR%\" >nul
 
 if errorlevel 1 (
     echo [ERROR] Failed to copy files to release directory.

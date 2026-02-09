@@ -61,6 +61,7 @@ cp README.md "$RELEASE_DIR/"
 cp LICENSE "$RELEASE_DIR/"
 cp passforge.example.json "$RELEASE_DIR/"
 cp passforge_quick.sh "$RELEASE_DIR/"
+cp passforge_launch.sh "$RELEASE_DIR/"
 
 if [ $? -ne 0 ]; then
     echo "[ERROR] Failed to copy files to release directory."
