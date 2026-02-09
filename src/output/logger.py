@@ -52,7 +52,7 @@ class PasswordLogger:
     
     def get_history(
         self,
-        limit: int = 10,
+        limit: Optional[int] = 10,
         search: Optional[str] = None,
         generator_type: Optional[str] = None
     ) -> List[Dict[str, Any]]:
@@ -60,7 +60,7 @@ class PasswordLogger:
         Get password generation history.
         
         Args:
-            limit: Maximum entries to return
+            limit: Maximum entries to return (set to None for all)
             search: Search term to filter results
             generator_type: Filter by generator type
             
@@ -92,6 +92,9 @@ class PasswordLogger:
         
         # Return most recent first
         entries.reverse()
+        
+        if limit is None:
+            return entries
         return entries[:limit]
     
     def clear_history(self) -> None:

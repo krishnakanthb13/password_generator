@@ -469,6 +469,11 @@ def create_parser() -> argparse.ArgumentParser:
         help="Search in history"
     )
     history_parser.add_argument(
+        "--all", "-a",
+        action="store_true",
+        help="Show all history entries (overrides --last)"
+    )
+    history_parser.add_argument(
         "--clear",
         action="store_true",
         help="Clear history"

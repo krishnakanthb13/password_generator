@@ -417,8 +417,11 @@ def handle_history(args: Any) -> int:
         return 0
     
     search_term = getattr(args, 'search', None)
+    show_all = getattr(args, 'all', False)
+    limit = None if show_all else args.last
+    
     entries = logger.get_history(
-        limit=args.last,
+        limit=limit,
         search=search_term
     )
     
@@ -426,15 +429,13 @@ def handle_history(args: Any) -> int:
         print(f"{Fore.YELLOW}No history entries found.{Style.RESET_ALL}")
         return 0
     
-    print(f"\n{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
+    print(f"\n{Fore.GREEN}{'-' * 70}{Style.RESET_ALL}")
     for entry in entries:
         ts = entry['timestamp'][:19].replace('T', ' ')
         gen_type = entry['generator_type']
-        password = colorize_password(entry['password'][:30])
-        if len(entry['password']) > 30:
-            password += "..."
+        password = colorize_password(entry['password'])
         print(f"{Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {password}")
-    print(f"{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}{'-' * 70}{Style.RESET_ALL}")
     
     return 0
 

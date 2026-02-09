@@ -2,6 +2,8 @@
 
 A production-ready, cryptographically secure password generator CLI with 17 generation modes, entropy transparency, and comprehensive customization options.
 
+![PassForge_v1.0.0](assets/release_v1.0.0.png)
+
 ## Features
 
 ### 17 Generation Modes
@@ -23,7 +25,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
 | **Themed Phrase** | `phrase` (custom) | Passphrases from themed wordlists (animals, sci-fi, etc.) |
 | **NATO Phonetic** | `phonetic`, `ph` | Convert text/passwords to NATO alphabet (Alpha-Bravo) |
-| **History** | `history` | View generation history (auto-logged in Menu) |
+| **History** | `history` | View password generation history (defaults to 10 entries) |
 
 - **Preset Profiles**: One-click generation for common use cases (Strong, Memorable, Dev, etc.)
 - **Interactive Menu**: Full-featured menu for guided generation
@@ -145,8 +147,14 @@ python main.py --show-entropy random -l 20
 # Log to history
 python main.py --log random -l 16
 
-# View history
-python main.py history --last 10
+# View last 10 history entries (default)
+python main.py history
+
+# View all history entries
+python main.py history --all
+
+# Search in history
+python main.py history --search random
 
 # JSON output for scripts
 python main.py --json jwt --bits 256
@@ -285,6 +293,15 @@ python main.py --json jwt --bits 256
 |------|---------|-------------|
 | `--text` | - | Text to convert to NATO alphabet |
 | `-l`, `--length` | 8 | Length of random string to generate if text not provided |
+
+#### History (`history`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--last` | 10 | Show last N entries |
+| `--all`, `-a` | - | Show all history entries (overrides --last) |
+| `--search` | - | Search within history |
+| `--clear` | - | Clear all history |
 
 ## Entropy Guide
 
