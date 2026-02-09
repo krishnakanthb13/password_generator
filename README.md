@@ -36,7 +36,7 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/password_generator.git
+git clone https://github.com/krishnakanthb13/password_generator.git
 cd password_generator
 
 # Install dependencies
