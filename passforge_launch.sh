@@ -99,7 +99,7 @@ while true; do
             clear
             echo "Random Password (16 characters)"
             echo "================================"
-            $PYTHON main.py --confirm-copy --show-entropy random -l 16
+            $PYTHON main.py --log --confirm-copy --show-entropy random -l 16
             echo ""
             ;;
         2)
@@ -111,9 +111,9 @@ while true; do
             read_int "Enter password length" 16 8 128 len
             read -p "Show entropy analysis? (y/n) [n]: " show_ent
             if [[ "$show_ent" == "y" || "$show_ent" == "Y" ]]; then
-                $PYTHON main.py --confirm-copy --show-entropy random -l "$len"
+                $PYTHON main.py --log --confirm-copy --show-entropy random -l "$len"
             else
-                $PYTHON main.py --confirm-copy random -l "$len"
+                $PYTHON main.py --log --confirm-copy random -l "$len"
             fi
             echo ""
             ;;
@@ -121,7 +121,7 @@ while true; do
             clear
             echo "Passphrase (4 words)"
             echo "===================="
-            $PYTHON main.py --confirm-copy --show-entropy phrase -w 4
+            $PYTHON main.py --log --confirm-copy --show-entropy phrase -w 4
             echo ""
             ;;
         4)
@@ -135,9 +135,9 @@ while true; do
             read -p "Capitalize words? (y/n) [n]: " cap
             [[ -z "$sep" ]] && sep="-"
             if [[ "$cap" == "y" || "$cap" == "Y" ]]; then
-                $PYTHON main.py --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize
+                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize
             else
-                $PYTHON main.py --confirm-copy --show-entropy phrase -w "$words" -s "$sep"
+                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep"
             fi
             echo ""
             ;;
@@ -148,7 +148,7 @@ while true; do
             echo "=================="
             echo ""
             read_int "Number of words" 3 2 5 words
-            $PYTHON main.py --confirm-copy --show-entropy leet -w "$words"
+            $PYTHON main.py --log --confirm-copy --show-entropy leet -w "$words"
             echo ""
             ;;
         6)
@@ -158,7 +158,7 @@ while true; do
             echo "============="
             echo ""
             read_int "PIN length" 6 4 8 len
-            $PYTHON main.py --confirm-copy --show-entropy pin -l "$len"
+            $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
             echo ""
             ;;
         7)
@@ -175,14 +175,14 @@ while true; do
                 3) bits=512 ;;
                 *) bits=256 ;;
             esac
-            $PYTHON main.py --confirm-copy --show-entropy jwt --bits "$bits"
+            $PYTHON main.py --log --confirm-copy --show-entropy jwt --bits "$bits"
             echo ""
             ;;
         8)
             clear
             echo "UUID v4 Token"
             echo "============="
-            $PYTHON main.py --confirm-copy --show-entropy uuid
+            $PYTHON main.py --log --confirm-copy --show-entropy uuid
             echo ""
             ;;
         9)
@@ -194,9 +194,9 @@ while true; do
             read_int "WiFi key length" 16 8 63 len
             read -p "Simple mode (alphanumeric only)? (y/n) [n]: " simple
             if [[ "$simple" == "y" || "$simple" == "Y" ]]; then
-                $PYTHON main.py --confirm-copy --show-entropy wifi -l "$len" --simple
+                $PYTHON main.py --log --confirm-copy --show-entropy wifi -l "$len" --simple
             else
-                $PYTHON main.py --confirm-copy --show-entropy wifi -l "$len"
+                $PYTHON main.py --log --confirm-copy --show-entropy wifi -l "$len"
             fi
             echo ""
             ;;
@@ -208,7 +208,7 @@ while true; do
             read_int "Number of segments (A)" 5 2 10 segments
             read_int "Segment length (B)" 5 2 10 length
             echo ""
-            $PYTHON main.py --confirm-copy --show-entropy license --segments "$segments" --segment-length "$length"
+            $PYTHON main.py --log --confirm-copy --show-entropy license --segments "$segments" --segment-length "$length"
             echo ""
             ;;
         11)
@@ -220,9 +220,9 @@ while true; do
             read_int "Number of recovery codes" 8 6 12 count
             read -p "Word-based codes? (y/n) [n]: " word_based
             if [[ "$word_based" == "y" || "$word_based" == "Y" ]]; then
-                $PYTHON main.py --confirm-copy recovery -n "$count" --words
+                $PYTHON main.py --log --confirm-copy recovery -n "$count" --words
             else
-                $PYTHON main.py --confirm-copy recovery -n "$count"
+                $PYTHON main.py --log --confirm-copy recovery -n "$count"
             fi
             echo ""
             ;;
@@ -230,14 +230,14 @@ while true; do
             clear
             echo "OTP Secret (for 2FA apps)"
             echo "========================="
-            $PYTHON main.py --confirm-copy --show-entropy otp
+            $PYTHON main.py --log --confirm-copy --show-entropy otp
             echo ""
             ;;
         13)
             clear
             echo "Interactive Mode"
             echo "================"
-            $PYTHON main.py --confirm-copy --interactive
+            $PYTHON main.py --log --confirm-copy --interactive
             ;;
         14)
             clear
@@ -267,7 +267,7 @@ while true; do
             echo ""
             echo "Preset: STRONG (32 chars, max security)"
             echo "========================================="
-            $PYTHON main.py --confirm-copy --preset strong --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset strong --show-entropy
             echo ""
             ;;
         [Pp]2)
@@ -275,7 +275,7 @@ while true; do
             echo ""
             echo "Preset: MEMORABLE (easy to say)"
             echo "================================="
-            $PYTHON main.py --confirm-copy --preset memorable --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset memorable --show-entropy
             echo ""
             ;;
         [Pp]3)
@@ -283,7 +283,7 @@ while true; do
             echo ""
             echo "Preset: DEVELOPER (40 char alphanumeric)"
             echo "========================================="
-            $PYTHON main.py --confirm-copy --preset dev --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset dev --show-entropy
             echo ""
             ;;
         [Pp]4)
@@ -291,7 +291,7 @@ while true; do
             echo ""
             echo "Preset: WEB ACCOUNT (16 chars mixed)"
             echo "====================================="
-            $PYTHON main.py --confirm-copy --preset web --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset web --show-entropy
             echo ""
             ;;
         [Pp]5)
@@ -299,7 +299,7 @@ while true; do
             echo ""
             echo "Preset: WIFI KEY (20 chars)"
             echo "============================"
-            $PYTHON main.py --confirm-copy --preset wifi --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset wifi --show-entropy
             echo ""
             ;;
         [Pp]6)
@@ -307,7 +307,7 @@ while true; do
             echo ""
             echo "Preset: LICENSE KEY (5x5 format)"
             echo "================================="
-            $PYTHON main.py --confirm-copy --preset key --show-entropy
+            $PYTHON main.py --log --confirm-copy --preset key --show-entropy
             echo ""
             ;;
         *)

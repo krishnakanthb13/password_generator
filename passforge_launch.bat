@@ -82,7 +82,7 @@ cls
 echo.
 echo  Random Password (16 characters, all character types)
 echo  ====================================================
-python main.py --confirm-copy --show-entropy random -l 16
+python main.py --log --confirm-copy --show-entropy random -l 16
 goto menu
 
 :random_custom
@@ -94,9 +94,9 @@ echo.
 call :read_int "Enter password length" 16 8 128 len
 set /p show_entropy="Show entropy analysis? (Y/N) [N]: "
 if /i "%show_entropy%"=="Y" (
-    python main.py --confirm-copy --show-entropy random -l %len%
+    python main.py --log --confirm-copy --show-entropy random -l %len%
 ) else (
-    python main.py --confirm-copy random -l %len%
+    python main.py --log --confirm-copy random -l %len%
 )
 goto menu
 
@@ -105,7 +105,7 @@ cls
 echo.
 echo  Passphrase (4 words, hyphen-separated)
 echo  ======================================
-python main.py --confirm-copy --show-entropy phrase -w 4
+python main.py --log --confirm-copy --show-entropy phrase -w 4
 goto menu
 
 :phrase_custom
@@ -119,9 +119,9 @@ set /p sep="Separator (default -): "
 set /p cap="Capitalize words? (Y/N) [N]: "
 if "%sep%"=="" set sep=-
 if /i "%cap%"=="Y" (
-    python main.py --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
 ) else (
-    python main.py --confirm-copy --show-entropy phrase -w %words% -s %sep%
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep%
 )
 goto menu
 
@@ -132,7 +132,7 @@ echo  Leetspeak Password
 echo  ==================
 echo.
 call :read_int "Number of words" 3 2 5 words
-python main.py --confirm-copy --show-entropy leet -w %words%
+python main.py --log --confirm-copy --show-entropy leet -w %words%
 goto menu
 
 :pin
@@ -142,7 +142,7 @@ echo  PIN Generator
 echo  =============
 echo.
 call :read_int "PIN length" 6 4 8 len
-python main.py --confirm-copy --show-entropy pin -l %len%
+python main.py --log --confirm-copy --show-entropy pin -l %len%
 goto menu
 
 :jwt
@@ -159,7 +159,7 @@ call :read_int "Select algorithm" 1 1 3 bits
 if "%bits%"=="1" set bits=256
 if "%bits%"=="2" set bits=384
 if "%bits%"=="3" set bits=512
-python main.py --confirm-copy --show-entropy jwt --bits %bits%
+python main.py --log --confirm-copy --show-entropy jwt --bits %bits%
 goto menu
 
 :uuid
@@ -167,7 +167,7 @@ cls
 echo.
 echo  UUID v4 Token
 echo  =============
-python main.py --confirm-copy --show-entropy uuid
+python main.py --log --confirm-copy --show-entropy uuid
 goto menu
 
 :wifi
@@ -179,9 +179,9 @@ echo.
 call :read_int "WiFi key length" 24 8 63 len
 set /p simple="Simple mode (alphanumeric only)? (Y/N) [N]: "
 if /i "%simple%"=="Y" (
-    python main.py --confirm-copy --show-entropy wifi -l %len% --simple
+    python main.py --log --confirm-copy --show-entropy wifi -l %len% --simple
 ) else (
-    python main.py --confirm-copy --show-entropy wifi -l %len%
+    python main.py --log --confirm-copy --show-entropy wifi -l %len%
 )
 goto menu
 
@@ -194,7 +194,7 @@ echo.
 call :read_int "Number of segments (A)" 5 2 10 segments
 call :read_int "Segment length (B)" 5 2 10 length
 echo.
-python main.py --confirm-copy --show-entropy license --segments %segments% --segment-length %length%
+python main.py --log --confirm-copy --show-entropy license --segments %segments% --segment-length %length%
 goto menu
 
 :recovery
@@ -206,9 +206,9 @@ echo.
 call :read_int "Number of recovery codes" 8 6 12 count
 set /p words="Word-based codes? (Y/N) [N]: "
 if /i "%words%"=="Y" (
-    python main.py --confirm-copy recovery -n %count% --words
+    python main.py --log --confirm-copy recovery -n %count% --words
 ) else (
-    python main.py --confirm-copy recovery -n %count%
+    python main.py --log --confirm-copy recovery -n %count%
 )
 goto menu
 
@@ -217,7 +217,7 @@ cls
 echo.
 echo  OTP Secret (for 2FA apps)
 echo  =========================
-python main.py --confirm-copy --show-entropy otp
+python main.py --log --confirm-copy --show-entropy otp
 goto menu
 
 :interactive
@@ -225,7 +225,7 @@ cls
 echo.
 echo  Interactive Mode
 echo  ================
-python main.py --confirm-copy --interactive
+python main.py --log --confirm-copy --interactive
 goto menu
 
 :history
@@ -254,7 +254,7 @@ cls
 echo.
 echo  Preset: STRONG (32 chars, max security)
 echo  =========================================
-python main.py --confirm-copy --preset strong --show-entropy
+python main.py --log --confirm-copy --preset strong --show-entropy
 goto menu
 
 :preset_memorable
@@ -262,7 +262,7 @@ cls
 echo.
 echo  Preset: MEMORABLE (easy to say)
 echo  =================================
-python main.py --confirm-copy --preset memorable --show-entropy
+python main.py --log --confirm-copy --preset memorable --show-entropy
 goto menu
 
 :preset_dev
@@ -270,7 +270,7 @@ cls
 echo.
 echo  Preset: DEVELOPER (40 char alphanumeric)
 echo  =========================================
-python main.py --confirm-copy --preset dev --show-entropy
+python main.py --log --confirm-copy --preset dev --show-entropy
 goto menu
 
 :preset_web
@@ -278,7 +278,7 @@ cls
 echo.
 echo  Preset: WEB ACCOUNT (16 chars mixed)
 echo  =====================================
-python main.py --confirm-copy --preset web --show-entropy
+python main.py --log --confirm-copy --preset web --show-entropy
 goto menu
 
 :preset_wifi
@@ -286,7 +286,7 @@ cls
 echo.
 echo  Preset: WIFI KEY (20 chars)
 echo  ============================
-python main.py --confirm-copy --preset wifi --show-entropy
+python main.py --log --confirm-copy --preset wifi --show-entropy
 goto menu
 
 :preset_key
@@ -294,7 +294,7 @@ cls
 echo.
 echo  Preset: LICENSE KEY (5x5 format)
 echo  =================================
-python main.py --confirm-copy --preset key --show-entropy
+python main.py --log --confirm-copy --preset key --show-entropy
 goto menu
 
 :read_int
