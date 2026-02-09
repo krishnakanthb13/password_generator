@@ -1,10 +1,10 @@
 # PassForge - All-in-One Password Generator CLI
 
-A production-ready, cryptographically secure password generator CLI with 14 generation modes, entropy transparency, and comprehensive customization options.
+A production-ready, cryptographically secure password generator CLI with 17 generation modes, entropy transparency, and comprehensive customization options.
 
 ## Features
 
-### 14 Generation Modes
+### 17 Generation Modes
 
 | Generator | Command | Description |
 |-----------|---------|-------------|
@@ -21,6 +21,8 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 | **Recovery Codes** | `recovery` | 2FA backup codes (numeric or word-based) |
 | **OTP Secret** | `otp` | TOTP/HOTP secrets with otpauth URI |
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
+| **Themed Phrase** | `phrase` (custom) | Passphrases from themed wordlists (animals, sci-fi, etc.) |
+| **NATO Phonetic** | `phonetic`, `ph` | Convert text/passwords to NATO alphabet (Alpha-Bravo) |
 | **History** | `history` | View generation history (auto-logged in Menu) |
 
 - **Preset Profiles**: One-click generation for common use cases (Strong, Memorable, Dev, etc.)
@@ -101,6 +103,10 @@ python main.py phrase -w 5 -s _ --capitalize
 
 # Leetspeak version (Smart 50% substitution)
 python main.py leet -w 4 -s -
+
+# Themed Passphrase (using 'animals.txt')
+python main.py phrase -w 4 --capitalize --wordlist data/wordlists/animals.txt
+# Output: Tiger-Falcon-Shark-Wolf
 ```
 
 ### Software Keys (A x B)
@@ -124,6 +130,10 @@ python main.py base64 -b 32 --url-safe
 
 # UUID token
 python main.py uuid --upper
+
+# NATO Phonetic Conversion
+python main.py phonetic --text "PassForge"
+# Output: Papa-Alpha-Sierra-Sierra-Foxtrot-Oscar-Romeo-Golf-Echo
 ```
 
 ### Security & Logging
@@ -152,6 +162,7 @@ python main.py --json jwt --bits 256
 | `--show-entropy` | Display entropy analysis |
 | `--check-strength` | Run zxcvbn pattern analysis |
 | `--clipboard`, `-c` | Copy to clipboard |
+| `--confirm-copy` | Prompt to confirm copying result to clipboard |
 | `--clipboard-timeout` | Auto-wipe clipboard after N seconds (default: 30) |
 | `--log` | Log password to history |
 | `--no-color` | Disable colored output |
@@ -188,6 +199,93 @@ python main.py --json jwt --bits 256
 | `--wordlist` | - | Path to custom wordlist |
 | `-n`, `--count` | 1 | Number to generate |
 
+#### Leetspeak (`leet`, `l`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-w`, `--words` | 4 | Number of words |
+| `-s`, `--separator` | `-` | Word separator |
+| `max_subs` | 0 | Max substitutions (internal logic) |
+
+#### PIN (`pin`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-l`, `--length` | 6 | PIN length |
+| `-n`, `--count` | 1 | Number to generate |
+
+#### Pronounceable (`pronounce`, `pr`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-l`, `--length` | 12 | Password length |
+| `-n`, `--count` | 1 | Number to generate |
+
+#### UUID (`uuid`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--upper` | - | Uppercase output |
+| `-n`, `--count` | 1 | Number to generate |
+
+#### Base64 (`base64`, `b64`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-b`, `--bytes` | 32 | Number of random bytes |
+| `--url-safe` | - | Use URL-safe characters |
+
+#### JWT Secret (`jwt`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--bits` | 256 | Bit length (256, 384, 512) |
+| `--hex` | - | Output as hex string |
+
+#### WiFi Key (`wifi`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-l`, `--length` | 20 | Key length |
+| `--simple` | - | Alphanumeric only (no symbols) |
+
+#### License Key (`license`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--segments` | 4 | Number of segments |
+| `--segment-length` | 4 | Characters per segment |
+| `--separator` | `-` | Segment separator |
+
+#### Recovery Codes (`recovery`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `-n`, `--count` | 8 | Number of codes |
+| `-l`, `--length` | 10 | Length of each code |
+| `--words` | - | Use word-based codes |
+
+#### OTP Secret (`otp`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--digits` | 6 | Code length (6 or 8) |
+| `--period` | 30 | Time period in seconds |
+| `--qr` | - | Show QR code in terminal |
+
+#### Pattern (`pattern`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--grid` | 3 | Grid size (e.g. 3x3) |
+
+#### Phonetic (`phonetic`, `ph`)
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--text` | - | Text to convert to NATO alphabet |
+| `-l`, `--length` | 8 | Length of random string to generate if text not provided |
+
 ## Entropy Guide
 
 | Entropy (bits) | Strength | Use Case |
@@ -207,32 +305,38 @@ password_generator/
 ├── requirements.txt        # Dependencies
 ├── src/
 │   ├── __init__.py
-│   ├── cli.py              # Argument parser & banner
-│   ├── command_handler.py  # Command routing
-│   ├── interactive.py      # Interactive menu
-│   ├── generators/         # All password generators
-│   │   ├── base.py         # Abstract base class
-│   │   ├── random_password.py
-│   │   ├── passphrase.py
-│   │   ├── leetspeak.py
-│   │   ├── pin.py
-│   │   ├── pronounceable.py
-│   │   ├── uuid_token.py
-│   │   ├── base64_secret.py
-│   │   ├── jwt_secret.py
-│   │   ├── wifi_key.py
-│   │   ├── license_key.py
-│   │   ├── recovery_codes.py
-│   │   ├── otp.py
-│   │   └── pattern.py
+│   ├── cli.py                # Argument parser & banner
+│   ├── command_handler.py    # Command routing
+│   ├── interactive.py        # Interactive menu
+│   ├── generators/           # All password generators
+│   │   ├── base.py           # Abstract base class
+│   │   ├── random_password.py # Random password generator
+│   │   ├── passphrase.py     # Passphrase generator
+│   │   ├── leetspeak.py      # Leetspeak generator
+│   │   ├── pin.py            # PIN generator
+│   │   ├── pronounceable.py  # Pronounceable password generator
+│   │   ├── uuid_token.py     # UUID token generator
+│   │   ├── base64_secret.py  # Base64 secret generator
+│   │   ├── jwt_secret.py     # JWT secret generator
+│   │   ├── wifi_key.py       # WiFi key generator
+│   │   ├── license_key.py    # License key generator
+│   │   ├── recovery_codes.py # Recovery codes generator
+│   │   ├── otp.py            # OTP generator
+│   │   ├── pattern.py        # Pattern generator
+│   │   └── phonetic.py       # NATO Phonetic generator
 │   ├── security/
-│   │   └── entropy.py      # Entropy calculator
+│   │   ├── entropy.py        # Entropy calculator
+│   │   └── strength_checker.py # zxcvbn integration
 │   ├── output/
-│   │   ├── formatter.py    # Color-coded output
-│   │   └── logger.py       # History logging
+│   │   ├── formatter.py      # Color-coded output
+│   │   ├── logger.py         # History logging
+│   │   ├── clipboard.py      # Secure clipboard handling
+│   │   └── qrcode_gen.py     # QR code generation for OTP
 │   ├── config/
-│   │   ├── loader.py       # YAML/JSON config loader
-│   │   └── presets.py      # Predefined security profiles
+│   │   ├── loader.py         # YAML/JSON config loader
+│   │   └── presets.py        # Predefined security profiles
+├── data/
+│   └── wordlists/            # Themed wordlists (animals.txt, biology.txt, etc.)
 └── tests/
 ```
 

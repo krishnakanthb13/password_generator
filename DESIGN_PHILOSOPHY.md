@@ -31,7 +31,11 @@ Existing solutions often fall into two categories:
 ### D. Visual Excellence (UI/UX)
 *   **The "Zero-Indentation" Rule**: All prompts, headers, and passwords are aligned to Column 0. This creates a sharp vertical alignment for technical precision.
 *   **The "One-Line Spacing" Rule**: Exactly one blank line is maintained before and after generated secrets to ensure visual prominence without excessive scrolling.
-*   **Subtle Colorization**: Colors are used deliberately to distinguish character types (digits vs symbols) rather than for mere decoration.
+*   **Numbered Selection**: In launchers and menus, options are always numbered. Users should never have to type a full filename (e.g., "animals.txt") when they can type "1".
+
+### E. Human-Centric Design
+*   **Verbal Communication**: Support for NATO phonetic output ensures passwords can be shared over the phone unambiguously.
+*   **Themed Generation**: Allowing users to choose themes (Positive, Biology, Sci-Fi) makes security personal and memorable.
 
 ## 3. Key Design Decisions
 

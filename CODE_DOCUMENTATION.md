@@ -14,10 +14,11 @@ graph TD
     D -->|random| E[RandomPasswordGenerator]
     D -->|phrase| F[PassphraseGenerator]
     D -->|otp| G[OtpGenerator]
-    D -->|...| H[Other Generators]
-    E & F & G & H --> I[GeneratorResult]
-    I --> J[Formatter (JSON/Color)]
-    I --> K[Logger (JSON Lines)]
+    D -->|phonetic| H[PhoneticGenerator]
+    D -->|...| I[Other Generators]
+    E & F & G & H & I --> J[GeneratorResult]
+    J --> K[Formatter (JSON/Color)]
+    J --> L[Logger (JSON Lines)]
 ```
 
 ## 2. File Structure
@@ -55,6 +56,13 @@ class BaseGenerator(ABC):
 *   `filter_charset(charset)`: Removes ambiguous characters (`0`, `O`, `1`, `I`, `l`) if `easy_read` is set.
 *   `to_leetspeak(word)`: Specialized logic for Leetspeak using a **50% substitution ratio** to balance security with human readability.
 *   `License Key System`: Supports dynamic **AXB formatting** (A segments of B character length).
+*   `Phonetic Conversion`: Maps characters to NATO standard (A -> Alpha) for clear verbal communication.
+
+### Themed Passphrases (`src/generators/passphrase.py`)
+Utilizes the `data/wordlists/` directory to offer themed generation.
+*   **Scanning**: Use `os.listdir` to find `.txt` files.
+*   **Selection**: Interactive menus (Python & Shell) present a **numbered list** for easy user selection.
+*   **Execution**: Passes the full path to `PassphraseGenerator(wordlist_path=...)`.
 
 ### Entropy Calculator (`src/security/entropy.py`)
 Provides the `EntropyCalculator` class with static methods:
@@ -122,3 +130,28 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
     *   `pytest`: Test runner.
     *   `pytest-cov`: Coverage reporting.
     *   `pyinstaller`: Building standalone executables.
+
+## 7. Installation & Usage (Release Artifacts)
+
+PassForge is distributed in three formats: Standalone Executable, packaged ZIP/Tarball, and Source Code.
+
+### A. Standalone Executable (`passforge.exe` / `passforge`)
+A single-file binary containing the Python runtime and all dependencies.
+*   **How to use**: Download and double-click to run in Interactive Mode.
+*   **Command Line**: Open a terminal in the folder and run `passforge.exe random -l 20`.
+*   **Pros**: Zero installation, fully portable (USB drive ready).
+
+### B. ZIP / Tarball (`passforge_v1.0.0.zip`)
+Examples: `.zip` (Windows), `.tar.gz` (Linux/macOS).
+Contains the executable plus helper scripts, documentation, and wordlists.
+1.  **Extract**: Right-click -> Extract All (or `unzip passforge.zip`).
+2.  **Run**:
+    *   **Windows**: Double-click `passforge_launch.bat` for the full menu experience.
+    *   **Linux/Mac**: Run `./passforge_launch.sh` in a terminal.
+3.  **Why use this?**: The launchers provide a superior UX with auto-clearing screens, menus, and theme selection that the raw executable lacks by default.
+
+### C. Source Code
+For developers who want to modify the code.
+1.  `git clone ...`
+2.  `pip install -r requirements.txt`
+3.  `python main.py --interactive`
