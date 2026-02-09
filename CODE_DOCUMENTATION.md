@@ -53,6 +53,8 @@ class BaseGenerator(ABC):
 **Common Utilities:**
 *   `calculate_entropy(pool_size, length)`: Computes Shannon entropy bits.
 *   `filter_charset(charset)`: Removes ambiguous characters (`0`, `O`, `1`, `I`, `l`) if `easy_read` is set.
+*   `to_leetspeak(word)`: Specialized logic for Leetspeak using a **50% substitution ratio** to balance security with human readability.
+*   `License Key System`: Supports dynamic **AXB formatting** (A segments of B character length).
 
 ### Entropy Calculator (`src/security/entropy.py`)
 Provides the `EntropyCalculator` class with static methods:
@@ -73,6 +75,7 @@ Handles colorization using `colorama`.
 Writes history to `~/.passforge/pass_history.log` in JSON Lines format.
 *   `entropy_bits`
 *   `parameters` (length, options used)
+*   **Automatic Logging**: To ensure no secret is lost, the platform launchers and interactive menu now enable history logging by default.
 
 ### Preset System (`src/config/presets.py`)
 Uses `apply_preset(args)` in `command_handler.py` to intercept and override command-line arguments with predefined values.
@@ -94,8 +97,9 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
     *   Returns `GeneratorResult`.
 6.  **Output**: `command_handler.output_result()`:
     *   Calls `colorize_password()` to format the string.
-    *   Prints to stdout.
+    *   Prints to stdout with **strictly one blank line** for visual separation.
     *   (Optional) Logs to history if `--log` is present.
+7.  **Loop**: In Interactive Mode, the system pauses with a "Press Enter" prompt to prevent screen-clearing before the user has viewed the result.
 
 ## 5. Adding a New Generator
 

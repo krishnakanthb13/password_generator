@@ -15,6 +15,15 @@ Passwords can be of several types, each balancing security and convenience diffe
 - Avoid obvious data (name, DOB, “123456”, “qwerty”) and dictionary words; prefer unique, random passwords or passphrases per account.
 - Enable multi-factor authentication, use a password manager, and update important passwords regularly to reduce breach impact.
 
+## PassForge Implemented Standards (v1.0.0 Refinements)
+
+- **Smart Leetspeak**: Uses a 50% probability for character substitution (e.g., 'A' might become '4' or stay 'A') to ensure the secret is both secure and human-readable.
+- **AXB License Keys**: Supports any segment count (A) and segment length (B), moving beyond the legacy 4x4 fixed format.
+- **Visual Grid Patterns**: Security is calculated based on path permutations within the grid size (3x3 to 5x5).
+- **NATO Phonetic Conversion**: Supports translating any alphanumeric string into the NATO standard (Alpha, Bravo, Charlie) for secure verbal communication.
+- **Zero-Indentation UI**: All terminal output is strictly aligned to Column 0 for a professional, technical aesthetic.
+- **Unified Auto-Logging**: Interactive menus and launchers automatically record generations to history by default to prevent data loss.
+
 [geeksforgeeks](https://www.geeksforgeeks.org/computer-networks/types-of-password/)
 
 ---

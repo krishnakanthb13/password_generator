@@ -17,11 +17,11 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 | **Base64** | `base64`, `b64` | URL-safe base64-encoded secrets |
 | **JWT Secret** | `jwt` | High-entropy secrets for JWT signing (HS256/384/512) |
 | **WiFi Key** | `wifi` | WPA2/WPA3 compatible keys (8-63 chars) |
-| **License Key** | `license` | Software license keys (XXXX-XXXX format) |
+| **License Key** | `license` | Software license keys (AXB format, e.g. 5x5) |
 | **Recovery Codes** | `recovery` | 2FA backup codes (numeric or word-based) |
 | **OTP Secret** | `otp` | TOTP/HOTP secrets with otpauth URI |
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
-| **History** | `history` | View password generation history |
+| **History** | `history` | View generation history (auto-logged in Menu) |
 
 - **Preset Profiles**: One-click generation for common use cases (Strong, Memorable, Dev, etc.)
 - **Interactive Menu**: Full-featured menu for guided generation
@@ -33,7 +33,10 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 - **QR Codes for OTP**: Scannable QR codes for authenticator apps
 - **Color-Coded Output**: Visual distinction between character types
 - **JSON Export**: Machine-readable output for scripting
-- **History Logging**: Track generated passwords for auditing
+- **Mandatory Logging**: Automatically records generations for later retrieval (Opt-in in CLI, Always-on in Menu)
+- **Zero-Indentation UI**: Clean, professional left-aligned output for all modes
+- **Smart Leetspeak**: Probabilistic substitution for more natural, readable passwords
+- **Robust Validation**: Interactive prompts with default values and recursive error handling
 - **Global Modifiers**: `--easy-read` and `--easy-say` modes
 
 ## Installation
@@ -96,8 +99,18 @@ python main.py phrase -w 4
 # Capitalized with underscore separator
 python main.py phrase -w 5 -s _ --capitalize
 
-# Leetspeak version
+# Leetspeak version (Smart 50% substitution)
 python main.py leet -w 4 -s -
+```
+
+### Software Keys (A x B)
+
+```bash
+# 5 segments of 5 characters
+python main.py license --segments 5 --segment-length 5
+
+# 4 segments of 8 characters
+python main.py license --segments 4 --segment-length 8
 ```
 
 ### Developer Tokens

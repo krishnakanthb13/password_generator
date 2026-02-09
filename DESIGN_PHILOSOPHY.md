@@ -28,6 +28,11 @@ Existing solutions often fall into two categories:
 *   **Plugin-like Architecture**: Each generator (`random`, `uuid`, `otp`) is an isolated module inheriting from a `BaseGenerator`. Adding a new generator should never require modifying existing core logic.
 *   **Zero-Dependency Core**: The core library relies only on Python standard libraries where possible. External dependencies (like `colorama` or `pyperclip`) are kept minimal and optional where feasible.
 
+### D. Visual Excellence (UI/UX)
+*   **The "Zero-Indentation" Rule**: All prompts, headers, and passwords are aligned to Column 0. This creates a sharp vertical alignment for technical precision.
+*   **The "One-Line Spacing" Rule**: Exactly one blank line is maintained before and after generated secrets to ensure visual prominence without excessive scrolling.
+*   **Subtle Colorization**: Colors are used deliberately to distinguish character types (digits vs symbols) rather than for mere decoration.
+
 ## 3. Key Design Decisions
 
 ### Why Python?
@@ -42,9 +47,9 @@ Existing solutions often fall into two categories:
 *   Manual configuration of 15+ flags is error-prone. We provide `PRESETS` (`--preset strong`) to codify industry-standard security patterns (e.g., 32 chars for "strong", 40 char alphanumeric for "dev"). This ensures users can generate high-quality credentials with zero cognitive load.
 
 ### Storage Strategy
-*   **Plaintext History**: We chose to store history in plaintext JSON lines (`~/.passforge/pass_history.log`) by default.
-    *   *Rationale*: This matches the "bash history" model. If an attacker has read access to your home directory, you have bigger problems.
-    *   *Mitigation*: History logging is **opt-in** via the `--log` flag (or interactive prompt) to preventing accidental leakage.
+*   **History Logs**: We store history in plaintext JSON lines (`~/.passforge/pass_history.log`).
+    *   *Rationale*: This matches the "bash history" model. If an attacker has local access to your machine, you have bigger problems.
+    *   *Updated UX Policy*: While history is still opt-in for CLI power users, it is now **auto-enabled** in the launchers and interactive mode. This prevents information loss for menu-driven users who might forget to copy a secret before the screen clears.
 
 ## 4. Trade-offs
 
