@@ -74,10 +74,10 @@ show_menu() {
     echo -e "  ${YELLOW}PRESET PROFILES (One-Click)${NC}            ${YELLOW}TOOLS & SYSTEM${NC}"
     echo -e "  ------------------------------         ----------------------------------"
     echo -e "  [P1] Strong (32 chars)                 [13] Interactive Mode"
-    echo -e "  [P2] Memorable (Easy Say)              [14] View History"
-    echo -e "  [P3] Developer (40 char)               [15] Show Help"
-    echo -e "  [P4] Web Account (16 chars)            [0]  Exit"
-    echo -e "  [P5] WiFi Key (20 chars)"
+    echo -e "  [P2] Memorable (Easy Say)              [14] NATO Phonetic"
+    echo -e "  [P3] Developer (40 char)               [15] View History"
+    echo -e "  [P4] Web Account (16 chars)            [16] Show Help"
+    echo -e "  [P5] WiFi Key (20 chars)               [0]  Exit"
     echo -e "  [P6] License Key (5x5)"
     echo ""
     echo -e "${BLUE}==========================================================================${NC}"
@@ -241,6 +241,21 @@ while true; do
             ;;
         14)
             clear
+            echo "NATO Phonetic Alphabet"
+            echo "======================"
+            echo ""
+            read -p "Text to convert (leave empty for random): " text
+            if [[ -z "$text" ]]; then
+                read_int "Random length" 8 4 32 len
+                $PYTHON main.py --log --confirm-copy phonetic -l "$len"
+            else
+                $PYTHON main.py --log --confirm-copy phonetic --text "$text"
+            fi
+            echo ""
+            pause
+            ;;
+        15)
+            clear
             echo "Generation History"
             echo "=================="
             read_int "Show last N entries" 10 1 100 num
@@ -249,7 +264,7 @@ while true; do
             echo ""
             pause
             ;;
-        15)
+        16)
             clear
             echo "Command Line Help"
             echo "================="

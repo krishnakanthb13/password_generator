@@ -41,10 +41,10 @@ echo.
 echo  PRESET PROFILES (One-Click)            TOOLS ^& SYSTEM
 echo  ------------------------------         ----------------------------------
 echo  [P1] Strong (32 chars)                 [13] Interactive Mode
-echo  [P2] Memorable (Easy Say)              [14] View History
-echo  [P3] Developer (40 char)               [15] Show Help
-echo  [P4] Web Account (16 chars)            [0]  Exit
-echo  [P5] WiFi Key (20 chars)
+echo  [P2] Memorable (Easy Say)              [14] NATO Phonetic
+echo  [P3] Developer (40 char)               [15] View History
+echo  [P4] Web Account (16 chars)            [16] Show Help
+echo  [P5] WiFi Key (20 chars)               [0]  Exit
 echo  [P6] License Key (5x5)
 echo.
 echo  ==========================================================================
@@ -64,8 +64,9 @@ if "%choice%"=="10" goto license
 if "%choice%"=="11" goto recovery
 if "%choice%"=="12" goto otp
 if "%choice%"=="13" goto interactive
-if "%choice%"=="14" goto history
-if "%choice%"=="15" goto help
+if "%choice%"=="14" goto phonetic
+if "%choice%"=="15" goto history
+if "%choice%"=="16" goto help
 if /i "%choice%"=="P1" goto preset_strong
 if /i "%choice%"=="P2" goto preset_memorable
 if /i "%choice%"=="P3" goto preset_dev
@@ -226,6 +227,23 @@ echo.
 echo  Interactive Mode
 echo  ================
 python main.py --log --confirm-copy --interactive
+goto menu
+
+:phonetic
+cls
+echo.
+echo  NATO Phonetic Alphabet
+echo  ======================
+echo.
+set /p text="Text to convert (leave empty for random): "
+if "%text%"=="" (
+    call :read_int "Random length" 8 4 32 len
+    python main.py --log --confirm-copy phonetic -l %len%
+) else (
+    python main.py --log --confirm-copy phonetic --text "%text%"
+)
+echo.
+pause
 goto menu
 
 :history

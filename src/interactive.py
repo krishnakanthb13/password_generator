@@ -27,12 +27,15 @@ class InteractiveMenu:
         ("11", "Recovery Codes", "recovery"),
         ("12", "OTP Secret", "otp"),
         ("13", "Pattern Password", "pattern"),
-        ("14", "View History", "history"),
+        ("14", "NATO Phonetic Alphabet", "phonetic"),
+        ("15", "View History", "history"),
         ("0", "Exit", "exit"),
     ]
     
     def __init__(self):
+        from .output.logger import PasswordLogger
         self.running = True
+        self.logger = PasswordLogger()
     
     def print_menu(self):
         """Print the main menu."""
@@ -80,9 +83,12 @@ class InteractiveMenu:
         return default
     
     def print_result(self, result, show_entropy: bool = True):
-        """Print a generator result."""
+        """Print a generator result and log to history."""
         from .output.formatter import colorize_password
         from .security.entropy import EntropyCalculator
+        
+        # Log to history
+        self.logger.log(result)
         
         print(f"\n{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         print(f"{Style.BRIGHT}{Fore.WHITE}Generated:{Style.RESET_ALL}")
@@ -96,6 +102,7 @@ class InteractiveMenu:
             print(f"{Style.BRIGHT}{Fore.YELLOW}Crack Time:{Style.RESET_ALL} {crack_time}")
         
         print(f"{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}✓ Saved to history{Style.RESET_ALL}")
     
     def handle_random(self):
         """Handle random password generation."""
@@ -330,6 +337,19 @@ class InteractiveMenu:
         print(f"\n  {Fore.YELLOW}Entropy:{Style.RESET_ALL} {result.entropy_bits:.2f} bits")
         print(f"{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
     
+    def handle_phonetic(self):
+        """Handle phonetic alphabet generation."""
+        from .generators.phonetic import PhoneticGenerator
+        
+        print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Phonetic Alphabet ==={Style.RESET_ALL}")
+        
+        text = self.get_input("Text to convert (leave empty for random)", "")
+        length = self.get_int("Random length", 8, 4, 32)
+        
+        generator = PhoneticGenerator()
+        result = generator.generate(text=text, length=length)
+        self.print_result(result, show_entropy=False)
+    
     def handle_history(self):
         """Handle history viewing."""
         from .output.logger import PasswordLogger
@@ -372,6 +392,7 @@ class InteractiveMenu:
             "recovery": self.handle_recovery,
             "otp": self.handle_otp,
             "pattern": self.handle_pattern,
+            "phonetic": self.handle_phonetic,
             "history": self.handle_history,
         }
         

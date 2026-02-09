@@ -54,6 +54,8 @@ def handle_command(args: Any) -> int:
             return handle_pattern(args)
         elif args.command == "otp":
             return handle_otp(args)
+        elif args.command in ["phonetic", "ph"]:
+            return handle_phonetic(args)
         elif args.command == "history":
             return handle_history(args)
         else:
@@ -388,6 +390,19 @@ def handle_otp(args: Any) -> int:
             print(f"{Fore.YELLOW}QR generation requires 'qrcode' package: pip install qrcode{Style.RESET_ALL}")
     
     return 0
+
+
+def handle_phonetic(args: Any) -> int:
+    """Handle phonetic alphabet generation."""
+    from .generators.phonetic import PhoneticGenerator
+    
+    text = getattr(args, 'text', "")
+    length = getattr(args, 'length', 8)
+    
+    generator = PhoneticGenerator()
+    result = generator.generate(text=text, length=length)
+    
+    return output_result(result, args)
 
 
 def handle_history(args: Any) -> int:

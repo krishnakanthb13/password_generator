@@ -434,6 +434,24 @@ def create_parser() -> argparse.ArgumentParser:
         help="Grid size (3x3, 4x4, or 5x5)"
     )
     
+    # Phonetic generator
+    phonetic_parser = subparsers.add_parser(
+        "phonetic",
+        help="Generate NATO phonetic alphabet sequence",
+        aliases=["ph"]
+    )
+    phonetic_parser.add_argument(
+        "--text",
+        type=str,
+        help="Text to convert to phonetic"
+    )
+    phonetic_parser.add_argument(
+        "-l", "--length",
+        type=int,
+        default=8,
+        help="Length of random sequence if --text not provided (default: 8)"
+    )
+    
     # History viewer
     history_parser = subparsers.add_parser(
         "history",
