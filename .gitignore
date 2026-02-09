@@ -1,6 +1,9 @@
-# PassForge Build Artifacts
+# PassForge Build & Release Artifacts
 build/
 dist/
+release_v*/
+passforge_v*.zip
+passforge_v*.tar.gz
 *.spec
 
 # Python
