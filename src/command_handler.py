@@ -1,0 +1,359 @@
+"""
+Command Handler - Routes CLI commands to appropriate generators.
+"""
+
+import json
+import sys
+from datetime import datetime
+from typing import Any
+from colorama import Fore, Style
+
+from .generators.random_password import RandomPasswordGenerator
+from .security.entropy import EntropyCalculator
+from .cli import colorize_password
+
+
+def handle_command(args: Any) -> int:
+    """
+    Handle CLI commands and route to appropriate generators.
+    
+    Args:
+        args: Parsed command-line arguments
+        
+    Returns:
+        Exit code (0 for success, 1 for error)
+    """
+    try:
+        if args.command in ["random", "r"]:
+            return handle_random(args)
+        elif args.command in ["phrase", "p"]:
+            return handle_phrase(args)
+        elif args.command == "pin":
+            return handle_pin(args)
+        elif args.command in ["pronounce", "pr"]:
+            return handle_pronounce(args)
+        elif args.command in ["leet", "l"]:
+            return handle_leet(args)
+        elif args.command == "uuid":
+            return handle_uuid(args)
+        elif args.command in ["base64", "b64"]:
+            return handle_base64(args)
+        elif args.command == "jwt":
+            return handle_jwt(args)
+        elif args.command == "wifi":
+            return handle_wifi(args)
+        elif args.command == "license":
+            return handle_license(args)
+        elif args.command == "recovery":
+            return handle_recovery(args)
+        elif args.command == "pattern":
+            return handle_pattern(args)
+        elif args.command == "otp":
+            return handle_otp(args)
+        elif args.command == "history":
+            return handle_history(args)
+        else:
+            print(f"{Fore.RED}Unknown command: {args.command}{Style.RESET_ALL}")
+            return 1
+            
+    except Exception as e:
+        print(f"{Fore.RED}Error: {e}{Style.RESET_ALL}")
+        return 1
+
+
+def handle_random(args: Any) -> int:
+    """Handle random password generation."""
+    generator = RandomPasswordGenerator(
+        easy_read=args.easy_read,
+        easy_say=args.easy_say
+    )
+    
+    count = getattr(args, 'count', 1)
+    
+    for i in range(count):
+        result = generator.generate(
+            length=args.length,
+            uppercase=not args.no_uppercase,
+            lowercase=not args.no_lowercase,
+            digits=not args.no_digits,
+            symbols=not args.no_symbols,
+            include_chars=args.include,
+            exclude_chars=args.exclude,
+            no_repeats=args.no_repeats,
+            min_uppercase=args.min_upper,
+            min_lowercase=args.min_lower,
+            min_digits=args.min_digits,
+            min_symbols=args.min_symbols
+        )
+        
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_phrase(args: Any) -> int:
+    """Handle passphrase generation."""
+    from .generators.passphrase import PassphraseGenerator
+    
+    generator = PassphraseGenerator(
+        easy_read=args.easy_read,
+        easy_say=args.easy_say
+    )
+    
+    count = getattr(args, 'count', 1)
+    wordlist_path = getattr(args, 'wordlist', None)
+    
+    for i in range(count):
+        result = generator.generate(
+            word_count=args.words,
+            separator=args.separator,
+            capitalize=args.capitalize,
+            wordlist_path=wordlist_path
+        )
+        
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_pin(args: Any) -> int:
+    """Handle PIN generation."""
+    from .generators.pin import PinGenerator
+    
+    generator = PinGenerator()
+    count = getattr(args, 'count', 1)
+    
+    for i in range(count):
+        result = generator.generate(length=args.length)
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_pronounce(args: Any) -> int:
+    """Handle pronounceable password generation."""
+    from .generators.pronounceable import PronounceableGenerator
+    
+    generator = PronounceableGenerator()
+    count = getattr(args, 'count', 1)
+    
+    for i in range(count):
+        result = generator.generate(length=args.length)
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_leet(args: Any) -> int:
+    """Handle leetspeak passphrase generation."""
+    from .generators.leetspeak import LeetspeakGenerator
+    
+    generator = LeetspeakGenerator()
+    count = getattr(args, 'count', 1)
+    
+    for i in range(count):
+        result = generator.generate(
+            word_count=args.words,
+            separator=args.separator
+        )
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_uuid(args: Any) -> int:
+    """Handle UUID generation."""
+    from .generators.uuid_token import UuidGenerator
+    
+    generator = UuidGenerator()
+    count = getattr(args, 'count', 1)
+    
+    for i in range(count):
+        result = generator.generate(uppercase=args.upper)
+        output_result(result, args)
+    
+    return 0
+
+
+def handle_base64(args: Any) -> int:
+    """Handle base64 secret generation."""
+    from .generators.base64_secret import Base64SecretGenerator
+    
+    generator = Base64SecretGenerator()
+    url_safe = getattr(args, 'url_safe', False)
+    
+    result = generator.generate(
+        byte_length=args.bytes,
+        url_safe=url_safe
+    )
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_jwt(args: Any) -> int:
+    """Handle JWT secret generation."""
+    from .generators.jwt_secret import JwtSecretGenerator
+    
+    generator = JwtSecretGenerator()
+    use_hex = getattr(args, 'hex', False)
+    
+    result = generator.generate(
+        bits=args.bits,
+        output_hex=use_hex
+    )
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_wifi(args: Any) -> int:
+    """Handle WiFi key generation."""
+    from .generators.wifi_key import WifiKeyGenerator
+    
+    generator = WifiKeyGenerator()
+    simple = getattr(args, 'simple', False)
+    
+    result = generator.generate(
+        length=args.length,
+        simple=simple
+    )
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_license(args: Any) -> int:
+    """Handle license key generation."""
+    from .generators.license_key import LicenseKeyGenerator
+    
+    generator = LicenseKeyGenerator()
+    
+    result = generator.generate(
+        segments=args.segments,
+        segment_length=args.segment_length
+    )
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_recovery(args: Any) -> int:
+    """Handle recovery codes generation."""
+    from .generators.recovery_codes import RecoveryCodesGenerator
+    
+    generator = RecoveryCodesGenerator()
+    use_words = getattr(args, 'words', False)
+    
+    result = generator.generate(
+        count=args.count,
+        use_words=use_words
+    )
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_pattern(args: Any) -> int:
+    """Handle pattern generation."""
+    from .generators.pattern import PatternGenerator
+    
+    generator = PatternGenerator()
+    
+    result = generator.generate(grid_size=args.grid)
+    output_result(result, args)
+    
+    return 0
+
+
+def handle_otp(args: Any) -> int:
+    """Handle OTP secret generation."""
+    from .generators.otp import OtpGenerator
+    
+    generator = OtpGenerator()
+    generate_qr = getattr(args, 'qr', False)
+    
+    result = generator.generate(
+        digits=args.digits,
+        period=args.period
+    )
+    output_result(result, args)
+    
+    # Generate QR if requested
+    if generate_qr:
+        try:
+            from .output.qr_generator import generate_otp_qr
+            generate_otp_qr(result.parameters.get('secret', ''))
+        except ImportError:
+            print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
+    
+    return 0
+
+
+def handle_history(args: Any) -> int:
+    """Handle history viewing."""
+    from .output.logger import PasswordLogger
+    
+    logger = PasswordLogger()
+    
+    if args.clear:
+        logger.clear_history()
+        print(f"{Fore.GREEN}History cleared.{Style.RESET_ALL}")
+        return 0
+    
+    search_term = getattr(args, 'search', None)
+    entries = logger.get_history(
+        limit=args.last,
+        search=search_term
+    )
+    
+    if not entries:
+        print(f"{Fore.YELLOW}No history entries found.{Style.RESET_ALL}")
+        return 0
+    
+    for entry in entries:
+        print(f"{Fore.CYAN}{entry['timestamp']}{Style.RESET_ALL} | "
+              f"{entry['generator_type']} | "
+              f"{colorize_password(entry['password'], no_color=False)}")
+    
+    return 0
+
+
+def output_result(result: Any, args: Any) -> None:
+    """Output the generator result based on args."""
+    
+    # JSON output
+    if args.json:
+        print(json.dumps(result.to_dict(), indent=2))
+        return
+    
+    # Regular output with color
+    no_color = getattr(args, 'no_color', False)
+    password = colorize_password(result.password, no_color)
+    
+    print(password)
+    
+    # Entropy display
+    if args.show_entropy:
+        report = EntropyCalculator.format_entropy_report(
+            result.password,
+            result.entropy_bits,
+            result.parameters.get('pool_size')
+        )
+        print(report)
+    
+    # Clipboard
+    if args.clipboard:
+        try:
+            import pyperclip
+            pyperclip.copy(result.password)
+            print(f"{Fore.GREEN}[OK] Copied to clipboard{Style.RESET_ALL}")
+        except ImportError:
+            print(f"{Fore.YELLOW}Clipboard requires 'pyperclip' package{Style.RESET_ALL}")
+    
+    # Logging
+    if args.log:
+        from .output.logger import PasswordLogger
+        logger = PasswordLogger()
+        logger.log(result)
+        print(f"{Fore.GREEN}[OK] Logged to history{Style.RESET_ALL}")
