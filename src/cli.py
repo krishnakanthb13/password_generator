@@ -81,6 +81,12 @@ def create_parser() -> argparse.ArgumentParser:
         help="Log generated password to history"
     )
     
+    parser.add_argument(
+        "--preset",
+        choices=["strong", "memorable", "dev", "pin", "web", "wifi", "key"],
+        help="Use a predefined security profile"
+    )
+    
     # Subcommands for each generator
     subparsers = parser.add_subparsers(
         dest="command",
@@ -482,8 +488,8 @@ def main(args: Optional[List[str]] = None):
     parser = create_parser()
     parsed = parser.parse_args(args)
     
-    # No command and no interactive flag = show help
-    if not parsed.command and not parsed.interactive:
+    # No command, no interactive flag, and no preset = show help
+    if not parsed.command and not parsed.interactive and not parsed.preset:
         print_banner()
         parser.print_help()
         return 0

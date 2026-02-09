@@ -57,6 +57,14 @@ show_menu() {
     echo "   [11] Recovery Codes"
     echo "   [12] OTP Secret"
     echo ""
+    echo "  Preset Profiles (One-Click):"
+    echo "   [P1] Strong (32 chars, max security)"
+    echo "   [P2] Memorable (easy to say)"
+    echo "   [P3] Developer (40 char alphanumeric)"
+    echo "   [P4] Web Account (16 chars)"
+    echo "   [P5] WiFi Key (20 chars)"
+    echo "   [P6] License Key (5x5 format)"
+    echo ""
     echo "  Tools:"
     echo "   [13] Interactive Mode"
     echo "   [14] View History"
@@ -232,6 +240,66 @@ while true; do
             echo ""
             echo "Goodbye!"
             exit 0
+            ;;
+        [Pp]1)
+            clear
+            echo ""
+            echo "Preset: STRONG (32 chars, max security)"
+            echo "========================================="
+            echo ""
+            $PYTHON main.py --preset strong --show-entropy
+            echo ""
+            pause
+            ;;
+        [Pp]2)
+            clear
+            echo ""
+            echo "Preset: MEMORABLE (easy to say)"
+            echo "================================="
+            echo ""
+            $PYTHON main.py --preset memorable --show-entropy
+            echo ""
+            pause
+            ;;
+        [Pp]3)
+            clear
+            echo ""
+            echo "Preset: DEVELOPER (40 char alphanumeric)"
+            echo "========================================="
+            echo ""
+            $PYTHON main.py --preset dev --show-entropy
+            echo ""
+            pause
+            ;;
+        [Pp]4)
+            clear
+            echo ""
+            echo "Preset: WEB ACCOUNT (16 chars mixed)"
+            echo "====================================="
+            echo ""
+            $PYTHON main.py --preset web --show-entropy
+            echo ""
+            pause
+            ;;
+        [Pp]5)
+            clear
+            echo ""
+            echo "Preset: WIFI KEY (20 chars)"
+            echo "============================"
+            echo ""
+            $PYTHON main.py --preset wifi --show-entropy
+            echo ""
+            pause
+            ;;
+        [Pp]6)
+            clear
+            echo ""
+            echo "Preset: LICENSE KEY (5x5 format)"
+            echo "================================="
+            echo ""
+            $PYTHON main.py --preset key --show-entropy
+            echo ""
+            pause
             ;;
         *)
             echo "Invalid option. Press Enter to try again..."

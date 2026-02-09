@@ -46,6 +46,14 @@ echo   [10] License Key
 echo   [11] Recovery Codes
 echo   [12] OTP Secret
 echo.
+echo  Preset Profiles (One-Click):
+echo   [P1] Strong (32 chars, max security)
+echo   [P2] Memorable (easy to say)
+echo   [P3] Developer (40 char alphanumeric)
+echo   [P4] Web Account (16 chars)
+echo   [P5] WiFi Key (20 chars)
+echo   [P6] License Key (5x5 format)
+echo.
 echo  Tools:
 echo   [13] Interactive Mode
 echo   [14] View History
@@ -70,6 +78,12 @@ if "%choice%"=="12" goto otp
 if "%choice%"=="13" goto interactive
 if "%choice%"=="14" goto history
 if "%choice%"=="15" goto help
+if /i "%choice%"=="P1" goto preset_strong
+if /i "%choice%"=="P2" goto preset_memorable
+if /i "%choice%"=="P3" goto preset_dev
+if /i "%choice%"=="P4" goto preset_web
+if /i "%choice%"=="P5" goto preset_wifi
+if /i "%choice%"=="P6" goto preset_key
 if "%choice%"=="0" goto end
 echo Invalid option. Press any key to try again...
 pause >nul
@@ -246,6 +260,72 @@ goto menu
 :help
 cls
 python main.py --help
+echo.
+pause
+goto menu
+
+:preset_strong
+cls
+echo.
+echo  Preset: STRONG (32 chars, max security)
+echo  =========================================
+echo.
+python main.py --preset strong --show-entropy
+echo.
+pause
+goto menu
+
+:preset_memorable
+cls
+echo.
+echo  Preset: MEMORABLE (easy to say)
+echo  =================================
+echo.
+python main.py --preset memorable --show-entropy
+echo.
+pause
+goto menu
+
+:preset_dev
+cls
+echo.
+echo  Preset: DEVELOPER (40 char alphanumeric)
+echo  =========================================
+echo.
+python main.py --preset dev --show-entropy
+echo.
+pause
+goto menu
+
+:preset_web
+cls
+echo.
+echo  Preset: WEB ACCOUNT (16 chars mixed)
+echo  =====================================
+echo.
+python main.py --preset web --show-entropy
+echo.
+pause
+goto menu
+
+:preset_wifi
+cls
+echo.
+echo  Preset: WIFI KEY (20 chars)
+echo  ============================
+echo.
+python main.py --preset wifi --show-entropy
+echo.
+pause
+goto menu
+
+:preset_key
+cls
+echo.
+echo  Preset: LICENSE KEY (5x5 format)
+echo  =================================
+echo.
+python main.py --preset key --show-entropy
 echo.
 pause
 goto menu

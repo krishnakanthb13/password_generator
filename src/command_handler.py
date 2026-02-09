@@ -24,6 +24,10 @@ def handle_command(args: Any) -> int:
         Exit code (0 for success, 1 for error)
     """
     try:
+        # Apply preset if provided
+        if hasattr(args, 'preset') and args.preset:
+            args = apply_preset(args)
+            
         if args.command in ["random", "r"]:
             return handle_random(args)
         elif args.command in ["phrase", "p"]:
@@ -58,7 +62,96 @@ def handle_command(args: Any) -> int:
             
     except Exception as e:
         print(f"{Fore.RED}Error: {e}{Style.RESET_ALL}")
+        import traceback
+        traceback.print_exc()
         return 1
+
+
+def apply_preset(args: Any) -> Any:
+    """Apply preset profile settings to args."""
+    from .config.presets import PRESETS
+    
+    preset_name = args.preset
+    if preset_name not in PRESETS:
+        return args
+        
+    preset_data = PRESETS[preset_name]
+    
+    # Set command if not already set
+    if not args.command:
+        args.command = preset_data.get("command")
+
+    # Define all possible attributes and their default values
+    # to avoid AttributeError when a preset is used without a subcommand
+    defaults = {
+        "length": 16,
+        "no_uppercase": False,
+        "no_lowercase": False,
+        "no_digits": False,
+        "no_symbols": False,
+        "include": "",
+        "exclude": "",
+        "no_repeats": False,
+        "min_upper": 0,
+        "min_lower": 0,
+        "min_digits": 0,
+        "min_symbols": 0,
+        "words": 4,
+        "separator": "-",
+        "capitalize": False,
+        "wordlist": None,
+        "bytes": 32,
+        "url_safe": False,
+        "bits": 256,
+        "hex": False,
+        "simple": False,
+        "segments": 4,
+        "segment_length": 4,
+        "digits": 6,
+        "period": 30,
+        "qr": False,
+        "upper": False,
+        "grid": 3,
+        "count": 1
+    }
+
+    # Set defaults if attribute doesn't exist
+    for attr, default_val in defaults.items():
+        if not hasattr(args, attr):
+            setattr(args, attr, default_val)
+        
+    # Map of preset keys to arg attributes
+    mapping = {
+        "length": "length",
+        "words": "words",
+        "uppercase": "no_uppercase", # Inverted logic in args: no_uppercase
+        "lowercase": "no_lowercase",
+        "digits": "no_digits",
+        "symbols": "no_symbols",
+        "min_uppercase": "min_upper",
+        "min_lowercase": "min_lower",
+        "min_digits": "min_digits",
+        "min_symbols": "min_symbols",
+        "no_repeats": "no_repeats",
+        "simple": "simple",
+        "segments": "segments",
+        "segment_length": "segment_length",
+        "capitalize": "capitalize",
+        "bits": "bits",
+        "bytes": "bytes"
+    }
+    
+    for preset_key, arg_attr in mapping.items():
+        if preset_key in preset_data:
+            val = preset_data[preset_key]
+            
+            # Handle inverted flags
+            if preset_key in ["uppercase", "lowercase", "digits", "symbols"]:
+                setattr(args, arg_attr, not val)
+            else:
+                setattr(args, arg_attr, val)
+                
+    return args
 
 
 def handle_random(args: Any) -> int:
