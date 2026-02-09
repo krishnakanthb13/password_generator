@@ -236,10 +236,12 @@ python -m pytest tests/test_generators.py::TestRandomPasswordGenerator -v
 python -m pytest tests/ --cov=src --cov-report=html
 ```
 
-All 41 unit tests cover:
+All 48 unit tests cover:
 - All 13 generator modules
-- Entropy calculator
-- Strength labels and crack time estimates
+- Entropy and zxcvbn strength calculators
+- Clipboard auto-wipe and secure storage
+- QR code ASCII generation logic
+- Configuration loading and presets
 
 ## Configuration
 

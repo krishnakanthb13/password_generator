@@ -25,12 +25,10 @@ graph TD
 | Directory | Purpose | Key Files |
 | :--- | :--- | :--- |
 | `src/generators/` | Core logic for each password type. | `base.py`, `random_password.py`, `otp.py` |
-| `src/security/` | Utility functions for randomness and entropy. | `entropy.py` |
-| `src/output/` | Presentation logic (CLI colors, JSON dumps). | `formatter.py`, `logger.py` |
+| `src/security/` | Entropy calculation and pattern analysis. | `entropy.py`, `strength_checker.py` |
+| `src/output/` | Presentation logic and secure utilities. | `formatter.py`, `logger.py`, `clipboard.py`, `qrcode_gen.py` |
 | `src/config/` | Configuration file parsing and presets. | `loader.py`, `presets.py` |
-| `src/output/` | Presentation logic and utilities. | `formatter.py`, `logger.py`, `clipboard.py`, `qrcode_gen.py` |
-| `src/security/` | Randomness, entropy, and strength analysis. | `entropy.py`, `strength_checker.py` |
-| `tests/` | Unit tests ensuring generator correctness. | `test_generators.py` |
+| `tests/` | Unit tests ensuring generator correctness. | `test_generators.py`, `test_security_output.py` |
 
 ## 3. Core Modules
 
@@ -114,7 +112,8 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
     *   `colorama`: Cross-platform ANSI colors.
     *   `pyperclip` (Optional): Clipboard integration.
     *   `qrcode` (Optional): QR code generation for OTPs.
-    *   `Pillow` (Optional): Required by `qrcode`.
+    *   `zxcvbn` (Optional): Password strength analysis.
+    *   `Pillow` (Optional): Required by `qrcode` (for images).
 *   **Dev/Test**:
     *   `pytest`: Test runner.
     *   `pytest-cov`: Coverage reporting.

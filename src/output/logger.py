@@ -42,9 +42,13 @@ class PasswordLogger:
             "parameters": result.parameters
         }
         
-        # Append to log file (JSON Lines format)
-        with open(self.log_file, 'a', encoding='utf-8') as f:
-            f.write(json.dumps(entry) + "\n")
+        try:
+            # Append to log file (JSON Lines format)
+            with open(self.log_file, 'a', encoding='utf-8') as f:
+                f.write(json.dumps(entry) + "\n")
+        except (IOError, OSError):
+            # Fail silently to avoid interrupting user flow
+            pass
     
     def get_history(
         self,
