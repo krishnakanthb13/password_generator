@@ -28,6 +28,9 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 - **Platform Launchers**: Dedicated `.bat` and `.sh` scripts with interactive menus
 - **Cryptographic Security**: Uses Python's `secrets` module for CSPRNG
 - **Entropy Transparency**: Real-time entropy calculation and strength analysis
+- **zxcvbn Analysis**: Pattern-based password strength checking (dictionary attacks, sequences)
+- **Secure Clipboard**: Auto-wipe clipboard after configurable timeout
+- **QR Codes for OTP**: Scannable QR codes for authenticator apps
 - **Color-Coded Output**: Visual distinction between character types
 - **JSON Export**: Machine-readable output for scripting
 - **History Logging**: Track generated passwords for auditing
@@ -134,7 +137,9 @@ python main.py --json jwt --bits 256
 | `--interactive`, `-i` | Launch interactive menu mode |
 | `--json` | Output in JSON format |
 | `--show-entropy` | Display entropy analysis |
-| `--clipboard`, `-c` | Copy to clipboard (requires pyperclip) |
+| `--check-strength` | Run zxcvbn pattern analysis |
+| `--clipboard`, `-c` | Copy to clipboard |
+| `--clipboard-timeout` | Auto-wipe clipboard after N seconds (default: 30) |
 | `--log` | Log password to history |
 | `--no-color` | Disable colored output |
 | `--easy-read` | Exclude ambiguous characters (0/O, 1/l/I) |

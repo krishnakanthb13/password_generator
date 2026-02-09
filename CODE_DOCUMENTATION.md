@@ -28,6 +28,8 @@ graph TD
 | `src/security/` | Utility functions for randomness and entropy. | `entropy.py` |
 | `src/output/` | Presentation logic (CLI colors, JSON dumps). | `formatter.py`, `logger.py` |
 | `src/config/` | Configuration file parsing and presets. | `loader.py`, `presets.py` |
+| `src/output/` | Presentation logic and utilities. | `formatter.py`, `logger.py`, `clipboard.py`, `qrcode_gen.py` |
+| `src/security/` | Randomness, entropy, and strength analysis. | `entropy.py`, `strength_checker.py` |
 | `tests/` | Unit tests ensuring generator correctness. | `test_generators.py` |
 
 ## 3. Core Modules

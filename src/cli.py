@@ -57,9 +57,23 @@ def create_parser() -> argparse.ArgumentParser:
     )
     
     parser.add_argument(
+        "--clipboard-timeout",
+        type=int,
+        default=30,
+        metavar="SECONDS",
+        help="Auto-wipe clipboard after N seconds (default: 30, 0=disabled)"
+    )
+    
+    parser.add_argument(
         "--show-entropy",
         action="store_true",
         help="Display entropy analysis"
+    )
+    
+    parser.add_argument(
+        "--check-strength",
+        action="store_true",
+        help="Run zxcvbn pattern analysis (requires zxcvbn package)"
     )
     
     # Global modifiers

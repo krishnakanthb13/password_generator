@@ -374,11 +374,18 @@ def handle_otp(args: Any) -> int:
     
     # Generate QR if requested
     if generate_qr:
-        try:
-            from .output.qr_generator import generate_otp_qr
-            generate_otp_qr(result.parameters.get('secret', ''))
-        except ImportError:
-            print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
+        from .output.qrcode_gen import is_available, generate_terminal_qr
+        
+        otpauth_uri = result.parameters.get('otpauth_uri', '')
+        
+        if is_available() and otpauth_uri:
+            qr_output = generate_terminal_qr(otpauth_uri)
+            if qr_output:
+                print()
+                print(f"{Fore.CYAN}Scan this QR code with your authenticator app:{Style.RESET_ALL}")
+                print(qr_output)
+        else:
+            print(f"{Fore.YELLOW}QR generation requires 'qrcode' package: pip install qrcode{Style.RESET_ALL}")
     
     return 0
 
@@ -435,14 +442,32 @@ def output_result(result: Any, args: Any) -> None:
         )
         print(report)
     
-    # Clipboard
+    # zxcvbn strength analysis
+    check_strength = getattr(args, 'check_strength', False)
+    if check_strength:
+        from .security.strength_checker import check_strength as zxcvbn_check, format_strength_report, is_available
+        if is_available():
+            strength_result = zxcvbn_check(result.password)
+            if strength_result:
+                print(format_strength_report(strength_result, no_color))
+        else:
+            print(f"{Fore.YELLOW}Pattern analysis requires 'zxcvbn' package: pip install zxcvbn{Style.RESET_ALL}")
+    
+    # Clipboard with timeout
     if args.clipboard:
-        try:
-            import pyperclip
-            pyperclip.copy(result.password)
-            print(f"{Fore.GREEN}[OK] Copied to clipboard{Style.RESET_ALL}")
-        except ImportError:
-            print(f"{Fore.YELLOW}Clipboard requires 'pyperclip' package{Style.RESET_ALL}")
+        from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
+        
+        if ClipboardManager.is_available():
+            timeout = getattr(args, 'clipboard_timeout', DEFAULT_CLIPBOARD_TIMEOUT)
+            if ClipboardManager.copy(result.password, timeout=timeout):
+                if timeout > 0:
+                    print(f"{Fore.GREEN}[OK] Copied to clipboard (auto-wipe in {timeout}s){Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.GREEN}[OK] Copied to clipboard{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.RED}[ERR] Failed to copy to clipboard{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}Clipboard requires 'pyperclip' package: pip install pyperclip{Style.RESET_ALL}")
     
     # Logging
     if args.log:
@@ -450,3 +475,4 @@ def output_result(result: Any, args: Any) -> None:
         logger = PasswordLogger()
         logger.log(result)
         print(f"{Fore.GREEN}[OK] Logged to history{Style.RESET_ALL}")
+
