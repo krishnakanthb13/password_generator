@@ -124,11 +124,15 @@ class RandomPasswordGenerator(BaseGenerator):
         remaining = length - len(password_chars)
         
         if no_repeats:
-            # Remove already used characters
-            available = [c for c in charset if c not in password_chars]
-            password_chars.extend(
-                secrets.choice(available) for _ in range(remaining)
-            )
+            # Use proper unique selection - remove used chars and sample
+            used_chars = set(password_chars)
+            available = [c for c in charset if c not in used_chars]
+            # Sample unique characters one by one
+            for _ in range(remaining):
+                if available:
+                    idx = secrets.randbelow(len(available))
+                    chosen = available.pop(idx)
+                    password_chars.append(chosen)
         else:
             # Allow repeats
             password_chars.extend(
