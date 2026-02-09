@@ -23,8 +23,9 @@ A production-ready, cryptographically secure password generator CLI with 14 gene
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
 | **History** | `history` | View password generation history |
 
-### Core Features
-
+- **Preset Profiles**: One-click generation for common use cases (Strong, Memorable, Dev, etc.)
+- **Interactive Menu**: Full-featured menu for guided generation
+- **Platform Launchers**: Dedicated `.bat` and `.sh` scripts with interactive menus
 - **Cryptographic Security**: Uses Python's `secrets` module for CSPRNG
 - **Entropy Transparency**: Real-time entropy calculation and strength analysis
 - **Color-Coded Output**: Visual distinction between character types
@@ -60,6 +61,9 @@ python main.py --show-entropy random -l 16
 
 # Launch interactive mode
 python main.py --interactive
+
+# Use a preset profile (Strong)
+python main.py --preset strong --show-entropy
 ```
 
 ## Usage Examples
@@ -126,8 +130,7 @@ python main.py --json jwt --bits 256
 
 ### Global Options
 
-| Flag | Description |
-|------|-------------|
+| `--preset` | Use a predefined security profile (strong, memorable, dev, etc.) |
 | `--interactive`, `-i` | Launch interactive menu mode |
 | `--json` | Output in JSON format |
 | `--show-entropy` | Display entropy analysis |
@@ -209,7 +212,9 @@ password_generator/
 │   ├── output/
 │   │   ├── formatter.py    # Color-coded output
 │   │   └── logger.py       # History logging
-│   └── config/
+│   ├── config/
+│   │   ├── loader.py       # YAML/JSON config loader
+│   │   └── presets.py      # Predefined security profiles
 └── tests/
 ```
 
@@ -291,7 +296,7 @@ The executable will be created in the `dist/` folder (~7MB, zero dependencies).
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+GPL v3 License - see [LICENSE](LICENSE) for details.
 
 ## Contributing
 

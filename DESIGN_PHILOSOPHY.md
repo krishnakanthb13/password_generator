@@ -35,8 +35,11 @@ Existing solutions often fall into two categories:
 *   **Standard Library**: The `secrets`, `uuid`, `base64`, and `hmac` libraries provide robust primitives out of the box.
 *   **Ubiquity**: Python is pre-installed on most modern developer environments.
 
-### Why Interactive Mode?
-*   CLI flags are powerful but hard to discover. The interactive menu (`--interactive`) serves as a self-documenting "wizard" that teaches users about available options and flags.
+### Why Interactive Mode & Launchers?
+*   CLI flags are powerful but hard to discover. The interactive menu (`--interactive`) and platform-specific launchers (`passforge.bat/sh`) serve as a self-documenting "wizard" that guides users through complex configurations.
+
+### Security Profiles (Presets)
+*   Manual configuration of 15+ flags is error-prone. We provide `PRESETS` (`--preset strong`) to codify industry-standard security patterns (e.g., 32 chars for "strong", 40 char alphanumeric for "dev"). This ensures users can generate high-quality credentials with zero cognitive load.
 
 ### Storage Strategy
 *   **Plaintext History**: We chose to store history in plaintext JSON lines (`~/.passforge/pass_history.log`) by default.

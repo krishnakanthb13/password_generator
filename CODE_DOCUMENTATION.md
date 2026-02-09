@@ -27,7 +27,7 @@ graph TD
 | `src/generators/` | Core logic for each password type. | `base.py`, `random_password.py`, `otp.py` |
 | `src/security/` | Utility functions for randomness and entropy. | `entropy.py` |
 | `src/output/` | Presentation logic (CLI colors, JSON dumps). | `formatter.py`, `logger.py` |
-| `src/config/` | Configuration file parsing (`passforge.json`). | `loader.py` |
+| `src/config/` | Configuration file parsing and presets. | `loader.py`, `presets.py` |
 | `tests/` | Unit tests ensuring generator correctness. | `test_generators.py` |
 
 ## 3. Core Modules
@@ -71,18 +71,21 @@ Handles colorization using `colorama`.
 
 ### Logging (`src/output/logger.py`)
 Writes history to `~/.passforge/pass_history.log` in JSON Lines format.
-Each entry logs:
-*   `timestamp` (ISO 8601)
-*   `generator_type`
-*   `password` (plaintext)
 *   `entropy_bits`
 *   `parameters` (length, options used)
+
+### Preset System (`src/config/presets.py`)
+Uses `apply_preset(args)` in `command_handler.py` to intercept and override command-line arguments with predefined values.
+*   **Default Injection**: Ensures all necessary attributes exist on the `Namespace` object.
+*   **Logic Inversion**: Handles flags where `True` in preset means `False` in CLI (e.g., `uppercase=True` maps to `no_uppercase=False`).
 
 ## 4. Execution Flow (Example: `passforge random -l 16`)
 
 1.  **Entry**: `main.py` calls `cli.main()`.
-2.  **Parse**: `argparse` parses `-l 16` and detects subcommand `random`.
-3.  **Route**: `command_handler.handle_command()` calls `handle_random(args)`.
+2.  **Parse**: `argparse` parses `-l 16` (or `--preset strong`).
+3.  **Route**: `command_handler.handle_command()`:
+    *   Calls `apply_preset(args)` if `--preset` is present.
+    *   Calls appropriate handler (e.g., `handle_random(args)`).
 4.  **Instantiate**: `RandomPasswordGenerator(easy_read=False)` is created.
 5.  **Generate**: `generator.generate(length=16, ...)` runs:
     *   Builds `charset` (upper+lower+digits+symbols).
