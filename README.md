@@ -280,7 +280,7 @@ PassForge can be compiled to a single standalone executable using PyInstaller.
 
 ```batch
 # Using the build script
-build.bat
+passforge_build.bat
 
 # Or manually
 pip install pyinstaller
@@ -291,8 +291,8 @@ pyinstaller --onefile --name passforge --console main.py
 
 ```bash
 # Using the build script
-chmod +x build.sh
-./build.sh
+chmod +x passforge_build.sh
+./passforge_build.sh
 
 # Or manually
 pip install pyinstaller
