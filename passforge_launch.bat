@@ -25,41 +25,29 @@ if errorlevel 1 (
 REM Display Menu
 :menu
 cls
+echo  ==========================================================================
+echo                       PASSFORGE - Password Generator CLI
+echo  ==========================================================================
 echo.
-echo  ========================================
-echo   PASSFORGE - Password Generator CLI
-echo  ========================================
+echo  QUICK GENERATE                         ADVANCED / PRESETS
+echo  ------------------------------         ----------------------------------
+echo  [1] Random Password (16 chars)          [7]  JWT Secret
+echo  [2] Random Password (custom)            [8]  UUID Token
+echo  [3] Passphrase (4 words)                [9]  WiFi Key
+echo  [4] Passphrase (custom)                [10] License Key
+echo  [5] Leetspeak Password                 [11] Recovery Codes
+echo  [6] PIN Code                           [12] OTP Secret
 echo.
-echo  Quick Generate:
-echo   [1] Random Password (16 chars)
-echo   [2] Random Password (custom length)
-echo   [3] Passphrase (4 words)
-echo   [4] Passphrase (custom)
-echo   [5] Leetspeak Password
-echo   [6] PIN Code
+echo  PRESET PROFILES (One-Click)            TOOLS ^& SYSTEM
+echo  ------------------------------         ----------------------------------
+echo  [P1] Strong (32 chars)                 [13] Interactive Mode
+echo  [P2] Memorable (Easy Say)              [14] View History
+echo  [P3] Developer (40 char)               [15] Show Help
+echo  [P4] Web Account (16 chars)            [0]  Exit
+echo  [P5] WiFi Key (20 chars)
+echo  [P6] License Key (5x5)
 echo.
-echo  Advanced:
-echo   [7] JWT Secret
-echo   [8] UUID Token
-echo   [9] WiFi Key
-echo   [10] License Key
-echo   [11] Recovery Codes
-echo   [12] OTP Secret
-echo.
-echo  Preset Profiles (One-Click):
-echo   [P1] Strong (32 chars, max security)
-echo   [P2] Memorable (easy to say)
-echo   [P3] Developer (40 char alphanumeric)
-echo   [P4] Web Account (16 chars)
-echo   [P5] WiFi Key (20 chars)
-echo   [P6] License Key (5x5 format)
-echo.
-echo  Tools:
-echo   [13] Interactive Mode
-echo   [14] View History
-echo   [15] Show Help
-echo.
-echo   [0] Exit
+echo  ==========================================================================
 echo.
 set /p choice="Select option: "
 
@@ -95,9 +83,7 @@ echo.
 echo  Random Password (16 characters, all character types)
 echo  ====================================================
 echo.
-python main.py --show-entropy random -l 16
-echo.
-pause
+python main.py --confirm-copy --show-entropy random -l 16
 goto menu
 
 :random_custom
@@ -106,12 +92,10 @@ echo.
 set /p len="Enter password length (8-128): "
 set /p show_entropy="Show entropy analysis? (Y/N): "
 if /i "%show_entropy%"=="Y" (
-    python main.py --show-entropy random -l %len%
+    python main.py --confirm-copy --show-entropy random -l %len%
 ) else (
-    python main.py random -l %len%
+    python main.py --confirm-copy random -l %len%
 )
-echo.
-pause
 goto menu
 
 :phrase_default
@@ -120,9 +104,7 @@ echo.
 echo  Passphrase (4 words, hyphen-separated)
 echo  ======================================
 echo.
-python main.py --show-entropy phrase -w 4
-echo.
-pause
+python main.py --confirm-copy --show-entropy phrase -w 4
 goto menu
 
 :phrase_custom
@@ -133,12 +115,10 @@ set /p sep="Separator (default -): "
 set /p cap="Capitalize words? (Y/N): "
 if "%sep%"=="" set sep=-
 if /i "%cap%"=="Y" (
-    python main.py --show-entropy phrase -w %words% -s %sep% --capitalize
+    python main.py --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
 ) else (
-    python main.py --show-entropy phrase -w %words% -s %sep%
+    python main.py --confirm-copy --show-entropy phrase -w %words% -s %sep%
 )
-echo.
-pause
 goto menu
 
 :leet
@@ -148,18 +128,14 @@ echo  Leetspeak Password
 echo  ==================
 echo.
 set /p words="Number of words (2-5): "
-python main.py --show-entropy leet -w %words%
-echo.
-pause
+python main.py --confirm-copy --show-entropy leet -w %words%
 goto menu
 
 :pin
 cls
 echo.
 set /p len="PIN length (4-8): "
-python main.py --show-entropy pin -l %len%
-echo.
-pause
+python main.py --confirm-copy --show-entropy pin -l %len%
 goto menu
 
 :jwt
@@ -176,9 +152,7 @@ set /p bits="Select: "
 if "%bits%"=="1" set bits=256
 if "%bits%"=="2" set bits=384
 if "%bits%"=="3" set bits=512
-python main.py --show-entropy jwt --bits %bits%
-echo.
-pause
+python main.py --confirm-copy --show-entropy jwt --bits %bits%
 goto menu
 
 :uuid
@@ -187,9 +161,7 @@ echo.
 echo  UUID v4 Token
 echo  =============
 echo.
-python main.py --show-entropy uuid
-echo.
-pause
+python main.py --confirm-copy --show-entropy uuid
 goto menu
 
 :wifi
@@ -198,12 +170,10 @@ echo.
 set /p len="WiFi key length (8-63): "
 set /p simple="Simple mode (alphanumeric only)? (Y/N): "
 if /i "%simple%"=="Y" (
-    python main.py --show-entropy wifi -l %len% --simple
+    python main.py --confirm-copy --show-entropy wifi -l %len% --simple
 ) else (
-    python main.py --show-entropy wifi -l %len%
+    python main.py --confirm-copy --show-entropy wifi -l %len%
 )
-echo.
-pause
 goto menu
 
 :license
@@ -212,9 +182,7 @@ echo.
 echo  License Key Generator
 echo  =====================
 echo.
-python main.py --show-entropy license --segments 4 --segment-length 4
-echo.
-pause
+python main.py --confirm-copy --show-entropy license --segments 4 --segment-length 4
 goto menu
 
 :recovery
@@ -223,12 +191,10 @@ echo.
 set /p count="Number of recovery codes (6-12): "
 set /p words="Word-based codes? (Y/N): "
 if /i "%words%"=="Y" (
-    python main.py recovery -n %count% --words
+    python main.py --confirm-copy recovery -n %count% --words
 ) else (
-    python main.py recovery -n %count%
+    python main.py --confirm-copy recovery -n %count%
 )
-echo.
-pause
 goto menu
 
 :otp
@@ -237,14 +203,12 @@ echo.
 echo  OTP Secret (for 2FA apps)
 echo  =========================
 echo.
-python main.py --show-entropy otp
-echo.
-pause
+python main.py --confirm-copy --show-entropy otp
 goto menu
 
 :interactive
 cls
-python main.py --interactive
+python main.py --confirm-copy --interactive
 goto menu
 
 :history
@@ -270,9 +234,7 @@ echo.
 echo  Preset: STRONG (32 chars, max security)
 echo  =========================================
 echo.
-python main.py --preset strong --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset strong --show-entropy
 goto menu
 
 :preset_memorable
@@ -281,9 +243,7 @@ echo.
 echo  Preset: MEMORABLE (easy to say)
 echo  =================================
 echo.
-python main.py --preset memorable --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset memorable --show-entropy
 goto menu
 
 :preset_dev
@@ -292,9 +252,7 @@ echo.
 echo  Preset: DEVELOPER (40 char alphanumeric)
 echo  =========================================
 echo.
-python main.py --preset dev --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset dev --show-entropy
 goto menu
 
 :preset_web
@@ -303,9 +261,7 @@ echo.
 echo  Preset: WEB ACCOUNT (16 chars mixed)
 echo  =====================================
 echo.
-python main.py --preset web --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset web --show-entropy
 goto menu
 
 :preset_wifi
@@ -314,9 +270,7 @@ echo.
 echo  Preset: WIFI KEY (20 chars)
 echo  ============================
 echo.
-python main.py --preset wifi --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset wifi --show-entropy
 goto menu
 
 :preset_key
@@ -325,9 +279,7 @@ echo.
 echo  Preset: LICENSE KEY (5x5 format)
 echo  =================================
 echo.
-python main.py --preset key --show-entropy
-echo.
-pause
+python main.py --confirm-copy --preset key --show-entropy
 goto menu
 
 :end

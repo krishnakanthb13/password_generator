@@ -29,15 +29,16 @@ def colorize_password(password: str, no_color: bool = False) -> str:
     for char in password:
         if char.isalpha():
             if char.isupper():
-                colored.append(f"{Fore.CYAN}{char}{Style.RESET_ALL}")
+                colored.append(f"{Style.BRIGHT}{Fore.CYAN}{char}{Style.RESET_ALL}")
             else:
-                colored.append(f"{Fore.BLUE}{char}{Style.RESET_ALL}")
+                # Use LIGHTBLUE_EX or Style.BRIGHT + Fore.BLUE for better visibility on dark backgrounds
+                colored.append(f"{Style.BRIGHT}{Fore.BLUE}{char}{Style.RESET_ALL}")
         elif char.isdigit():
-            colored.append(f"{Fore.GREEN}{char}{Style.RESET_ALL}")
+            colored.append(f"{Style.BRIGHT}{Fore.GREEN}{char}{Style.RESET_ALL}")
         elif char in " \n\t-_":
             colored.append(char)
         else:
-            colored.append(f"{Fore.MAGENTA}{char}{Style.RESET_ALL}")
+            colored.append(f"{Style.BRIGHT}{Fore.MAGENTA}{char}{Style.RESET_ALL}")
     
     return "".join(colored)
 
@@ -62,9 +63,9 @@ def format_result(result: Any, show_entropy: bool = False) -> str:
         crack_time = EntropyCalculator.get_crack_time_estimate(result.entropy_bits)
         
         lines.append("")
-        lines.append(f"{Fore.YELLOW}Entropy:{Style.RESET_ALL} {result.entropy_bits:.2f} bits")
-        lines.append(f"{Fore.YELLOW}Strength:{Style.RESET_ALL} {strength}")
-        lines.append(f"{Fore.YELLOW}Crack Time:{Style.RESET_ALL} {crack_time}")
+        lines.append(f"{Style.BRIGHT}{Fore.YELLOW}Entropy:{Style.RESET_ALL} {result.entropy_bits:.2f} bits")
+        lines.append(f"{Style.BRIGHT}{Fore.YELLOW}Strength:{Style.RESET_ALL} {strength}")
+        lines.append(f"{Style.BRIGHT}{Fore.YELLOW}Crack Time:{Style.RESET_ALL} {crack_time}")
     
     return "\n".join(lines)
 
@@ -85,7 +86,7 @@ def format_batch_results(results: list, numbered: bool = True) -> str:
     for i, result in enumerate(results, 1):
         password = colorize_password(result.password)
         if numbered:
-            lines.append(f"{Fore.YELLOW}{i:2}.{Style.RESET_ALL} {password}")
+            lines.append(f"{Style.BRIGHT}{Fore.YELLOW}{i:2}.{Style.RESET_ALL} {password}")
         else:
             lines.append(password)
     

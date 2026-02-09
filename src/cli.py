@@ -96,6 +96,12 @@ def create_parser() -> argparse.ArgumentParser:
     )
     
     parser.add_argument(
+        "--confirm-copy",
+        action="store_true",
+        help="Ask to copy to clipboard after displaying"
+    )
+    
+    parser.add_argument(
         "--preset",
         choices=["strong", "memorable", "dev", "pin", "web", "wifi", "key"],
         help="Use a predefined security profile"
@@ -468,13 +474,13 @@ def colorize_password(password: str, no_color: bool = False) -> str:
     for char in password:
         if char.isalpha():
             if char.isupper():
-                colored.append(f"{Fore.CYAN}{char}{Style.RESET_ALL}")
+                colored.append(f"{Style.BRIGHT}{Fore.CYAN}{char}{Style.RESET_ALL}")
             else:
-                colored.append(f"{Fore.BLUE}{char}{Style.RESET_ALL}")
+                colored.append(f"{Style.BRIGHT}{Fore.BLUE}{char}{Style.RESET_ALL}")
         elif char.isdigit():
-            colored.append(f"{Fore.GREEN}{char}{Style.RESET_ALL}")
+            colored.append(f"{Style.BRIGHT}{Fore.GREEN}{char}{Style.RESET_ALL}")
         else:
-            colored.append(f"{Fore.MAGENTA}{char}{Style.RESET_ALL}")
+            colored.append(f"{Style.BRIGHT}{Fore.MAGENTA}{char}{Style.RESET_ALL}")
     
     return "".join(colored)
 
@@ -482,7 +488,7 @@ def colorize_password(password: str, no_color: bool = False) -> str:
 def print_banner():
     """Print the PassForge banner."""
     banner = f"""
-{Fore.CYAN}+===========================================================+
+{Style.BRIGHT}{Fore.CYAN}+===========================================================+
 |  {Fore.YELLOW}PassForge{Fore.CYAN} - All-in-One Password Generator              |
 |     {Fore.WHITE}Generate. Secure. Manage.{Fore.CYAN}                            |
 +===========================================================+{Style.RESET_ALL}

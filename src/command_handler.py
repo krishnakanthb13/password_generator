@@ -10,7 +10,7 @@ from colorama import Fore, Style
 
 from .generators.random_password import RandomPasswordGenerator
 from .security.entropy import EntropyCalculator
-from .cli import colorize_password
+from .output.formatter import colorize_password
 
 
 def handle_command(args: Any) -> int:
@@ -431,16 +431,18 @@ def output_result(result: Any, args: Any) -> None:
     no_color = getattr(args, 'no_color', False)
     password = colorize_password(result.password, no_color)
     
-    print(password)
-    
     # Entropy display
     if args.show_entropy:
         report = EntropyCalculator.format_entropy_report(
             result.password,
             result.entropy_bits,
-            result.parameters.get('pool_size')
+            result.parameters.get('pool_size'),
+            colorized_password=password
         )
         print(report)
+    else:
+        # Just print the password if entropy isn't shown
+        print(f"\n{password}\n")
     
     # zxcvbn strength analysis
     check_strength = getattr(args, 'check_strength', False)
@@ -475,4 +477,21 @@ def output_result(result: Any, args: Any) -> None:
         logger = PasswordLogger()
         logger.log(result)
         print(f"{Fore.GREEN}[OK] Logged to history{Style.RESET_ALL}")
+
+    # Confirm Copy (Interactive Post-Generation Flow)
+    if getattr(args, 'confirm_copy', False):
+        from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
+        print("")
+        choice = input(f"{Style.BRIGHT}> Press [C] to Copy to Clipboard, or Enter to return... {Style.RESET_ALL}").strip().lower()
+        if choice == 'c':
+            if ClipboardManager.is_available():
+                timeout = getattr(args, 'clipboard_timeout', DEFAULT_CLIPBOARD_TIMEOUT)
+                if ClipboardManager.copy(result.password, timeout=timeout):
+                    print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
+                    input(f"\nPress Enter to return to menu... ")
+                else:
+                    print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
+                    input(f"\nPress Enter to return to menu... ")
+            else:
+                print(f"{Fore.YELLOW}Clipboard requires 'pyperclip' package{Style.RESET_ALL}")
 

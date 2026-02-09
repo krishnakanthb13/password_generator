@@ -141,35 +141,36 @@ class EntropyCalculator:
     def format_entropy_report(
         password: str,
         entropy_bits: float,
-        pool_size: Optional[int] = None
+        pool_size: Optional[int] = None,
+        colorized_password: Optional[str] = None
     ) -> str:
         """
         Generate a formatted entropy report.
-        
-        Args:
-            password: The generated password
-            entropy_bits: Calculated entropy
-            pool_size: Optional pool size used
-            
-        Returns:
-            Formatted report string
         """
         strength = EntropyCalculator.get_strength_label(entropy_bits)
         crack_time = EntropyCalculator.get_crack_time_estimate(entropy_bits)
         
+        # Calculate report width
+        width = 50
+        
+        display_password = colorized_password if colorized_password else password
+        
         lines = [
-            f"+{'-' * 50}+",
-            f"| {'Entropy Report':^48} |",
-            f"+{'-' * 50}+",
-            f"| Length:        {len(password):>32} |",
-            f"| Entropy:       {entropy_bits:>28.2f} bits |",
-            f"| Strength:      {strength:>32} |",
-            f"| Crack Time:    {crack_time:>32} |",
+            "",
+            display_password,
+            "",
+            f"+{'-' * width}+",
+            f"| {'Entropy Report':^{width-2}} |",
+            f"+{'-' * width}+",
+            f"| Length:        {len(password):>{width-18}} |",
+            f"| Entropy:       {entropy_bits:>{width-22}.2f} bits |",
+            f"| Strength:      {strength:>{width-18}} |",
+            f"| Crack Time:    {crack_time:>{width-18}} |",
         ]
         
         if pool_size:
-            lines.append(f"| Pool Size:     {pool_size:>32} |")
+            lines.append(f"| Pool Size:     {pool_size:>{width-18}} |")
         
-        lines.append(f"+{'-' * 50}+")
+        lines.append(f"+{'-' * width}+")
         
         return "\n".join(lines)
