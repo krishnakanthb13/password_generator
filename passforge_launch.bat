@@ -82,15 +82,17 @@ cls
 echo.
 echo  Random Password (16 characters, all character types)
 echo  ====================================================
-echo.
 python main.py --confirm-copy --show-entropy random -l 16
 goto menu
 
 :random_custom
 cls
 echo.
-set /p len="Enter password length (8-128): "
-set /p show_entropy="Show entropy analysis? (Y/N): "
+echo  Random Password (custom length)
+echo  ===============================
+echo.
+call :read_int "Enter password length" 16 8 128 len
+set /p show_entropy="Show entropy analysis? (Y/N) [N]: "
 if /i "%show_entropy%"=="Y" (
     python main.py --confirm-copy --show-entropy random -l %len%
 ) else (
@@ -103,16 +105,18 @@ cls
 echo.
 echo  Passphrase (4 words, hyphen-separated)
 echo  ======================================
-echo.
 python main.py --confirm-copy --show-entropy phrase -w 4
 goto menu
 
 :phrase_custom
 cls
 echo.
-set /p words="Number of words (3-8): "
+echo  Passphrase (custom settings)
+echo  ============================
+echo.
+call :read_int "Number of words" 4 3 8 words
 set /p sep="Separator (default -): "
-set /p cap="Capitalize words? (Y/N): "
+set /p cap="Capitalize words? (Y/N) [N]: "
 if "%sep%"=="" set sep=-
 if /i "%cap%"=="Y" (
     python main.py --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
@@ -127,14 +131,17 @@ echo.
 echo  Leetspeak Password
 echo  ==================
 echo.
-set /p words="Number of words (2-5): "
+call :read_int "Number of words" 3 2 5 words
 python main.py --confirm-copy --show-entropy leet -w %words%
 goto menu
 
 :pin
 cls
 echo.
-set /p len="PIN length (4-8): "
+echo  PIN Generator
+echo  =============
+echo.
+call :read_int "PIN length" 6 4 8 len
 python main.py --confirm-copy --show-entropy pin -l %len%
 goto menu
 
@@ -148,7 +155,7 @@ echo  [1] HS256 (256 bits)
 echo  [2] HS384 (384 bits)
 echo  [3] HS512 (512 bits)
 echo.
-set /p bits="Select: "
+call :read_int "Select algorithm" 1 1 3 bits
 if "%bits%"=="1" set bits=256
 if "%bits%"=="2" set bits=384
 if "%bits%"=="3" set bits=512
@@ -160,15 +167,17 @@ cls
 echo.
 echo  UUID v4 Token
 echo  =============
-echo.
 python main.py --confirm-copy --show-entropy uuid
 goto menu
 
 :wifi
 cls
 echo.
-set /p len="WiFi key length (8-63): "
-set /p simple="Simple mode (alphanumeric only)? (Y/N): "
+echo  WiFi Key Generator
+echo  ==================
+echo.
+call :read_int "WiFi key length" 24 8 63 len
+set /p simple="Simple mode (alphanumeric only)? (Y/N) [N]: "
 if /i "%simple%"=="Y" (
     python main.py --confirm-copy --show-entropy wifi -l %len% --simple
 ) else (
@@ -179,17 +188,23 @@ goto menu
 :license
 cls
 echo.
-echo  License Key Generator
-echo  =====================
+echo  License Key Generator (AXB)
+echo  ===========================
 echo.
-python main.py --confirm-copy --show-entropy license --segments 4 --segment-length 4
+call :read_int "Number of segments (A)" 5 2 10 segments
+call :read_int "Segment length (B)" 5 2 10 length
+echo.
+python main.py --confirm-copy --show-entropy license --segments %segments% --segment-length %length%
 goto menu
 
 :recovery
 cls
 echo.
-set /p count="Number of recovery codes (6-12): "
-set /p words="Word-based codes? (Y/N): "
+echo  Recovery Codes
+echo  ==============
+echo.
+call :read_int "Number of recovery codes" 8 6 12 count
+set /p words="Word-based codes? (Y/N) [N]: "
 if /i "%words%"=="Y" (
     python main.py --confirm-copy recovery -n %count% --words
 ) else (
@@ -202,20 +217,23 @@ cls
 echo.
 echo  OTP Secret (for 2FA apps)
 echo  =========================
-echo.
 python main.py --confirm-copy --show-entropy otp
 goto menu
 
 :interactive
 cls
+echo.
+echo  Interactive Mode
+echo  ================
 python main.py --confirm-copy --interactive
 goto menu
 
 :history
 cls
 echo.
-set /p num="Show last N entries (default 10): "
-if "%num%"=="" set num=10
+echo  Generation History
+echo  ==================
+call :read_int "Show last N entries" 10 1 100 num
 python main.py history --last %num%
 echo.
 pause
@@ -223,6 +241,9 @@ goto menu
 
 :help
 cls
+echo.
+echo  Command Line Help
+echo  =================
 python main.py --help
 echo.
 pause
@@ -233,7 +254,6 @@ cls
 echo.
 echo  Preset: STRONG (32 chars, max security)
 echo  =========================================
-echo.
 python main.py --confirm-copy --preset strong --show-entropy
 goto menu
 
@@ -242,7 +262,6 @@ cls
 echo.
 echo  Preset: MEMORABLE (easy to say)
 echo  =================================
-echo.
 python main.py --confirm-copy --preset memorable --show-entropy
 goto menu
 
@@ -251,7 +270,6 @@ cls
 echo.
 echo  Preset: DEVELOPER (40 char alphanumeric)
 echo  =========================================
-echo.
 python main.py --confirm-copy --preset dev --show-entropy
 goto menu
 
@@ -260,7 +278,6 @@ cls
 echo.
 echo  Preset: WEB ACCOUNT (16 chars mixed)
 echo  =====================================
-echo.
 python main.py --confirm-copy --preset web --show-entropy
 goto menu
 
@@ -269,7 +286,6 @@ cls
 echo.
 echo  Preset: WIFI KEY (20 chars)
 echo  ============================
-echo.
 python main.py --confirm-copy --preset wifi --show-entropy
 goto menu
 
@@ -278,9 +294,30 @@ cls
 echo.
 echo  Preset: LICENSE KEY (5x5 format)
 echo  =================================
-echo.
 python main.py --confirm-copy --preset key --show-entropy
 goto menu
+
+:read_int
+REM %1=prompt, %2=default, %3=min, %4=max, %5=varname
+set "%~5=%~2"
+:read_loop
+set "input_val=%~2"
+set /p "input_val=%~1 [%~2]: "
+echo %input_val%| findstr /r "^[0-9][0-9]*$" >nul
+if errorlevel 1 (
+    echo [Error] Please enter a valid number.
+    goto read_loop
+)
+if %input_val% lss %~3 (
+    echo [Error] Value must be at least %~3.
+    goto read_loop
+)
+if %input_val% gtr %~4 (
+    echo [Error] Value must be no more than %~4.
+    goto read_loop
+)
+set "%~5=%input_val%"
+exit /b
 
 :end
 echo.

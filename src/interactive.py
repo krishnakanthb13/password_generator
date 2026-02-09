@@ -393,9 +393,13 @@ class InteractiveMenu:
             if handler:
                 try:
                     handler()
+                    if self.running and choice != "history":
+                        print("")
+                        input(f"{Style.BRIGHT}Press Enter to return to menu... {Style.RESET_ALL}")
                 except KeyboardInterrupt:
                     print(f"\n{Fore.YELLOW}Cancelled.{Style.RESET_ALL}")
                 except Exception as e:
                     print(f"\n{Fore.RED}Error: {e}{Style.RESET_ALL}")
             elif self.running and choice:
                 print(f"\n{Fore.RED}Invalid choice. Please try again.{Style.RESET_ALL}")
+                input(f"\nPress Enter to continue...")

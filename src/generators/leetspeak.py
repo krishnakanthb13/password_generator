@@ -30,10 +30,11 @@ class LeetspeakGenerator(BaseGenerator):
         return "leetspeak"
     
     def to_leetspeak(self, word: str) -> str:
-        """Convert a word to leetspeak."""
+        """Convert a word to leetspeak with partial substitution."""
         result = []
         for char in word:
-            if char in LEET_MAP:
+            # Only substitute with a 50% probability for better readability
+            if char in LEET_MAP and secrets.randbelow(100) < 50:
                 result.append(LEET_MAP[char])
             else:
                 result.append(char)

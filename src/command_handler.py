@@ -411,10 +411,15 @@ def handle_history(args: Any) -> int:
         print(f"{Fore.YELLOW}No history entries found.{Style.RESET_ALL}")
         return 0
     
+    print(f"\n{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
     for entry in entries:
-        print(f"{Fore.CYAN}{entry['timestamp']}{Style.RESET_ALL} | "
-              f"{entry['generator_type']} | "
-              f"{colorize_password(entry['password'], no_color=False)}")
+        ts = entry['timestamp'][:19].replace('T', ' ')
+        gen_type = entry['generator_type']
+        password = colorize_password(entry['password'][:30])
+        if len(entry['password']) > 30:
+            password += "..."
+        print(f"{Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {password}")
+    print(f"{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
     
     return 0
 
