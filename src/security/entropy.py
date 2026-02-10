@@ -57,21 +57,33 @@ class EntropyCalculator:
         if not password:
             return 0.0
         
+        from ..generators.base import BaseGenerator
+        
         pool_size = 0
-        has_lower = any(c.islower() for c in password)
-        has_upper = any(c.isupper() for c in password)
-        has_digit = any(c.isdigit() for c in password)
-        has_symbol = any(not c.isalnum() for c in password)
+        has_lower = any(c in BaseGenerator.LOWERCASE for c in password)
+        has_upper = any(c in BaseGenerator.UPPERCASE for c in password)
+        has_digit = any(c in BaseGenerator.DIGITS for c in password)
+        has_symbol = any(c in BaseGenerator.SYMBOLS for c in password)
         
         if has_lower:
-            pool_size += EntropyCalculator.LOWERCASE_SIZE
+            pool_size += len(BaseGenerator.LOWERCASE)
         if has_upper:
-            pool_size += EntropyCalculator.UPPERCASE_SIZE
+            pool_size += len(BaseGenerator.UPPERCASE)
         if has_digit:
-            pool_size += EntropyCalculator.DIGITS_SIZE
+            pool_size += len(BaseGenerator.DIGITS)
         if has_symbol:
-            pool_size += EntropyCalculator.SYMBOLS_SIZE
+            pool_size += len(BaseGenerator.SYMBOLS)
         
+        # Add a fallback for characters not in standard pools but present
+        others = sum(1 for c in password if not (
+            c in BaseGenerator.LOWERCASE or 
+            c in BaseGenerator.UPPERCASE or 
+            c in BaseGenerator.DIGITS or 
+            c in BaseGenerator.SYMBOLS
+        ))
+        if others > 0:
+            pool_size += 95 # Approximate printable ASCII range
+            
         return EntropyCalculator.calculate_from_pool(pool_size, len(password))
     
     @staticmethod

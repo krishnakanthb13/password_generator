@@ -26,6 +26,9 @@ class PasswordLogger:
         
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.log_file = self.log_dir / "pass_history.log"
+        
+        from ..security.vault import Vault
+        self.vault = Vault(self.log_dir)
     
     def log(self, result: Any) -> None:
         """
@@ -36,7 +39,7 @@ class PasswordLogger:
         """
         entry = {
             "timestamp": datetime.now().isoformat(),
-            "password": result.password,
+            "password": self.vault.encrypt(result.password),
             "generator_type": result.generator_type,
             "entropy_bits": round(result.entropy_bits, 2),
             "parameters": result.parameters
@@ -79,6 +82,10 @@ class PasswordLogger:
                     continue
                 try:
                     entry = json.loads(line)
+                    
+                    # Decrypt password for viewing/searching
+                    if 'password' in entry:
+                        entry['password'] = self.vault.decrypt(entry['password'])
                     
                     # Apply filters
                     if search and search.lower() not in json.dumps(entry).lower():

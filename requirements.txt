@@ -8,6 +8,7 @@ colorama>=0.4.6          # Cross-platform colored terminal output
 pyperclip>=1.8.2         # Clipboard support and auto-wipe functionality
 zxcvbn>=4.4.28           # Advanced pattern analysis and strength checking
 qrcode>=7.4.2            # QR code generation for OTP secrets (ASCII/Terminal)
+cryptography>=42.0.0     # Secure encryption for local history logs
 
 # Extension Dependencies (Optional)
 pillow>=10.0.0           # Required for QR code IMAGE export (not needed for terminal)

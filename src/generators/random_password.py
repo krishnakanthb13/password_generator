@@ -98,46 +98,59 @@ class RandomPasswordGenerator(BaseGenerator):
         
         # Generate password with minimum requirements
         password_chars = []
+        used_indices = set() # Track used characters from the pool if no_repeats is True
         
+        def pick_from_pool(source_charset):
+            available = self.filter_charset(source_charset)
+            available = "".join(c for c in available if c not in exclude_chars)
+            
+            if no_repeats:
+                # Filter out already used characters
+                remaining_available = [c for c in available if c not in password_chars]
+                if not remaining_available:
+                    raise ValueError("Pool exhausted for unique character requirement")
+                char = secrets.choice(remaining_available)
+            else:
+                char = secrets.choice(available)
+            return char
+
         # Add required characters first
         if min_uppercase > 0:
-            available = self.filter_charset(self.UPPERCASE)
-            available = "".join(c for c in available if c not in exclude_chars)
-            password_chars.extend(secrets.choice(available) for _ in range(min_uppercase))
+            for _ in range(min_uppercase):
+                password_chars.append(pick_from_pool(self.UPPERCASE))
         
         if min_lowercase > 0:
-            available = self.filter_charset(self.LOWERCASE)
-            available = "".join(c for c in available if c not in exclude_chars)
-            password_chars.extend(secrets.choice(available) for _ in range(min_lowercase))
+            for _ in range(min_lowercase):
+                password_chars.append(pick_from_pool(self.LOWERCASE))
         
         if min_digits > 0:
-            available = self.filter_charset(self.DIGITS)
-            available = "".join(c for c in available if c not in exclude_chars)
-            password_chars.extend(secrets.choice(available) for _ in range(min_digits))
+            for _ in range(min_digits):
+                password_chars.append(pick_from_pool(self.DIGITS))
         
         if min_symbols > 0:
-            available = self.filter_charset(self.SYMBOLS)
-            available = "".join(c for c in available if c not in exclude_chars)
-            password_chars.extend(secrets.choice(available) for _ in range(min_symbols))
+            for _ in range(min_symbols):
+                password_chars.append(pick_from_pool(self.SYMBOLS))
         
         # Fill remaining length
         remaining = length - len(password_chars)
         
-        if no_repeats:
-            # Use proper unique selection - remove used chars and sample
-            used_chars = set(password_chars)
-            available = [c for c in charset if c not in used_chars]
-            # Sample unique characters one by one
-            for _ in range(remaining):
-                if available:
-                    idx = secrets.randbelow(len(available))
-                    chosen = available.pop(idx)
-                    password_chars.append(chosen)
-        else:
-            # Allow repeats
-            password_chars.extend(
-                secrets.choice(charset) for _ in range(remaining)
-            )
+        if remaining > 0:
+            if no_repeats:
+                # Use proper unique selection - remove used chars and sample
+                available = [c for c in charset if c not in password_chars]
+                # Sample unique characters one by one
+                for _ in range(remaining):
+                    if available:
+                        idx = secrets.randbelow(len(available))
+                        chosen = available.pop(idx)
+                        password_chars.append(chosen)
+                    else:
+                        raise ValueError("Pool exhausted for unique remaining characters")
+            else:
+                # Allow repeats
+                password_chars.extend(
+                    secrets.choice(charset) for _ in range(remaining)
+                )
         
         # Shuffle to randomize position of required chars
         shuffled = list(password_chars)
