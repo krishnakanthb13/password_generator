@@ -46,8 +46,8 @@ echo  [P1] Strong (32 chars)                 [14] Interactive Mode
 echo  [P2] Memorable (Easy Say)              [15] NATO Phonetic
 echo  [P3] Developer (40 char)               [16] View History
 echo  [P4] Web Account (16 chars)            [17] Show Help
-echo  [P5] WiFi Key (20 chars)               [0]  Exit
-echo  [P6] License Key (5x5)
+echo  [P5] WiFi Key (20 chars)               [18] Paranoid Mode
+echo  [P6] License Key (5x5)                 [0]  Exit
 echo.
 echo  ==========================================================================
 echo.
@@ -70,6 +70,7 @@ if "%choice%"=="14" goto interactive
 if "%choice%"=="15" goto phonetic
 if "%choice%"=="16" goto history
 if "%choice%"=="17" goto help
+if "%choice%"=="18" goto paranoid
 if /i "%choice%"=="P1" goto preset_strong
 if /i "%choice%"=="P2" goto preset_memorable
 if /i "%choice%"=="P3" goto preset_dev
@@ -301,6 +302,16 @@ echo.
 echo  Command Line Help
 echo  =================
 python main.py --help
+echo.
+pause
+goto menu
+
+:paranoid
+cls
+echo.
+echo  Paranoid Mode (High-Security Generator)
+echo  =======================================
+python main.py --log --confirm-copy --show-entropy --paranoid random -l 32
 echo.
 pause
 goto menu

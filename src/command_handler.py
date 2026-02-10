@@ -168,6 +168,11 @@ def handle_random(args: Any) -> int:
     
     count = getattr(args, 'count', 1)
     
+    custom_seed = None
+    if getattr(args, 'paranoid', False):
+        from .security.jitter import collect_jitter
+        custom_seed = collect_jitter()
+    
     for i in range(count):
         result = generator.generate(
             length=args.length,
@@ -182,7 +187,8 @@ def handle_random(args: Any) -> int:
             min_lowercase=args.min_lower,
             min_digits=args.min_digits,
             min_symbols=args.min_symbols,
-            balanced=args.balanced
+            balanced=args.balanced,
+            custom_seed=custom_seed
         )
         
         output_result(result, args)

@@ -39,6 +39,12 @@ def create_parser() -> argparse.ArgumentParser:
     )
     
     parser.add_argument(
+        "--paranoid",
+        action="store_true",
+        help="Enable Paranoid Mode: augment entropy with manual jitter (timing-based)"
+    )
+    
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Output in JSON format"

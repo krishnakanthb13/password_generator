@@ -78,8 +78,8 @@ show_menu() {
     echo -e "  [P2] Memorable (Easy Say)              [15] NATO Phonetic"
     echo -e "  [P3] Developer (40 char)               [16] View History"
     echo -e "  [P4] Web Account (16 chars)            [17] Show Help"
-    echo -e "  [P5] WiFi Key (20 chars)               [0]  Exit"
-    echo -e "  [P6] License Key (5x5)"
+    echo -e "  [P5] WiFi Key (20 chars)               [18] Paranoid Mode"
+    echo -e "  [P6] License Key (5x5)                 [0]  Exit"
     echo ""
     echo -e "${BLUE}==========================================================================${NC}"
     echo ""
@@ -313,6 +313,15 @@ while true; do
             echo "Command Line Help"
             echo "================="
             $PYTHON main.py --confirm-copy --help
+            echo ""
+            pause
+            ;;
+        18)
+            clear
+            echo ""
+            echo "Paranoid Mode (High-Security Generator)"
+            echo "======================================="
+            $PYTHON main.py --log --confirm-copy --show-entropy --paranoid random -l 32
             echo ""
             pause
             ;;

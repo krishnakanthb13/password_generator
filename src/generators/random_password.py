@@ -37,7 +37,8 @@ class RandomPasswordGenerator(BaseGenerator):
         min_lowercase: int = 0,
         min_digits: int = 0,
         min_symbols: int = 0,
-        balanced: bool = False
+        balanced: bool = False,
+        custom_seed: Optional[str] = None
     ) -> GeneratorResult:
         """
         Generate a random password.
@@ -219,9 +220,17 @@ class RandomPasswordGenerator(BaseGenerator):
         
         # Shuffle to randomize position of required chars
         shuffled = list(password_chars)
-        for i in range(len(shuffled) - 1, 0, -1):
-            j = secrets.randbelow(i + 1)
-            shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
+        
+        if custom_seed:
+            # PARANOID MODE: Use custom seed for an extra shuffle layer
+            import random
+            rng = random.Random(custom_seed)
+            rng.shuffle(shuffled)
+        else:
+            # Standard secure shuffle using secrets
+            for i in range(len(shuffled) - 1, 0, -1):
+                j = secrets.randbelow(i + 1)
+                shuffled[i], shuffled[j] = shuffled[j], shuffled[i]
         
         password = "".join(shuffled)
         
@@ -254,7 +263,8 @@ class RandomPasswordGenerator(BaseGenerator):
             "balanced": balanced,
             "pool_size": pool_size,
             "easy_read": self.easy_read,
-            "easy_say": self.easy_say
+            "easy_say": self.easy_say,
+            "paranoid": custom_seed is not None
         }
         
         return GeneratorResult(
