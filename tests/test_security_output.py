@@ -71,11 +71,11 @@ class TestQRCodeGenerator(unittest.TestCase):
         mock_qr.add_data.assert_called_with("test_data")
         mock_qr.make.assert_called_with(fit=True)
         
-        # Verify output format (using @@ for Black/True and spaces for White/False)
+        # Verify output format (using \u2588\u2588 for Black/True and spaces for White/False)
         expected_lines = [
-            "@@  @@",
-            "  @@  ",
-            "@@@@@@"
+            "\u2588\u2588  \u2588\u2588",
+            "  \u2588\u2588  ",
+            "\u2588\u2588\u2588\u2588\u2588\u2588"
         ]
         self.assertEqual(output, "\n".join(expected_lines))
 

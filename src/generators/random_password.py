@@ -176,6 +176,21 @@ class RandomPasswordGenerator(BaseGenerator):
                         password_chars.append(secrets.choice(charset))
                         continue
 
+                    # Redistribute weights if some pools are missing
+                    # If symbols are missing, give 10 to letters and 10 to digits
+                    # If digits are missing, give 10 to letters and 10 to symbols
+                    if len(pools) < 3:
+                        total_missing_weight = 100 - sum(weights)
+                        if letter_pool:
+                            # Letters take the lion's share of missing weights
+                            idx = [i for i, p in enumerate(pools) if p == letter_pool][0]
+                            weights[idx] += total_missing_weight
+                        else:
+                            # Divide equally among remaining
+                            extra = total_missing_weight // len(weights)
+                            for i in range(len(weights)):
+                                weights[i] += extra
+
                     # Manual weighted choice (secrets.choice doesn't support weights directly)
                     total_weight = sum(weights)
                     r = secrets.randbelow(total_weight)

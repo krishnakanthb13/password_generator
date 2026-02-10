@@ -32,15 +32,19 @@ def generate_terminal_qr(data: str, border: int = 1) -> Optional[str]:
         return None
         
     try:
-        qr = qrcode.QRCode()
+        qr = qrcode.QRCode(border=border)
         qr.add_data(data)
-        qr.make()
+        qr.make(fit=True)
         
-        # Use StringIO to capture the output of print_ascii
-        import io
-        f = io.StringIO()
-        qr.print_ascii(out=f)
-        return f.getvalue()
+        matrix = qr.get_matrix()
+        lines = []
+        for row in matrix:
+            # Use Unicode full block characters (█) for a "real" QR look.
+            # We use two blocks per module to approximate a square shape in terminals.
+            line = "".join("\u2588\u2588" if cell else "  " for cell in row)
+            lines.append(line)
+        
+        return "\n".join(lines)
         
     except Exception:
         return None

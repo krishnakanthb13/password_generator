@@ -50,6 +50,14 @@ class InteractiveMenu:
             print(f"  {Style.BRIGHT}{Fore.GREEN}[{key:>2}]{Style.RESET_ALL} {name}")
         
         print(f"{Style.BRIGHT}{Fore.CYAN}{'═' * 50}{Style.RESET_ALL}")
+        
+        # Display security status
+        if self.logger.vault and self.logger.vault.is_active:
+            print(f"  {Fore.GREEN}● Secure History Active (AES-128){Style.RESET_ALL}")
+        else:
+            print(f"  {Fore.YELLOW}○ History Unencrypted (Install 'cryptography' for security){Style.RESET_ALL}")
+        
+        print(f"{Style.BRIGHT}{Fore.CYAN}{'═' * 50}{Style.RESET_ALL}")
     
     def get_input(self, prompt: str, default: Optional[str] = None) -> str:
         """Get user input with optional default."""
