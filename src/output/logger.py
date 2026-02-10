@@ -97,7 +97,7 @@ class PasswordLogger:
                         continue
                     
                     entries.append(entry)
-                except json.JSONDecodeError:
+                except Exception:
                     continue
         
         # Return most recent first
