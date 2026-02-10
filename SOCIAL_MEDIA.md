@@ -38,7 +38,7 @@ Following some great feedback on local security boundaries, I've just pushed **P
 1.  🛡️ **Zero-Leakage (PWA)**: I've implemented a custom `SecureStaticFiles` handler in the FastAPI backend. It explicitly forbids the browser from reading `.py`, `.sh`, `.bat`, or `.key` files. No more "local source exposure" risks.
 2.  🙈 **Masked Analysis (CLI)**: When using `passforge analyze`, the input is now masked via `getpass`. You can audit your most sensitive passwords without worrying about shoulder-surfers or terminal logs catching the plaintext.
 3.  🧱 **Defensive Frontend**: The PWA now includes safety checks for Lucide icons and other CDN-delivered assets. If your firewall blocks the CDN or you're offline, the app still initializes gracefully.
-4.  ⚡ **SW v2 & Fetch Fixes**: Improved service worker caching and fixed a bug in the history fetching logic that was causing silent failures in some browsers.
+4.  ⚡ **SW v7 & Fetch Fixes**: Improved service worker caching and fixed a bug in the history fetching logic that was causing silent failures in some browsers.
 
 PassForge started as a simple generator; it's now becoming a platform for secure credential orchestration.
 

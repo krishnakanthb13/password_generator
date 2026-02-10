@@ -43,7 +43,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 - **Balanced Mode**: Ensures readable distribution (60% Letters, 20% Digits, 20% Symbols)
 - **Encrypted History (Vault)**: Automatically encrypts saved passwords using AES-128 (Fernet) with a unique local machine key
 - **Secure Vault Storage**: Dedicated vault handles cryptographic keys with strict 0600 file permissions
-- **Zero-Leakage Architecture**: 🛡️ Source code and logs are blocked from browser access in PWA mode; sensitive inputs are masked in CLI mode.
+- **Zero-Leakage Architecture**: 🛡️ Source code and logs are blocked from browser access in PWA mode; sensitive inputs are masked in CLI mode for entropy analysis.
 - **Redacted Exports**: Security-first history export with automatic password redaction by default
 - **Zero-Indentation UI**: Clean, professional left-aligned output for all modes
 - **Smart Leetspeak**: Probabilistic substitution for more natural, readable passwords
@@ -324,8 +324,11 @@ python main.py --json jwt --bits 256
 | `--export` | - | Export history to file |
 | `--no-redact` | - | Do not redact passwords in export (Caution!) |
 | `--clear` | - | Clear all history |
+| `--search` | - | Filter history by keyword |
 
 ## Entropy Guide
+
+PassForge provides a comprehensive **Entropy Report** including the raw character pool size, Shannon bits, and brute-force time estimates.
 
 | Entropy (bits) | Strength | Use Case |
 |----------------|----------|----------|
@@ -477,7 +480,7 @@ To start the web interface, run the launcher script for your OS:
 - **Linux/macOS**: `passforge_pwa.sh`
 
 > [!IMPORTANT]
-> **Security Hardening (v28+)**: The PWA now utilizes a `SecureStaticFiles` handler that explicitly blocks browser access to Python source files, logs, and cryptographic keys. Frontend logic also includes defensive wrappers for external CDN assets to ensure functionality even if a CDN is blocked.
+> **Security Hardening (v34+)**: The PWA now utilizes a `SecureStaticFiles` handler that explicitly blocks browser access to Python source files, logs, and cryptographic keys. History access is protected via an internal API Key handshake. Frontend logic also includes defensive wrappers for external CDN assets to ensure functionality even if a CDN is blocked.
 
 > [!TIP]
 > **Build Availability**: The PWA files are included in the **Source Code** and **ZIP/Tarball** distributions. The PWA is *not* embedded in the single-file `.exe` binary.

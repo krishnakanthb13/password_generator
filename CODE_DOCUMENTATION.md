@@ -69,10 +69,11 @@ Utilizes the `data/wordlists/` directory to offer themed generation.
 ### Entropy Calculator (`src/security/entropy.py`)
 Provides the `EntropyCalculator` class with static methods:
 *   `calculate_from_pool(pool_size, length)`: Returns bits based on pool size.
-*   `calculate_from_password(password)`: Estimates entropy based on construction using a **single-pass analysis** for high performance.
+*   `calculate_from_password(password)`: Estimates entropy based on construction using a **single-pass analysis** for high performance. Returns a tuple of `(entropy_bits, pool_size)`.
 *   `no_repeats logic`: Uses **Permutation-based entropy** ($P(n, k)$) via `math.lgamma` instead of standard $n^k$ power logic when character repetition is disabled.
+*   `format_entropy_report()`: Generates a visual table in the CLI containing Length, Entropy, Pool Size, Strength, and Crack Time.
 *   `get_strength_label(bits)`: Maps bits to labels (Weak, Reasonable, Strong, Excellent).
-*   `get_crack_time_estimate(bits)`: Returns human-readable brute-force time estimates.
+*   `get_crack_time_estimate(bits)`: Returns human-readable brute-force time estimates based on an assumed 10 billion guesses/sec.
 
 ### Output Formatting (`src/output/formatter.py`)
 Handles colorization using `colorama`.
@@ -177,14 +178,15 @@ The PassForge PWA is designed as a modular add-on that bridges the existing Pyth
 - **`index.html`**: The main application shell using semantic HTML and Lucide icons.
 - **`css/style.css`**: A premium design system with Glassmorphism and theme variables.
 - **`js/app.js`**: Pure Vanilla Javascript handling state management and UI rendering.
-    *   **Defensive UI**: 🛡️ Wraps all `lucide` calls in safety checks to prevent crashes if the application initializes offline or behind a restrictive firewall.
+    - **Defensive UI**: 🛡️ Wraps all `lucide` calls in safety checks and provides network-resilient feedback to prevent crashes if the application initializes offline.
 - **`manifest.json` / `sw.js`**: Standard PWA manifests for an installable mobile/desktop experience.
-    *   **sw.js (v2)**: Implements atomic caching for external assets to maximize offline resilience.
+    - **sw.js (v7+)**: Implements atomic precaching for core assets and individual caching for external scripts (Lucide, Google Fonts) to maximize offline resilience.
 
 ### API Endpoints
-- `GET /api/generate`: Accepts parameters (type, length, etc.) and returns the generated secret along with entropy and a base64 QR code.
-- `GET /api/history`: Retrieves encrypted history entries.
-- `DELETE /api/history`: Clears local history logs.
+- `GET /api/generate`: Accepts parameters (type, length, etc.) and returns the generated secret along with entropy and a base64 QR code. Supports optional logging.
+- `GET /api/history`: Retrieves encrypted history entries. Protected by `verify_api_key` dependency.
+- `DELETE /api/history`: Clears local history logs. Protected by `verify_api_key` dependency.
+- `POST /api/analyze`: Accepts a password in the request body and returns entropy metrics. Sets `No-Cache` security headers to protect sensitive data.
 
 ### Folder Isolation
 All PWA-specific files are strictly contained within the `pwa/` directory and project root launchers to ensure zero impact on the core CLI functionality.

@@ -34,9 +34,9 @@ Existing solutions often fall into two categories:
 *   **Numbered Selection**: In launchers and menus, options are always numbered. Users should never have to type a full filename (e.g., "animals.txt") when they can type "1".
 
 ### F. Defense in Depth (Hardening)
-*   **Masked Inputs**: 🛡️ Sensitive operations (like analyzing an existing password) use `getpass` to mask input, preventing shoulder-surfing.
-*   **Source Sequestration**: 🛡️ The PWA server explicitly blocks access to its own source code and system logs via the browser to minimize the local attack surface.
-*   **Resilient Context**: Frontend logic assumes external resources (like CDNs) might fail and provides safe fallbacks to ensure core generation remains functional.
+*   **Masked Inputs**: 🛡️ Sensitive operations (like analyzing an existing password in the CLI) use `getpass` to mask input, preventing shoulder-surfing.
+*   **Source Sequestration**: 🛡️ The PWA server utilizes `SecureStaticFiles` to explicitly block access to its own source code, logs, and system keys via the browser.
+*   **Resilient Context**: Frontend logic assumes external resources (like CDNs) might fail and provides safe fallbacks and Service Worker caching to ensure core generation remains functional.
 
 ### E. Human-Centric Design
 *   **Verbal Communication**: Support for NATO phonetic output ensures passwords can be shared over the phone unambiguously.
@@ -59,7 +59,8 @@ Existing solutions often fall into two categories:
 
 ### Storage Strategy
 *   **Encrypted History Vault**: We store history in AES-128 encrypted blocks.
-    *   *Rationale*: While history is essential for convenience, secrets should never reside on disk in plaintext. By using a machine-unique key and `cryptography.fernet`, we protect the user's history against casual data theft (e.g., someone copying the `~/.passforge` folder) while maintaining the seamless UX of a local tool.
+    *   *Rationale*: While history is essential for convenience, secrets should never reside on disk in plaintext. By using a machine-unique key and `cryptography.fernet`, we protect the user's history against casual data theft while maintaining the seamless UX of a local tool.
+    *   *Shared Persistence*: The PWA and CLI share the same encrypted vault, providing a unified experience across terminal and browser.
     *   *Consent & Transparency*: History remains opt-in for CLI users but is auto-enabled in launchers to prevent data loss. Export functionality requires explicit flags to bypass redaction, ensuring users make a conscious decision when handling raw secrets.
 
 ## 4. Trade-offs

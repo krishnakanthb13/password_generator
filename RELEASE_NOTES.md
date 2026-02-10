@@ -17,7 +17,7 @@ This release focuses on hardening the PWA/CLI interface against modern attack ve
 *   **Defensive Frontend**: 🛡️ Added safety wrappers around the Lucide icon library. The PWA will now initialize gracefully even if CDN assets fail to load or are blocked by a firewall.
 *   **API Key Reliability**: Optimized 401 response handling in `app.js` to provide clearer feedback and state recovery for protected history access.
 *   **Fetch Integrity**: Resolved a bug where the `history` tab would fail to load due to an undefined URL variable.
-*   **Atomic Service Worker**: Updated `sw.js` (v2) for improved caching of critical library assets.
+*   **Atomic Service Worker**: Updated `sw.js` (v7+) for improved atomic precaching and resilient external asset management.
 
 ### 📚 Documentation
 *   Updated **Design Philosophy** with new "Defense in Depth" and "Resilient Context" principles.
