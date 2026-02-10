@@ -137,6 +137,11 @@ async function init() {
     if (elements.copyBtn) elements.copyBtn.addEventListener('click', copyToClipboard);
     if (elements.clearHistoryBtn) elements.clearHistoryBtn.addEventListener('click', clearHistory);
 
+    // Click password display to copy
+    if (elements.passwordDisplay) {
+        elements.passwordDisplay.addEventListener('click', copyToClipboard);
+    }
+
     // Start
     renderControls();
     generate();
@@ -412,12 +417,30 @@ async function generate() {
 }
 
 async function copyToClipboard() {
-    const text = elements.passwordDisplay.textContent;
+    // Use the stored raw password to avoid whitespace/span artifacts from colorized HTML
+    const text = state.lastGenerated || elements.passwordDisplay.textContent;
+    if (!text || text === 'Initializing...' || text === 'Enter password...') {
+        showToast("Nothing to copy yet", "danger");
+        return;
+    }
     try {
         await navigator.clipboard.writeText(text);
         showToast("Copied to clipboard!");
     } catch (err) {
-        showToast("Failed to copy", "danger");
+        // Fallback for older browsers / non-HTTPS contexts
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.opacity = '0';
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            showToast("Copied to clipboard!");
+        } catch (fallbackErr) {
+            showToast("Failed to copy", "danger");
+        }
     }
 }
 

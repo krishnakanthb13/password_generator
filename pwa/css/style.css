@@ -25,6 +25,9 @@
     --input-bg: rgba(0, 0, 0, 0.3);
     --input-focus-bg: rgba(0, 0, 0, 0.5);
     --border-glass: rgba(59, 130, 246, 0.25);
+    --scrollbar-thumb: rgba(100, 116, 139, 0.5);
+    --scrollbar-thumb-hover: rgba(148, 163, 184, 0.7);
+    --scrollbar-track: rgba(15, 23, 42, 0.3);
     --bg-pattern: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
         linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
 }
@@ -52,6 +55,9 @@
     --input-focus-bg: #ffffff;
     --bg-pattern: none;
     /* Hide scanlines in light mode for clarity */
+    --scrollbar-thumb: rgba(100, 116, 139, 0.4);
+    --scrollbar-thumb-hover: rgba(71, 85, 105, 0.6);
+    --scrollbar-track: rgba(226, 232, 240, 0.5);
 }
 
 * {
@@ -168,9 +174,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-    /* Reduced from 0.5rem */
     overflow-y: auto;
-    /* Enable scrolling for many items */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    scrollbar-width: thin;
 }
 
 .nav-item {
@@ -199,7 +207,6 @@ body {
 .nav-item:hover {
     background: var(--bg-glass);
     color: var(--text-primary);
-    transform: translateX(4px);
 }
 
 .nav-item.active {
@@ -268,8 +275,6 @@ body {
     border: 1px solid var(--border-glass);
 }
 
-}
-
 .top-bar {
     display: flex;
     justify-content: space-between;
@@ -323,6 +328,7 @@ body {
     background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.05), transparent);
     transform: translateX(-100%);
     animation: HUDscanner 4s infinite linear;
+    pointer-events: none;
 }
 
 @keyframes HUDscanner {
@@ -421,18 +427,30 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    border: none;
+    padding: 0.75rem 1.5rem;
+    min-width: 100px;
+    border-radius: 10px;
+    border: 1px solid var(--border-glass);
     background: var(--bg-glass);
     color: var(--text-primary);
     cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    position: relative;
+    z-index: 2;
 }
 
 .copy-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.copy-btn:active {
+    transform: translateY(0) scale(0.97);
 }
 
 /* Controls Grid */
@@ -553,22 +571,34 @@ input[type="range"] {
     }
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar — theme-aware */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
 ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--border-glass);
+    background: var(--scrollbar-track);
     border-radius: 10px;
 }
 
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
+    background: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 .history-section {
@@ -580,20 +610,25 @@ input[type="range"] {
     width: 100% !important;
     overflow-y: auto;
     max-height: calc(100vh - 250px);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    contain: layout style;
 }
 
 .history-item {
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    padding: 1.25rem !important;
-    background: rgba(255, 255, 255, 0.02) !important;
-    border: 1px solid var(--border-glass) !important;
-    border-radius: 12px !important;
-    margin-bottom: 0.75rem !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+    contain: content;
 }
 
 .history-item:hover {
