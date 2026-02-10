@@ -2,6 +2,67 @@
 
 This document contains social media posts for each release.
 
+## [v1.1.6] - 2026-02-10
+
+### 💼 LinkedIn
+
+🛡️ PassForge v1.1.6: Paranoid Security & PWA Excellence 🚀
+
+Our biggest update yet is here! We've pushed the boundaries of what a CLI-first generator can do with the new v1.1.6 release. We've introduced "Paranoid Mode" and completely overhauled our PWA architecture for a faster, more resilient experience.
+
+Key technical upgrades in v1.1.6:
+- 🛡️ Paranoid Mode: Timing-based entropy collection (user-driven jitter) to supplement CSPRNGs for ultra-high-stakes secrets.
+- ⚡ Service Worker v7+: A fully registered SW with atomic precaching for near-instant load times and 100% offline resilience.
+- 🏗️ Architecture Refresh: A massive refactor of the UI codebase and routing for a snappier, more professional experience.
+- 📋 Smarter Clipboard: Enhanced cross-platform secret handling with robust feedback loops.
+
+At PassForge, we're committed to building tools that are not only secure but also a joy to use. Whether you're in the terminal or on the web, v1.1.6 brings you the best of both worlds.
+
+Check out the full release on GitHub:
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #OpenSource #DevTools #PasswordGenerator #Python #WebSecurity #PWA #InfoSec
+
+---
+
+### 🤖 Reddit (r/python, r/commandline, r/opensource, r/netsec, r/sysadmin)
+
+**Title: PassForge v1.1.6 - Paranoid Mode Entropy, SW v7+ Offline Sync, and Major UI Refactor**
+
+Hey r/commandline!
+
+I've just released **PassForge v1.1.6**, and it's a massive step forward for our "Swiss Army Knife" credential generator. This release covers the jump from v1.1.0 to v1.1.6, consolidating several major security and performance milestones.
+
+**What's new in the milestone update?**
+
+1.  🛡️ **Paranoid Mode (Security)**: We've added a timing-based entropy collection layer. You can now use user-driven jitter to supplement system CSPRNGs for critical secrets.
+2.  ⚡ **SW v7+ (Performance)**: The PWA is now 100% offline-ready with atomic precaching. It loads instantly and handles history sync with zero network overhead.
+3.  🏗️ **Architecture Refresh**: I've completely restructured the FastAPI/FastJS stack, consolidated prompt logic across CLI/Web, and improved scrollbar theming for a refined "Zero-Indentation" look.
+4.  📋 **Clipboard v2**: Improved reliability for cross-browser and cross-platform clipboard interactions including better auto-wipe handling.
+
+PassForge is evolving into a comprehensive platform for local credential management. Audit the code, run it offline, and let me know what you think! 🛠️
+
+**Repo:** https://github.com/krishnakanthb13/password_generator
+
+---
+
+### 🐦 X (Twitter)
+
+🛡️ PassForge v1.1.6 is LIVE! 🚀
+
+✨ New: Paranoid Mode (timing-based entropy jitter)
+✨ New: SW v7+ for near-instant offline access
+✨ Refactor: Snappier UI & restructured PWA codebase
+✨ Fix: Enhanced cross-platform clipboard handling
+
+The ultimate security-first generator just got a massive performance boost.
+
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #Python #OpenSource #DevTools #PasswordGenerator #CLI
+
+---
+
 ## [v1.0.14] - 2026-02-10
 
 ### 💼 LinkedIn

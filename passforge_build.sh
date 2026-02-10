@@ -18,7 +18,7 @@ echo ""
 
 # Build the executable
 pyinstaller --onefile \
-    --name passforge_v1.0.14 \
+    --name passforge_v1.1.6 \
     --console \
     --add-data "src:src" \
     --add-data "data:data" \
@@ -46,7 +46,7 @@ echo ""
 
 # Create Release Package
 echo "Step 2: Creating Release Package..."
-VERSION="1.0.14"
+VERSION="1.1.6"
 RELEASE_NAME="passforge_v${VERSION}"
 RELEASE_DIR="dist/${RELEASE_NAME}"
 ARCHIVE="dist/${RELEASE_NAME}.tar.gz"
@@ -57,7 +57,7 @@ rm -rf "$RELEASE_DIR"
 mkdir -p "$RELEASE_DIR"
 
 echo "Copying artifacts..."
-cp dist/passforge_v1.0.14 "$RELEASE_DIR/"
+cp dist/passforge_v1.1.6 "$RELEASE_DIR/"
 cp README.md "$RELEASE_DIR/"
 cp LICENSE "$RELEASE_DIR/"
 cp passforge.example.json "$RELEASE_DIR/"
@@ -84,15 +84,15 @@ echo "============================================"
 echo "  Build and Packaging Successful!"
 echo "============================================"
 echo ""
-echo "Binary:   dist/passforge_v1.0.14"
+echo "Binary:   dist/passforge_v1.1.6"
 echo "Folder:   $RELEASE_DIR/"
-echo "Archive:  dist/passforge_v1.0.14.tar.gz"
+echo "Archive:  dist/passforge_v1.1.6.tar.gz"
 echo ""
 
 # Test the executable
 echo "Testing the binary..."
-./dist/passforge_v1.0.14 --version
-./dist/passforge_v1.0.14 random -l 12
+./dist/passforge_v1.1.6 --version
+./dist/passforge_v1.1.6 random -l 12
 
 echo ""
 echo "Process complete!"

@@ -2,6 +2,27 @@
 
 This document tracks all notable changes to the **PassForge** project.
 
+## [v1.1.6] - 2026-02-10
+
+🚀 **the performance & paranoid security update**
+
+This milestone release introduces "Paranoid Mode" for high-stakes entropy collection and a major overhaul of the PWA architecture for maximum performance and offline resilience. We've consolidated core logic and refined the UI to provide a snappier, more professional experience across all platforms.
+
+### 🚀 New Features
+*   **Paranoid Mode (v1.1.0)**: 🛡️ A new high-security generation mode that utilizes timing-based entropy collection (user-driven jitter) to supplement system CSPRNGs for ultra-high-stakes secrets.
+*   **Service Worker v7+ (v1.1.4-v1.1.6)**: ⚡ fully registered and optimized Service Worker with atomic precaching, ensuring near-instant load times and 100% offline functionality.
+*   **Enhanced Clipboard Support (v1.1.1)**: Improved cross-platform clipboard handling with robust feedback and reliable auto-wipe across various system environments.
+
+### ⚡ Improvements & Refactoring
+*   **PWA Architecture Overhaul (v1.1.2)**: Streamlined internal routing and restructured the UI codebase for faster rendering and better maintainability.
+*   **Consolidated Prompt Logic (v1.1.5)**: unified the interactive prompt system across CLI and PWA to ensure consistent validation and entropy reporting.
+*   **Adaptive Entropy Handling**: Refined the entropy calculator to better account for pooled resources and complex character distributions in multi-mode generation.
+*   **UI Polish (v1.1.1/v1.1.3)**: Enhanced scrollbar theming and removed redundant status badges for a cleaner, more focused "Zero-Indentation" interface.
+
+### 📚 Documentation
+*   Updated technical deep-dives to cover the new `analyze` API, Service Worker v7 logic, and Paranoid Mode security principles.
+*   Enhanced code documentation with architecture diagrams for the restructured PWA frontend.
+
 ## [v1.0.14] - 2026-02-10
 
 🚀 **the "iron wall" security & stability update**

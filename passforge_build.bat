@@ -21,7 +21,7 @@ echo.
 REM Build the executable
 call pyinstaller --onefile ^
     --clean ^
-    --name passforge_v1.0.14 ^
+    --name passforge_v1.1.6 ^
     --console ^
     --add-data "src;src" ^
     --hidden-import colorama ^
@@ -49,7 +49,7 @@ echo.
 
 REM Create Release Package
 echo Step 2: Creating Release Package...
-set VERSION=1.0.14
+set VERSION=1.1.6
 set RELEASE_NAME=passforge_v%VERSION%
 set RELEASE_DIR=dist\%RELEASE_NAME%
 set ZIP_FILE=dist\%RELEASE_NAME%.zip
@@ -61,7 +61,7 @@ if exist %RELEASE_DIR% rd /s /q %RELEASE_DIR%
 mkdir %RELEASE_DIR%
 
 echo Copying artifacts...
-copy dist\passforge_v1.0.14.exe "%RELEASE_DIR%\" >nul
+copy dist\passforge_v1.1.6.exe "%RELEASE_DIR%\" >nul
 copy README.md "%RELEASE_DIR%\" >nul
 copy LICENSE "%RELEASE_DIR%\" >nul
 copy passforge.example.json "%RELEASE_DIR%\" >nul
@@ -95,16 +95,16 @@ echo ============================================
 echo   Build and Packaging Successful!
 echo ============================================
 echo.
-echo Binary:   dist\passforge_v1.0.14.exe
+echo Binary:   dist\passforge_v1.1.6.exe
 echo Folder:   %RELEASE_DIR%\
-echo ZIP:      dist\passforge_v1.0.14.zip
-echo TAR.GZ:   dist\passforge_v1.0.14.tar.gz
+echo ZIP:      dist\passforge_v1.1.6.zip
+echo TAR.GZ:   dist\passforge_v1.1.6.tar.gz
 echo.
 
 REM Test the executable
 echo Testing the binary...
-dist\passforge_v1.0.14.exe --version
-dist\passforge_v1.0.14.exe random -l 12
+dist\passforge_v1.1.6.exe --version
+dist\passforge_v1.1.6.exe random -l 12
 
 echo.
 echo Process complete!
