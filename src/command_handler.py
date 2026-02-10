@@ -58,6 +58,8 @@ def handle_command(args: Any) -> int:
             return handle_phonetic(args)
         elif args.command == "history":
             return handle_history(args)
+        elif args.command in ["analyze", "check"]:
+            return handle_analyze(args)
         else:
             print(f"{Fore.RED}Unknown command: {args.command}{Style.RESET_ALL}")
             return 1
@@ -407,8 +409,48 @@ def handle_phonetic(args: Any) -> int:
     return output_result(result, args)
 
 
+def handle_analyze(args: Any) -> int:
+    """Analyze the strength of an existing password."""
+    password = getattr(args, 'password', None)
+    
+    if not password:
+        from .interactive import InteractiveMenu
+        menu = InteractiveMenu()
+        password = menu.get_input("Enter password to analyze")
+        
+    if not password:
+        print(f"{Fore.RED}No password provided.{Style.RESET_ALL}")
+        return 1
+
+    # Entropy Report
+    entropy_calculator = EntropyCalculator()
+    entropy_bits = entropy_calculator.calculate_from_password(password)
+    
+    no_color = getattr(args, 'no_color', False)
+    display_pwd = colorize_password(password, no_color)
+    
+    report = entropy_calculator.format_entropy_report(
+        password,
+        entropy_bits,
+        None,  # Pool size unknown for external passwords
+        colorized_password=display_pwd
+    )
+    print(report)
+    
+    # zxcvbn Report
+    from .security.strength_checker import check_strength as zxcvbn_check, format_strength_report, is_available
+    if is_available():
+        strength_result = zxcvbn_check(password)
+        if strength_result:
+            print(format_strength_report(strength_result, no_color))
+    else:
+        print(f"\n{Fore.YELLOW}Note: Install 'zxcvbn' for deep pattern analysis.{Style.RESET_ALL}")
+        
+    return 0
+
+
 def handle_history(args: Any) -> int:
-    """Handle history viewing."""
+    """Handle history viewing and export."""
     from .output.logger import PasswordLogger
     
     logger = PasswordLogger()
@@ -417,6 +459,22 @@ def handle_history(args: Any) -> int:
         logger.clear_history()
         print(f"{Fore.GREEN}History cleared.{Style.RESET_ALL}")
         return 0
+    
+    # Handle Export
+    export_path = getattr(args, 'export', None)
+    if export_path:
+        no_redact = getattr(args, 'no_redact', False)
+        # Redact unless explicitly told not to
+        redact = not no_redact
+        try:
+            # Determine format from extension
+            fmt = "csv" if export_path.lower().endswith(".csv") else "json"
+            logger.export_history(export_path, format=fmt, redact_passwords=redact)
+            print(f"{Fore.GREEN}[OK] Exported {fmt.upper()} to {export_path} (Redacted: {redact}){Style.RESET_ALL}")
+            return 0
+        except Exception as e:
+            print(f"{Fore.RED}[ERR] Export failed: {e}{Style.RESET_ALL}")
+            return 1
     
     search_term = getattr(args, 'search', None)
     show_all = getattr(args, 'all', False)
@@ -431,13 +489,26 @@ def handle_history(args: Any) -> int:
         print(f"{Fore.YELLOW}No history entries found.{Style.RESET_ALL}")
         return 0
     
-    print(f"\n{Fore.GREEN}{'-' * 70}{Style.RESET_ALL}")
+    redact_view = getattr(args, 'redact', False)
+    
+    print(f"\n{Fore.GREEN}{'-' * 80}{Style.RESET_ALL}")
+    header = f"{Fore.YELLOW}{'Timestamp':19} | {'Generator':12} | {'Password/Secret'}{Style.RESET_ALL}"
+    print(header)
+    print(f"{Fore.GREEN}{'-' * 80}{Style.RESET_ALL}")
+    
     for entry in entries:
         ts = entry['timestamp'][:19].replace('T', ' ')
         gen_type = entry['generator_type']
-        password = colorize_password(entry['password'])
-        print(f"{Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {password}")
-    print(f"{Fore.GREEN}{'-' * 70}{Style.RESET_ALL}")
+        
+        pwd = entry['password']
+        if redact_view:
+            pwd = "*" * 12
+            display_pwd = f"{Fore.WHITE}{pwd}{Style.RESET_ALL}"
+        else:
+            display_pwd = colorize_password(pwd)
+            
+        print(f"{Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {display_pwd}")
+    print(f"{Fore.GREEN}{'-' * 80}{Style.RESET_ALL}")
     
     return 0
 

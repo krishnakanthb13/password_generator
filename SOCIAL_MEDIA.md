@@ -2,6 +2,76 @@
 
 This document contains social media posts for each release.
 
+## [v1.0.5] - 2026-02-10
+
+### 💼 LinkedIn
+
+🔒 Hardening Local Password Security: Introducing PassForge v1.0.5 🚀
+
+The latest update for PassForge is all about privacy and precision. While generating strong passwords is critical, storing them securely on your local machine is equally important.
+
+What's new in v1.0.5:
+- 🔐 Encrypted History Vault: Your generation history is now automatically protected with AES-128 (Fernet) encryption using a machine-unique key. 
+- 🙈 Privacy-First Viewing: We've implemented mandatory redaction in terminal displays and history exports. Your secrets stay secret, even when sharing your screen.
+- ⚖️ Balanced Mode: A new generation algorithm that ensures a 60/20/20 ratio of letters, digits, and symbols—creating highly secure passwords that actually look professional.
+- 📊 Standalone Auditing: Use the new 'analyze' command to audit the strength of any existing password using both Shannon entropy and zxcvbn pattern analysis.
+
+We've also upgraded our terminal QR codes to high-fidelity Unicode blocks for a cleaner, more scan-friendly experience.
+
+Maintaining security in a CLI environment often means balancing power with safety. With v1.0.5, PassForge sets a new standard for local credential management.
+
+Check out the full release notes and the open-source repo:
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #OpenSource #DevSecOps #Python #PassForge #Privacy #CLI
+
+---
+
+### 🤖 Reddit (r/python, r/commandline, r/opensource, r/netsec, r/sysadmin)
+
+**Title: PassForge v1.0.5: Enhancing CLI Password Security with AES-128 History Vaults and Balanced Distribution**
+
+Hey everyone!
+
+I've just released **PassForge v1.0.5**, and this update pushes the tool from a simple generator to a more robust local credential manager.
+
+**The Privacy Problem:**
+Many users requested a way to keep a history of generated passwords (for those "did I copy that?" moments), but keeping a plaintext log file is a huge security risk.
+
+**The Solution:**
+In v1.0.5, I've implemented a **Secured Vault**. All generation history is now encrypted on-the-fly using **AES-128 (Fernet)** with a key that's unique to your machine and protected with strict 0600 file permissions.
+
+**Other Major Technical Updates:**
+1.  **Analyze Command**: You can now audit external passwords (`passforge analyze "input"`) using a combination of Shannon entropy and `zxcvbn` pattern detection.
+2.  **Balanced Mode**: Standard uniform randomness often yields "noisy" passwords (e.g., $$$&%92ka). The new `--balanced` flag uses weighted selection (60% letters, 20% digits, 20% symbols) to create credentials that look human-made but are mathematically robust.
+3.  **Permutation Math**: Entropy for non-repeating passwords is now calculated using `math.lgamma` for permutation-based accuracy ($P(n, k)$) rather than standard power logic ($n^k$).
+4.  **Unicode QR Codes**: We've ditched the ASCII `@@` blocks for high-fidelity Unicode `█` blocks, making terminal-based TOTP setup much more reliable for camera apps.
+
+**Check it out on GitHub:**
+https://github.com/krishnakanthb13/password_generator
+
+Feedback is (as always) very welcome!
+
+---
+
+### 🐦 X (Twitter)
+
+PassForge v1.0.5 is out! 🔐🚀
+
+✨ New AES-128 Encrypted History Vault
+✨ Balanced Mode for cleaner passwords
+✨ Standalone Password Auditing (`analyze`)
+✨ High-fidelity Unicode QR codes
+✨ Masked/Redacted history viewing
+
+Secure your terminal workflow.
+https://github.com/krishnakanthb13/password_generator
+
+#Security #Python #OpenSource #DevTools #CLI
+
+---
+
+
 ## [v1.0.0] - 2026-02-09
 
 ### 💼 LinkedIn

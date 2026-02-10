@@ -25,6 +25,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
 | **Themed Phrase** | `phrase` (custom) | Passphrases from themed wordlists (animals, sci-fi, etc.) |
 | **NATO Phonetic** | `phonetic`, `ph` | Convert text/passwords to NATO alphabet (Alpha-Bravo) |
+| **Analyze** | `analyze`, `check` | Analyze strength of an existing password |
 | **History** | `history` | View password generation history (defaults to 10 entries) |
 
 - **Preset Profiles**: One-click generation for common use cases (Strong, Memorable, Dev, etc.)
@@ -147,8 +148,8 @@ python main.py phonetic --text "PassForge"
 ### Security & Logging
 
 ```bash
-# Show entropy analysis
-python main.py --show-entropy random -l 20
+# Analyze an existing password
+python main.py analyze "p@ssword123"
 
 # Log to history
 python main.py --log random -l 16
@@ -159,8 +160,8 @@ python main.py history
 # View all history entries (decrypted on the fly)
 python main.py history --all
 
-# Search in history
-python main.py history --search random
+# View history with redacted passwords
+python main.py history --redact
 
 # Export history (Redacted by default)
 python main.py history --export backup.json
@@ -315,6 +316,7 @@ python main.py --json jwt --bits 256
 | `--last` | 10 | Show last N entries |
 | `--all`, `-a` | - | Show all history entries (overrides --last) |
 | `--search` | - | Search within history |
+| `--redact` | - | Redact passwords in terminal output |
 | `--export` | - | Export history to file |
 | `--no-redact` | - | Do not redact passwords in export (Caution!) |
 | `--clear` | - | Clear all history |
@@ -387,7 +389,7 @@ python -m pytest tests/test_generators.py::TestRandomPasswordGenerator -v
 python -m pytest tests/ --cov=src --cov-report=html
 ```
 
-All 48 unit tests cover:
+All 52 unit tests cover:
 - All 13 generator modules
 - Entropy and zxcvbn strength calculators
 - Clipboard auto-wipe and secure storage

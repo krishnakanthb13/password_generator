@@ -2,6 +2,35 @@
 
 This document tracks all notable changes to the **PassForge** project.
 
+## [v1.0.5] - 2026-02-10
+
+🚀 **The Security & Privacy Update**
+
+This release focuses on hardening local data storage and enhancing the quality of generated credentials. We've introduced full AES-128 encryption for your password history and a new "Balanced Mode" for more professional-looking random passwords.
+
+### 🚀 New Features
+*   **Analyze Command**: New `analyze` (alias `check`) command to audit any existing password. Combines Shannon entropy with deep `zxcvbn` pattern analysis.
+*   **Balanced Distribution Mode**: New `--balanced` flag for random passwords that enforces a 60% Letters / 20% Digits / 20% Symbols ratio—reducing "symbol crowding" while maintaining high entropy.
+
+### ⚡ Security Improvements
+*   **Encrypted History Vault**: Your generation history is now encrypted with a machine-unique AES-128 (Fernet) key.
+*   **Privacy-First Viewing**: History passwords are now masked with asterisks by default in both CLI (`--redact`) and the Interactive Menu.
+*   **Redacted Exports**: Security-first export logic that redacts secrets by default.
+*   **Permutation-based Entropy**: Switched to `math.lgamma` for mathematically precise entropy on passwords with `no_repeats=True`.
+*   **Single-Pass Composition Analysis**: Optimized entropy analyzer that checks character pools in a single pass for high performance.
+
+### ⚡ UI/UX Enhancements
+*   **High-Fidelity Unicode QR Codes**: Switched to Unicode block characters (`█`) for terminal QR codes, improving visual clarity and scan success rates.
+*   **Security Status Monitor**: New real-time indicator in the Interactive Menu showing whether your history is being securely encrypted.
+*   **Smart Weight Redistribution**: Balanced mode now intelligently shifts weights if specific character pools are disabled via flags.
+
+### 📚 Documentation
+*   Updated **Design Philosophy** to reflect our shift to private-by-default history.
+*   Updated **Code Documentation** with deep dives into the Vault architecture and permutation math.
+
+---
+
+
 ## [v1.0.0] - 2026-02-09
 
 🚀 **Initial Production Release**

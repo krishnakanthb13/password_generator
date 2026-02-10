@@ -29,7 +29,8 @@ class InteractiveMenu:
         ("13", "OTP Secret", "otp"),
         ("14", "Pattern Password", "pattern"),
         ("15", "NATO Phonetic Alphabet", "phonetic"),
-        ("16", "View History", "history"),
+        ("16", "Analyze Password", "analyze"),
+        ("17", "View History", "history"),
         ("0", "Exit", "exit"),
     ]
     
@@ -446,8 +447,36 @@ class InteractiveMenu:
         result = generator.generate(text=text, length=length)
         self.print_result(result, show_entropy=False)
     
+    def handle_analyze(self):
+        """Handle analysis of an existing password."""
+        from .security.entropy import EntropyCalculator
+        from .security.strength_checker import check_strength as zxcvbn_check, format_strength_report, is_available
+        from .output.formatter import colorize_password
+        
+        print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Analyze Password ==={Style.RESET_ALL}")
+        
+        password = self.get_input("Enter password to analyze")
+        if not password:
+            return
+            
+        print(f"\n{Fore.GREEN}Analyzing...{Style.RESET_ALL}")
+        
+        # Entropy
+        calc = EntropyCalculator()
+        bits = calc.calculate_from_password(password)
+        report = calc.format_entropy_report(password, bits, colorized_password=colorize_password(password))
+        print(report)
+        
+        # zxcvbn
+        if is_available():
+            strength = zxcvbn_check(password)
+            if strength:
+                print(format_strength_report(strength))
+        else:
+            print(f"\n{Fore.YELLOW}Note: Install 'zxcvbn' for pattern analysis.{Style.RESET_ALL}")
+
     def handle_history(self):
-        """Handle history viewing."""
+        """Handle history viewing with privacy masking."""
         from .output.logger import PasswordLogger
         from .output.formatter import colorize_password
         
@@ -462,15 +491,26 @@ class InteractiveMenu:
             print(f"\n{Fore.YELLOW}No history entries found.{Style.RESET_ALL}")
             return
         
-        print(f"\n{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
-        for entry in entries:
+        print(f"\n{Fore.YELLOW}Note: Passwords are masked for privacy.{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'─' * 80}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{'ID':2} | {'Timestamp':19} | {'Generator':12} | {'Password'}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'─' * 80}{Style.RESET_ALL}")
+        
+        for i, entry in enumerate(entries, 1):
             ts = entry['timestamp'][:19].replace('T', ' ')
             gen_type = entry['generator_type']
-            password = colorize_password(entry['password'][:30])
-            if len(entry['password']) > 30:
-                password += "..."
-            print(f"{Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {password}")
-        print(f"{Fore.GREEN}{'─' * 70}{Style.RESET_ALL}")
+            # Mask the password
+            masked_pwd = "*" * 12
+            print(f"{Fore.GREEN}{i:02}{Style.RESET_ALL} | {Fore.CYAN}{ts}{Style.RESET_ALL} | {gen_type:12} | {masked_pwd}")
+        
+        print(f"{Fore.GREEN}{'─' * 80}{Style.RESET_ALL}")
+        
+        choice = self.get_input("Enter ID to reveal, or Enter to return", "0")
+        if choice.isdigit() and 0 < int(choice) <= len(entries):
+            idx = int(choice) - 1
+            entry = entries[idx]
+            print(f"\n{Style.BRIGHT}{Fore.YELLOW}Revealed Password [{entry['generator_type']}]:{Style.RESET_ALL}")
+            print(f"{colorize_password(entry['password'])}")
     
     def run(self):
         """Run the interactive menu loop."""
@@ -490,6 +530,7 @@ class InteractiveMenu:
             "otp": self.handle_otp,
             "pattern": self.handle_pattern,
             "phonetic": self.handle_phonetic,
+            "analyze": self.handle_analyze,
             "history": self.handle_history,
         }
         

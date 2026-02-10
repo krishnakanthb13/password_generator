@@ -456,11 +456,24 @@ def create_parser() -> argparse.ArgumentParser:
         default=8,
         help="Length of random sequence if --text not provided (default: 8)"
     )
+
+    # Analyze existing password
+    analyze_parser = subparsers.add_parser(
+        "analyze",
+        help="Analyze strength of an existing password",
+        aliases=["check"]
+    )
+    analyze_parser.add_argument(
+        "password",
+        nargs="?",
+        help="The password to analyze (will be prompted if not provided)"
+    )
     
     # History viewer
     history_parser = subparsers.add_parser(
         "history",
-        help="View password generation history"
+        help="View password generation history",
+        aliases=["h"]
     )
     history_parser.add_argument(
         "--last",
@@ -469,14 +482,29 @@ def create_parser() -> argparse.ArgumentParser:
         help="Show last N entries"
     )
     history_parser.add_argument(
+        "--all", "-a",
+        action="store_true",
+        help="Show all history entries (overrides --last)"
+    )
+    history_parser.add_argument(
         "--search",
         type=str,
         help="Search in history"
     )
     history_parser.add_argument(
-        "--all", "-a",
+        "--redact",
         action="store_true",
-        help="Show all history entries (overrides --last)"
+        help="Redact passwords in terminal output"
+    )
+    history_parser.add_argument(
+        "--export",
+        type=str,
+        help="Export history to file (JSON or CSV)"
+    )
+    history_parser.add_argument(
+        "--no-redact",
+        action="store_true",
+        help="Do not redact passwords in FILE export (Caution!)"
     )
     history_parser.add_argument(
         "--clear",
