@@ -7,7 +7,7 @@ from typing import Optional
 from colorama import Fore, Style, init
 
 # Initialize colorama
-init()
+# Redundant init() removed as it is called in cli.py
 
 
 class InteractiveMenu:
@@ -120,36 +120,10 @@ class InteractiveMenu:
         print(f"{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         print(f"{Fore.GREEN}✓ Saved to history{Style.RESET_ALL}")
         
-        from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
-        from .output.qrcode_gen import is_available as qr_available, generate_terminal_qr
+        from .output.formatter import prompt_interactive_actions
+        from .output.clipboard import DEFAULT_CLIPBOARD_TIMEOUT
         
-        prompt = f"\n{Style.BRIGHT}> Press [C]opy"
-        if qr_available():
-            prompt += ", [Q]R Code"
-        prompt += f", or Enter to return... {Style.RESET_ALL}"
-        
-        choice = input(prompt).strip().lower()
-        
-        if choice in ['c', 'q']:
-            if ClipboardManager.is_available():
-                if ClipboardManager.copy(result.password, timeout=DEFAULT_CLIPBOARD_TIMEOUT):
-                    print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
-                else:
-                    print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
-            else:
-                print(f"{Fore.YELLOW}Clipboard module not available{Style.RESET_ALL}")
-                
-        if choice == 'q':
-            if qr_available():
-                qr_output = generate_terminal_qr(result.password)
-                if qr_output:
-                    print(f"\n{Fore.CYAN}Scan with any QR reader:{Style.RESET_ALL}")
-                    print(qr_output)
-                    input(f"\nPress Enter to return... ")
-            else:
-                print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
-        elif choice == 'c':
-            input(f"\nPress Enter to return... ")
+        prompt_interactive_actions(result, clipboard_timeout=DEFAULT_CLIPBOARD_TIMEOUT)
     
     def handle_random(self):
         """Handle random password generation."""
@@ -469,8 +443,8 @@ class InteractiveMenu:
         
         # Entropy
         calc = EntropyCalculator()
-        bits = calc.calculate_from_password(password)
-        report = calc.format_entropy_report(password, bits, colorized_password=colorize_password(password))
+        bits, p_size = calc.calculate_from_password(password)
+        report = calc.format_entropy_report(password, bits, pool_size=p_size, colorized_password=colorize_password(password))
         print(report)
         
         # zxcvbn

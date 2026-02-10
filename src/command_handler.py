@@ -56,7 +56,7 @@ def handle_command(args: Any) -> int:
             return handle_otp(args)
         elif args.command in ["phonetic", "ph"]:
             return handle_phonetic(args)
-        elif args.command == "history":
+        elif args.command in ["history", "h"]:
             return handle_history(args)
         elif args.command in ["analyze", "check"]:
             return handle_analyze(args)
@@ -66,8 +66,12 @@ def handle_command(args: Any) -> int:
             
     except Exception as e:
         print(f"{Fore.RED}Error: {e}{Style.RESET_ALL}")
-        import traceback
-        traceback.print_exc()
+        # Only print full traceback if specifically requested or in debug mode
+        if hasattr(args, 'debug') and args.debug:
+            import traceback
+            traceback.print_exc()
+        else:
+            print(f"{Fore.YELLOW}Tip: Use --debug for more details (if available).{Style.RESET_ALL}")
         return 1
 
 
@@ -430,7 +434,7 @@ def handle_analyze(args: Any) -> int:
 
     # Entropy Report
     entropy_calculator = EntropyCalculator()
-    entropy_bits = entropy_calculator.calculate_from_password(password)
+    entropy_bits, pool_size = entropy_calculator.calculate_from_password(password)
     
     no_color = getattr(args, 'no_color', False)
     display_pwd = colorize_password(password, no_color)
@@ -438,7 +442,7 @@ def handle_analyze(args: Any) -> int:
     report = entropy_calculator.format_entropy_report(
         password,
         entropy_bits,
-        None,  # Pool size unknown for external passwords
+        pool_size,
         colorized_password=display_pwd
     )
     print(report)
@@ -580,35 +584,9 @@ def output_result(result: Any, args: Any) -> None:
 
     # Confirm Copy (Interactive Post-Generation Flow)
     if getattr(args, 'confirm_copy', False):
-        from .output.clipboard import ClipboardManager, DEFAULT_CLIPBOARD_TIMEOUT
-        from .output.qrcode_gen import is_available as qr_available, generate_terminal_qr
+        from .output.formatter import prompt_interactive_actions
+        from .output.clipboard import DEFAULT_CLIPBOARD_TIMEOUT
         
-        prompt = f"\n{Style.BRIGHT}> Press [C]opy"
-        if qr_available():
-            prompt += ", [Q]R Code"
-        prompt += f", or Enter to return... {Style.RESET_ALL}"
-        
-        choice = input(prompt).strip().lower()
-        
-        if choice in ['c', 'q']:
-            if ClipboardManager.is_available():
-                timeout = getattr(args, 'clipboard_timeout', DEFAULT_CLIPBOARD_TIMEOUT)
-                if ClipboardManager.copy(result.password, timeout=timeout):
-                    print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
-                else:
-                    print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
-            else:
-                print(f"{Fore.YELLOW}Clipboard module not available{Style.RESET_ALL}")
-                
-        if choice == 'q':
-            if qr_available():
-                qr_output = generate_terminal_qr(result.password)
-                if qr_output:
-                    print(f"\n{Fore.CYAN}Scan with any QR reader:{Style.RESET_ALL}")
-                    print(qr_output)
-                    input(f"\nPress Enter to return... ")
-            else:
-                print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
-        elif choice == 'c':
-            input(f"\nPress Enter to return... ")
+        timeout = getattr(args, 'clipboard_timeout', DEFAULT_CLIPBOARD_TIMEOUT)
+        prompt_interactive_actions(result, clipboard_timeout=timeout)
 

@@ -12,7 +12,6 @@ class EntropyCalculator:
     
     
     # Strength thresholds (in bits)
-    # Strength thresholds (in bits)
     THRESHOLDS = {
         "very_weak": 28,
         "weak": 36,
@@ -92,7 +91,8 @@ class EntropyCalculator:
             # but don't double count if we already calculated more.
             pool_size = max(pool_size, EntropyCalculator.ASCII_EXTENDED_POOL)
             
-        return EntropyCalculator.calculate_from_pool(pool_size, len(password))
+        entropy = EntropyCalculator.calculate_from_pool(pool_size, len(password))
+        return entropy, pool_size
     
     @staticmethod
     def get_strength_label(entropy_bits: float) -> str:

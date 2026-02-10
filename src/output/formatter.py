@@ -91,3 +91,47 @@ def format_batch_results(results: list, numbered: bool = True) -> str:
             lines.append(password)
     
     return "\n".join(lines)
+
+
+def prompt_interactive_actions(result: Any, clipboard_timeout: int = 30) -> None:
+    """
+    Prompt user for post-generation actions (Copy, QR Code).
+    
+    Args:
+        result: GeneratorResult object
+        clipboard_timeout: Seconds before clipboard is cleared
+    """
+    from .clipboard import ClipboardManager
+    from .qrcode_gen import is_available as qr_available, generate_terminal_qr
+    
+    prompt = f"\n{Style.BRIGHT}> Press [C]opy"
+    if qr_available():
+        prompt += ", [Q]R Code"
+    prompt += f", or Enter to return... {Style.RESET_ALL}"
+    
+    try:
+        choice = input(prompt).strip().lower()
+        
+        if choice in ['c', 'q']:
+            if ClipboardManager.is_available():
+                if ClipboardManager.copy(result.password, timeout=clipboard_timeout):
+                    print(f"{Fore.GREEN}✓ Secret copied to clipboard!{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.RED}✗ Failed to copy to clipboard{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}Clipboard module not available{Style.RESET_ALL}")
+                
+        if choice == 'q':
+            if qr_available():
+                qr_output = generate_terminal_qr(result.password)
+                if qr_output:
+                    print(f"\n{Fore.CYAN}Scan with any QR reader:{Style.RESET_ALL}")
+                    print(qr_output)
+                    input(f"\nPress Enter to return... ")
+            else:
+                print(f"{Fore.YELLOW}QR generation requires 'qrcode' package{Style.RESET_ALL}")
+        elif choice == 'c':
+            input(f"\nPress Enter to return... ")
+            
+    except (KeyboardInterrupt, EOFError):
+        print(f"\n{Fore.YELLOW}Action cancelled.{Style.RESET_ALL}")

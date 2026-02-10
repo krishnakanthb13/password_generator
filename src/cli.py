@@ -14,6 +14,8 @@ init()
 def create_parser() -> argparse.ArgumentParser:
     """Create the main argument parser with all subcommands."""
     
+    from . import __version__
+    
     parser = argparse.ArgumentParser(
         prog="passforge",
         description="PassForge - All-in-One Password Generator CLI",
@@ -29,7 +31,7 @@ def create_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version="%(prog)s 1.0.14"
+        version=f"%(prog)s {__version__}"
     )
     
     parser.add_argument(
