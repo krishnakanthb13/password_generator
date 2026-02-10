@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PassForge - Ultimate Password Generator</title>
+    <link rel="stylesheet" href="css/style.css?v=23">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="favicon.png?v=3">
+    <link rel="shortcut icon" href="favicon.png?v=3">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="shield-check" class="logo-icon"></i>
+                <span class="logo-text">PassForge</span>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-type="random">
+                    <i data-lucide="refresh-cw"></i> <span>Random</span>
+                </button>
+                <button class="nav-item" data-type="phrase">
+                    <i data-lucide="type"></i> <span>Passphrase</span>
+                </button>
+                <button class="nav-item" data-type="pin">
+                    <i data-lucide="hash"></i> <span>PIN</span>
+                </button>
+                <button class="nav-item" data-type="leet">
+                    <i data-lucide="binary"></i> <span>Leetspeak</span>
+                </button>
+                <button class="nav-item" data-type="pronounce">
+                    <i data-lucide="volume-2"></i> <span>Pronounceable</span>
+                </button>
+                <button class="nav-item" data-type="wifi">
+                    <i data-lucide="wifi"></i> <span>WiFi Key</span>
+                </button>
+                <button class="nav-item" data-type="otp">
+                    <i data-lucide="clock"></i> <span>OTP Secret</span>
+                </button>
+                <button class="nav-item" data-type="uuid">
+                    <i data-lucide="fingerprint"></i> <span>UUID</span>
+                </button>
+                <button class="nav-item" data-type="license">
+                    <i data-lucide="key"></i> <span>License Key</span>
+                </button>
+                <button class="nav-item" data-type="recovery">
+                    <i data-lucide="list-checks"></i> <span>Recovery Codes</span>
+                </button>
+                <button class="nav-item" data-type="pattern">
+                    <i data-lucide="grid-3x3"></i> <span>Pattern</span>
+                </button>
+                <button class="nav-item" data-type="phonetic">
+                    <i data-lucide="languages"></i> <span>Phonetic</span>
+                </button>
+                <button class="nav-item" data-type="analyze">
+                    <i data-lucide="search"></i> <span>Analyze</span>
+                </button>
+                <div class="nav-divider"></div>
+                <div class="nav-label">Developer Tools</div>
+                <button class="nav-item" data-type="base64">
+                    <i data-lucide="code-2"></i> <span>Base64 Secret</span>
+                </button>
+                <button class="nav-item" data-type="jwt">
+                    <i data-lucide="key-round"></i> <span>JWT Secret</span>
+                </button>
+
+            </nav>
+            <div class="sidebar-footer">
+                <button class="nav-item" data-type="history" style="width:100%; margin-bottom: 0.5rem;">
+                    <i data-lucide="history"></i> <span>History</span>
+                </button>
+                <div class="nav-divider" style="margin: 0.5rem 0;"></div>
+                <button id="theme-toggle" class="theme-btn">
+                    <i data-lucide="moon" id="theme-icon"></i>
+                    <span id="theme-text">Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 id="page-title">Random Password</h1>
+                <div class="top-actions">
+                    <span class="status-badge" id="online-status">Online</span>
+                </div>
+            </header>
+
+            <section class="generator-section">
+                <!-- Result Card with QR -->
+                <div class="result-card glass">
+                    <div style="flex: 1;">
+                        <div class="result-display" id="password-display" title="Click to copy">
+                            Initializing...
+                        </div>
+                        <div class="result-meta">
+                            <div class="entropy-badge">
+                                <i data-lucide="gauge"></i> <span id="entropy-value">0</span> bits
+                            </div>
+                            <button class="copy-btn" id="copy-btn">
+                                <i data-lucide="copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="qr-wrapper"
+                        style="margin-left: 0.5rem; padding-left: 0.5rem; border-left: 1px solid var(--border-glass);">
+                        <div class="qr-container" id="qr-container" style="width: 120px; height: 120px; margin: 0;">
+                            <div class="qr-placeholder">
+                                <i data-lucide="qr-code" style="width: 40px; height: 40px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Parameters Card -->
+                <div class="controls-grid">
+                    <div class="control-card glass" style="grid-column: 1 / -1;">
+                        <h3>Configuration</h3>
+                        <div id="controls-container">
+                            <!-- Dynamic controls will be injected here -->
+                        </div>
+                        <button id="generate-btn" class="primary-btn">
+                            <i data-lucide="zap"></i> Generate New
+                        </button>
+                    </div>
+
+
+                </div>
+            </section>
+
+            <!-- Dedicated History Section -->
+            <section class="history-section hidden" id="history-section">
+                <div class="glass" style="padding: 1.5rem; border-radius: 16px;">
+                    <div class="panel-header" style="margin-bottom: 1rem;">
+                        <div style="display:flex; align-items:center; gap:1rem; flex:1;">
+                            <h2 style="font-size: 1.25rem; white-space:nowrap;">Request History</h2>
+                            <input type="text" id="history-search" placeholder="Search history..."
+                                class="glass input-glass" style="max-width:300px;">
+                        </div>
+                        <button id="clear-history-btn" class="icon-btn" title="Clear History"
+                            style="color:var(--danger)">
+                            <i data-lucide="trash-2"></i>
+                        </button>
+                    </div>
+                    <div id="history-list" class="history-list"
+                        style="max-height: calc(100vh - 200px); overflow-y: auto;">
+                        <!-- History items injected here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification -->
+    <div id="toast" class="toast hidden">
+        <i data-lucide="check-circle"></i> <span id="toast-message">Copied!</span>
+    </div>
+
+    <script src="js/app.js?v=22"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
