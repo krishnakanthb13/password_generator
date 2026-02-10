@@ -4,9 +4,13 @@ Password Logger - Log generated passwords with history viewer.
 
 import json
 import os
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+# Setup logger
+logger = logging.getLogger(__name__)
 
 
 class PasswordLogger:
@@ -17,7 +21,9 @@ class PasswordLogger:
         Initialize the logger.
         
         Args:
-            log_dir: Directory for log files (default: ~/.passforge/)
+            log_dir: Directory for log files (default: ~/.passforge/). 
+                    Passwords are stored encrypted with Fernet/AES-128 if the vault is active, 
+                    or hashed with SHA-256 as a fallback to prevent plaintext exposure.
         """
         if log_dir:
             self.log_dir = Path(log_dir)
@@ -33,16 +39,33 @@ class PasswordLogger:
         except ImportError:
             self.vault = None
     
-    def log(self, result: Any) -> None:
+    def log(self, result: Any, redact: bool = False) -> None:
         """
-        Log a generator result.
+        Log a generator result with security considerations.
+        
+        Passwords are encrypted using the Vault (Fernet/AES-128).
+        If the vault is not active, passwords will be hashed (SHA-256) 
+        to avoid plaintext storage.
         
         Args:
             result: GeneratorResult object to log
+            redact: If True, replace password with <REDACTED> entirely
         """
+        import hashlib
+        
+        raw_password = result.password
+        
+        if redact:
+            stored_password = "<REDACTED>"
+        elif self.vault and self.vault.is_active:
+            stored_password = self.vault.encrypt(raw_password, strict=True)
+        else:
+            # Fallback to hash if encryption is unavailable - never store plaintext
+            stored_password = f"hash:{hashlib.sha256(raw_password.encode()).hexdigest()}"
+
         entry = {
             "timestamp": datetime.now().isoformat(),
-            "password": self.vault.encrypt(result.password),
+            "password": stored_password,
             "generator_type": result.generator_type,
             "entropy_bits": round(result.entropy_bits, 2),
             "parameters": result.parameters
@@ -50,6 +73,7 @@ class PasswordLogger:
         
         try:
             # Append to log file (JSON Lines format)
+            # Location: ~/.passforge/pass_history.log
             with open(self.log_file, 'a', encoding='utf-8') as f:
                 f.write(json.dumps(entry) + "\n")
         except (IOError, OSError):
@@ -97,7 +121,14 @@ class PasswordLogger:
                         continue
                     
                     entries.append(entry)
-                except Exception:
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Skipping malformed JSON line in history: {e}")
+                    continue
+                except (KeyError, AttributeError) as e:
+                    logger.warning(f"Skipping history entry due to malformed data or missing vault: {e}")
+                    continue
+                except Exception as e:
+                    logger.error(f"Unexpected error processing history entry: {e}", exc_info=True)
                     continue
         
         # Return most recent first

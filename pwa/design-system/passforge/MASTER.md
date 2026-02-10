@@ -18,11 +18,11 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#0369A1` | `--color-primary` |
-| Secondary | `#0EA5E9` | `--color-secondary` |
+| Primary | `#0EA5E9` | `--color-primary` |
+| Secondary | `#3B82F6` | `--color-secondary` |
 | CTA/Accent | `#22C55E` | `--color-cta` |
-| Background | `#F0F9FF` | `--color-background` |
-| Text | `#0C4A6E` | `--color-text` |
+| Background | `#020617` | `--color-background` |
+| Text | `#F8FAFC` | `--color-text` |
 
 **Color Notes:** Security blue + protected green
 
@@ -69,83 +69,34 @@
 /* Primary Button */
 .btn-primary {
   background: #22C55E;
-  color: white;
+  color: #052E16;
   padding: 12px 24px;
   border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
 }
 
-.btn-primary:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background: transparent;
-  color: #0369A1;
-  border: 2px solid #0369A1;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: all 200ms ease;
-  cursor: pointer;
-}
-```
-
-### Cards
-
-```css
+/* Glass Card */
 .card {
-  background: #F0F9FF;
-  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: var(--shadow-md);
-  transition: all 200ms ease;
-  cursor: pointer;
 }
 
-.card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-2px);
-}
-```
-
-### Inputs
-
-```css
+/* Cyber Input */
 .input {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #F8FAFC;
   padding: 12px 16px;
-  border: 1px solid #E2E8F0;
   border-radius: 8px;
-  font-size: 16px;
-  transition: border-color 200ms ease;
 }
 
 .input:focus {
-  border-color: #0369A1;
-  outline: none;
-  box-shadow: 0 0 0 3px #0369A120;
-}
-```
-
-### Modals
-
-```css
-.modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
-}
-
-.modal {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: var(--shadow-xl);
-  max-width: 500px;
-  width: 90%;
+  border-color: #0EA5E9;
+  box-shadow: 0 0 10px rgba(14, 165, 233, 0.3);
 }
 ```
 
@@ -166,9 +117,6 @@
 **Pattern Name:** Horizontal Scroll Journey
 
 - **Conversion Strategy:** Immersive product discovery. High engagement. Keep navigation visible.
-28,Bento Grid Showcase,bento,  grid,  features,  modular,  apple-style,  showcase", 1. Hero, 2. Bento Grid (Key Features), 3. Detail Cards, 4. Tech Specs, 5. CTA, Floating Action Button or Bottom of Grid, Card backgrounds: #F5F5F7 or Glass. Icons: Vibrant brand colors. Text: Dark., Hover card scale (1.02), video inside cards, tilt effect, staggered reveal, Scannable value props. High information density without clutter. Mobile stack.
-29,Interactive 3D Configurator,3d,  configurator,  customizer,  interactive,  product", 1. Hero (Configurator), 2. Feature Highlight (synced), 3. Price/Specs, 4. Purchase, Inside Configurator UI + Sticky Bottom Bar, Neutral studio background. Product: Realistic materials. UI: Minimal overlay., Real-time rendering, material swap animation, camera rotate/zoom, light reflection, Increases ownership feeling. 360 view reduces return rates. Direct add-to-cart.
-30,AI-Driven Dynamic Landing,ai,  dynamic,  personalized,  adaptive,  generative", 1. Prompt/Input Hero, 2. Generated Result Preview, 3. How it Works, 4. Value Prop, Input Field (Hero) + 'Try it' Buttons, Adaptive to user input. Dark mode for compute feel. Neon accents., Typing text effects, shimmering generation loaders, morphing layouts, Immediate value demonstration. 'Show, don't tell'. Low friction start.
 - **CTA Placement:** Floating Sticky CTA or End of Horizontal Track
 - **Section Order:** 1. Intro (Vertical), 2. The Journey (Horizontal Track), 3. Detail Reveal, 4. Vertical Footer
 
@@ -176,8 +124,10 @@
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Light mode
+- ❌ **Low-contrast themes** — Maintain AA accessibility on all modes.
 - ❌ Poor data viz
+
+**Note on Themes:** While Cyberpunk is primarily a dark aesthetic, high-contrast Light Themes are allowed if they maintain the 4.5:1 contrast requirement. Mixed-theme components that break visual hierarchy are forbidden.
 
 ### Additional Forbidden Patterns
 
@@ -198,7 +148,7 @@ Before delivering any UI code, verify:
 - [ ] All icons from consistent icon set (Heroicons/Lucide)
 - [ ] `cursor-pointer` on all clickable elements
 - [ ] Hover states with smooth transitions (150-300ms)
-- [ ] Light mode: text contrast 4.5:1 minimum
+- [ ] High-contrast themes: text contrast 4.5:1 minimum
 - [ ] Focus states visible for keyboard navigation
 - [ ] `prefers-reduced-motion` respected
 - [ ] Responsive: 375px, 768px, 1024px, 1440px

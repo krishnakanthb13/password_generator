@@ -2,13 +2,19 @@ import sys
 import os
 import io
 import base64
+import logging
+import tempfile
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Header, Depends, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# Initialize logger
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Add parent directory to sys.path to import from src
 sys.path.append(str(Path(__file__).parent.parent))
@@ -35,13 +41,32 @@ from src.security.strength_checker import check_strength as zxcvbn_check, is_ava
 
 app = FastAPI(title="PassForge API")
 
-# Enable CORS for local development
+# Security: Restricted CORS Setup
+# Read from ALLOWED_ORIGINS env var (comma-separated), default to localhost/wildcard for dev
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:8093,http://127.0.0.1:8093")
+if allowed_origins_str == "*":
+    allowed_origins = ["*"]
+else:
+    allowed_origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=allowed_origins,
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+# Security: Basic API Key Authentication
+# In production, use a more robust auth system (OAuth2, Sessions, etc.)
+PASSFORGE_API_KEY = os.getenv("PASSFORGE_API_KEY", "default_secret_key")
+
+async def verify_api_key(x_api_key: Optional[str] = Header(None)):
+    if not x_api_key or x_api_key != PASSFORGE_API_KEY:
+        raise HTTPException(
+            status_code=401,
+            detail="Missing or invalid API Key. Protected History access denied."
+        )
+    return x_api_key
 
 # Request Models
 class GeneratorParams(BaseModel):
@@ -73,7 +98,8 @@ class GeneratorParams(BaseModel):
     exclude: str = ""
     no_repeats: bool = False
     text: str = ""  # For phonetic
-    password: str = "" # For analyze
+class PasswordAnalysisRequest(BaseModel):
+    password: str = ""
 
 @app.get("/api/presets")
 async def get_presets():
@@ -82,34 +108,34 @@ async def get_presets():
 @app.get("/api/generate")
 async def generate(
     type: str = "random",
-    length: int = 16,
+    length: int = Query(16, ge=4, le=1024),
     uppercase: bool = True,
     lowercase: bool = True,
     digits: bool = True,
     symbols: bool = True,
-    words: int = 4,
-    separator: str = "-",
+    words: int = Query(4, ge=2, le=20),
+    separator: str = Query("-", max_length=5),
     capitalize: bool = False,
-    bits: int = 256,
+    bits: int = Query(256, ge=128, le=4096),
     hex: bool = False,
     simple: bool = False,
-    segments: int = 4,
-    segment_length: int = 4,
-    grid: int = 3,
+    segments: int = Query(4, ge=1, le=64),
+    segment_length: int = Query(4, ge=1, le=32),
+    grid: int = Query(3, ge=3, le=10),
     url_safe: bool = False,
     easy_read: bool = False,
     easy_say: bool = False,
     balanced: bool = False,
-    min_upper: int = 0,
-    min_lower: int = 0,
-    min_digits: int = 0,
-    min_symbols: int = 0,
-    include: str = "",
-    exclude: str = "",
+    min_upper: int = Query(0, ge=0, le=1024),
+    min_lower: int = Query(0, ge=0, le=1024),
+    min_digits: int = Query(0, ge=0, le=1024),
+    min_symbols: int = Query(0, ge=0, le=1024),
+    include: str = Query("", max_length=128),
+    exclude: str = Query("", max_length=128),
     no_repeats: bool = False,
-    text: str = "", # phonetic
-    otp_digits: int = 6, # OTP specific to avoid conflict with 'digits' boolean
-    period: int = 30, # OTP
+    text: str = Query("", max_length=1024), # phonetic
+    otp_digits: int = Query(6, ge=4, le=10), # OTP specific
+    period: int = Query(30, ge=1, le=3600), # OTP
     log: bool = False
 ):
     try:
@@ -174,21 +200,30 @@ async def generate(
             raise HTTPException(status_code=400, detail="Invalid generator type")
 
         if log:
+            # SECURITY CONSIDERATION: 
+            # Password history is stored in a local JSON Lines file (~/.passforge/pass_history.log).
+            # By default, passwords are encrypted using Fernet (AES-128) if the 'cryptography' 
+            # package is installed. Ensure the .vault.key file is protected.
             logger = PasswordLogger()
             logger.log(result)
 
-        # Generate QR if possible
+        # Generate QR if possible using a unique temporary file to avoid race conditions
         qr_base64 = None
         if QRCODE_AVAILABLE:
             # For OTP use URI, otherwise use password
             qr_data = result.parameters.get('otpauth_uri', result.password) if type == "otp" else result.password
             
-            # Temporary file for QR
-            qr_path = Path(__file__).parent / "temp_qr.png"
-            if generate_qr_image(qr_data, str(qr_path)):
-                with open(qr_path, "rb") as f:
-                    qr_base64 = base64.b64encode(f.read()).decode("utf-8")
-                qr_path.unlink()
+            # Use unique temporary file for QR generation
+            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp_qr:
+                tmp_qr_path = tmp_qr.name
+            
+            try:
+                if generate_qr_image(qr_data, tmp_qr_path):
+                    with open(tmp_qr_path, "rb") as f:
+                        qr_base64 = base64.b64encode(f.read()).decode("utf-8")
+            finally:
+                if os.path.exists(tmp_qr_path):
+                    os.unlink(tmp_qr_path)
 
         return {
             "password": result.password,
@@ -197,38 +232,53 @@ async def generate(
             "qr": qr_base64
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Internal error in generate route")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.get("/api/analyze")
-async def analyze(password: str = ""):
+@app.post("/api/analyze")
+async def analyze(request: PasswordAnalysisRequest, response: Response):
+    """
+    Analyze password strength. 
+    Accepts password in POST body and returns security headers to prevent caching.
+    """
+    password = request.password
     if not password:
         raise HTTPException(status_code=400, detail="Password required")
     
-    calc = EntropyCalculator()
-    entropy = calc.calculate_from_password(password)
-    
-    strength = None
-    if zxcvbn_available():
-        res = zxcvbn_check(password)
-        strength = {
-            "score": res.get("score"),
-            "warning": res.get("feedback", {}).get("warning"),
-            "suggestions": res.get("feedback", {}).get("suggestions")
+    # Set Cache-Control headers to prevent sensitive data from being cached
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+
+    try:
+        calc = EntropyCalculator()
+        entropy = calc.calculate_from_password(password)
+        
+        strength = None
+        if zxcvbn_available():
+            res = zxcvbn_check(password)
+            strength = {
+                "score": res.get("score"),
+                "warning": res.get("feedback", {}).get("warning"),
+                "suggestions": res.get("feedback", {}).get("suggestions")
+            }
+        
+        return {
+            "entropy": round(entropy, 2),
+            "strength": strength
         }
-    
-    return {
-        "password": password,
-        "entropy": round(entropy, 2),
-        "strength": strength
-    }
+    except Exception:
+        logger.exception("Internal error in analyze route")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/api/history")
-async def get_history(limit: int = 10, search: str = None):
+async def get_history(limit: int = 10, search: str = None, _ = Depends(verify_api_key)):
+    """Retrieve password history. Requires X-API-Key authentication."""
     logger = PasswordLogger()
     return logger.get_history(limit=limit, search=search)
 
 @app.delete("/api/history")
-async def clear_history():
+async def clear_history(_ = Depends(verify_api_key)):
+    """Clear all history. Requires X-API-Key authentication."""
     logger = PasswordLogger()
     logger.clear_history()
     return {"status": "success"}

@@ -23,9 +23,12 @@ fi
 
 # Check for dependencies
 echo "[2/4] Verifying dependencies..."
-if ! python3 -c "import fastapi, uvicorn" &> /dev/null; then
+if ! python3 -c "import fastapi, uvicorn, multipart" &> /dev/null; then
     echo "[!] Missing PWA dependencies. Installing..."
-    pip3 install fastapi uvicorn python-multipart
+    if ! pip3 install fastapi uvicorn python-multipart; then
+        echo "[ERR] Failed to install dependencies."
+        exit 1
+    fi
 fi
 
 # Start the server in the background
@@ -35,6 +38,12 @@ SERVER_PID=$!
 
 # Wait for server to start
 sleep 2
+
+# Verify server is still running
+if ! kill -0 $SERVER_PID 2>/dev/null; then
+    echo "[ERR] PassForge web server failed to start."
+    exit 1
+fi
 
 # Open browser (cross-platform)
 echo "[3/3] Opening browser at http://127.0.0.1:8093"

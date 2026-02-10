@@ -20,14 +20,19 @@ if %errorlevel% neq 0 (
 
 :: Kill any existing process on port 8093 to avoid bind errors
 echo [1/4] Checking for existing PWA processes...
-for /f "tokens=5" %%a in ('netstat -aon ^| findstr :8093') do taskkill /f /pid %%a >nul 2>&1
-
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8093.*LISTENING"') do taskkill /f /pid %%a >nul 2>&1
 :: Check for dependencies
 echo [2/4] Verifying dependencies...
-python -c "import fastapi, uvicorn" >nul 2>&1
+python -c "import fastapi, uvicorn, multipart" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [!] Missing PWA dependencies. Installing...
     pip install fastapi uvicorn python-multipart
+    if !errorlevel! neq 0 (
+        echo [ERR] Failed to install dependencies.
+        echo Please try manual install: pip install fastapi uvicorn python-multipart
+        pause
+        exit /b 1
+    )
 )
 
 :: Start the server in the background

@@ -1,3 +1,7 @@
+const AUTH_CONFIG = {
+    apiKey: 'default_secret_key' // Should match PASSFORGE_API_KEY in server.py
+};
+
 const state = {
     currentType: 'random',
     config: {
@@ -154,9 +158,14 @@ async function init() {
 async function fetchPresets() {
     try {
         const res = await fetch('/api/presets');
-        state.presets = await res.json();
+        if (res.ok) {
+            state.presets = await res.json();
+        } else {
+            const errorData = await res.json().catch(() => ({}));
+            showToast(`Failed to load presets: ${errorData.detail || res.statusText}`, "danger");
+        }
     } catch (err) {
-        showToast("Error loading security presets", "danger");
+        showToast("Network error loading security presets", "danger");
     }
 }
 
@@ -198,7 +207,7 @@ function switchTab(type) {
             elements.passwordDisplay.textContent = 'Enter password...';
             elements.entropyValue.textContent = '0';
             elements.qrContainer.innerHTML = '<div class="qr-placeholder"><i data-lucide="search" style="width: 40px; height: 40px;"></i></div>';
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     }
 }
@@ -263,9 +272,10 @@ function renderControls() {
                 <div class="control-label">
                     <span>${ctrl.label}</span>
                 </div>
-                <input type="text" id="input-${ctrl.id}" value="${val}" class="glass input-glass">
+                <input type="text" id="input-${ctrl.id}" class="glass input-glass">
             `;
             const input = item.querySelector('input');
+            input.value = val; // Programmatic assignment to avoid XSS
             input.addEventListener('input', (e) => {
                 state.config[state.currentType][ctrl.id] = e.target.value;
             });
@@ -276,11 +286,19 @@ function renderControls() {
                 </div>
                 <select id="input-preset" class="glass input-glass">
                     <option value="">Custom (Manual)</option>
-                    ${Object.keys(state.presets).map(name => `<option value="${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</option>`).join('')}
                 </select>
             `;
-            const input = item.querySelector('select');
-            input.addEventListener('change', (e) => {
+            const select = item.querySelector('select');
+
+            // Programmatically add options to prevent XSS from preset keys
+            Object.keys(state.presets).forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+                select.appendChild(opt);
+            });
+
+            select.addEventListener('change', (e) => {
                 const presetName = e.target.value;
                 if (!presetName) return;
                 const preset = state.presets[presetName];
@@ -308,7 +326,7 @@ async function generate() {
     if (elements.generateBtn) {
         elements.generateBtn.disabled = true;
         elements.generateBtn.innerHTML = '<i data-lucide="loader-2" class="spin"></i> Generating...';
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     const config = state.config[state.currentType] || {};
@@ -316,17 +334,26 @@ async function generate() {
     // Analyze Mode
     if (state.currentType === 'analyze') {
         try {
-            const response = await fetch(`/api/analyze?password=${encodeURIComponent(config.password || '')}`);
+            const password = config.password || '';
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
             const data = await response.json();
             if (response.ok) {
-                elements.passwordDisplay.innerHTML = colorizePassword(data.password || "No input");
+                elements.passwordDisplay.innerHTML = colorizePassword(password || "No input");
                 elements.entropyValue.textContent = data.entropy || 0;
 
-                let details = `Score: ${data.strength?.score}/4\n`;
-                if (data.strength?.warning) details += `Warning: ${data.strength.warning}\n`;
-                if (data.strength?.suggestions?.length) details += `Tip: ${data.strength.suggestions[0]}`;
+                let detailsHtml = `Score: ${data.strength?.score}/4<br>`;
+                if (data.strength?.warning) {
+                    detailsHtml += `Warning: ${escapeHtml(data.strength.warning)}<br>`;
+                }
+                if (data.strength?.suggestions?.length) {
+                    detailsHtml += `Tip: ${escapeHtml(data.strength.suggestions[0])}`;
+                }
 
-                elements.qrContainer.innerHTML = `<div style="text-align:left; font-size:0.85rem; padding:1rem; color:var(--text-primary); line-height:1.5;">${details.replace(/\n/g, '<br>')}</div>`;
+                elements.qrContainer.innerHTML = `<div style="text-align:left; font-size:0.85rem; padding:1rem; color:var(--text-primary); line-height:1.5;">${detailsHtml}</div>`;
             } else {
                 showToast(data.detail, "danger");
             }
@@ -336,7 +363,7 @@ async function generate() {
             if (elements.generateBtn) {
                 elements.generateBtn.disabled = false;
                 elements.generateBtn.innerHTML = '<i data-lucide="search"></i> Analyze';
-                lucide.createIcons();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
         }
         return;
@@ -365,7 +392,7 @@ async function generate() {
                 elements.qrContainer.innerHTML = `<img src="data:image/png;base64,${data.qr}" alt="QR Code">`;
             } else {
                 elements.qrContainer.innerHTML = '<div class="qr-placeholder"><i data-lucide="qr-code"></i></div>';
-                lucide.createIcons();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             }
             fetchHistory(); // Refresh history
         } else {
@@ -379,7 +406,7 @@ async function generate() {
         if (elements.generateBtn) {
             elements.generateBtn.disabled = false;
             elements.generateBtn.innerHTML = '<i data-lucide="zap"></i> Generate New';
-            lucide.createIcons();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
         }
     }
 }
@@ -402,11 +429,16 @@ async function fetchHistory() {
         const query = searchInput ? searchInput.value : '';
 
         const url = `/api/history?limit=50${query ? `&search=${encodeURIComponent(query)}` : ''}`;
-        const res = await fetch(url);
+        const res = await fetch(url, {
+            headers: { 'X-API-Key': AUTH_CONFIG.apiKey }
+        });
         if (res.ok) {
             const data = await res.json();
             state.history = data;
             renderHistory();
+        } else if (res.status === 401) {
+            console.error("Authentication failed: Invalid API Key");
+            showToast("History Auth Failed: Check API Key", "danger");
         }
     } catch (err) {
         showToast("Failed to sync history", "danger");
@@ -426,7 +458,7 @@ function renderHistory() {
             </button>
         </div>
     `).join('');
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function colorizePassword(password) {
@@ -452,20 +484,32 @@ function escapeHtml(text) {
         .replace(/'/g, "&#039;");
 }
 
-function copyText(text) {
-    navigator.clipboard.writeText(text);
-    showToast("Copied from history!");
+async function copyText(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied from history!");
+    } catch (err) {
+        showToast("Failed to copy from history", "danger");
+        console.error("Clipboard error:", err);
+    }
 }
 
 async function clearHistory() {
     if (!confirm("Are you sure you want to clear history?")) return;
     try {
-        await fetch('/api/history', { method: 'DELETE' });
-        state.history = [];
-        renderHistory();
-        showToast("History cleared");
+        const res = await fetch('/api/history', {
+            method: 'DELETE',
+            headers: { 'X-API-Key': AUTH_CONFIG.apiKey }
+        });
+        if (res.ok) {
+            state.history = [];
+            renderHistory();
+            showToast("History cleared");
+        } else {
+            showToast("Server failed to clear history", "danger");
+        }
     } catch (err) {
-        showToast("Failed to clear history", "danger");
+        showToast("Connection error: Failed to clear history", "danger");
     }
 }
 
@@ -485,7 +529,7 @@ function updateThemeIcon(theme) {
         const isDark = theme === 'dark';
         elements.themeIcon.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
         elements.themeText.textContent = isDark ? 'Dark Mode' : 'Light Mode';
-        lucide.createIcons();
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 }
 
