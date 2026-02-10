@@ -94,10 +94,11 @@ class GeneratorParams(BaseModel):
     min_lower: int = 0
     min_digits: int = 0
     min_symbols: int = 0
-    include: str = ""
     exclude: str = ""
     no_repeats: bool = False
     text: str = ""  # For phonetic
+
+
 class PasswordAnalysisRequest(BaseModel):
     password: str = ""
 
@@ -204,8 +205,8 @@ async def generate(
             # Password history is stored in a local JSON Lines file (~/.passforge/pass_history.log).
             # By default, passwords are encrypted using Fernet (AES-128) if the 'cryptography' 
             # package is installed. Ensure the .vault.key file is protected.
-            logger = PasswordLogger()
-            logger.log(result)
+            pwd_logger = PasswordLogger()
+            pwd_logger.log(result)
 
         # Generate QR if possible using a unique temporary file to avoid race conditions
         qr_base64 = None
@@ -251,16 +252,17 @@ async def analyze(request: PasswordAnalysisRequest, response: Response):
 
     try:
         calc = EntropyCalculator()
-        entropy = calc.calculate_from_password(password)
+        entropy, pool_size = calc.calculate_from_password(password)
         
         strength = None
         if zxcvbn_available():
             res = zxcvbn_check(password)
-            strength = {
-                "score": res.get("score"),
-                "warning": res.get("feedback", {}).get("warning"),
-                "suggestions": res.get("feedback", {}).get("suggestions")
-            }
+            if res:
+                strength = {
+                    "score": res.score,
+                    "warning": res.feedback_warning,
+                    "suggestions": res.feedback_suggestions
+                }
         
         return {
             "entropy": round(entropy, 2),
@@ -273,14 +275,14 @@ async def analyze(request: PasswordAnalysisRequest, response: Response):
 @app.get("/api/history")
 async def get_history(limit: int = 10, search: str = None, _ = Depends(verify_api_key)):
     """Retrieve password history. Requires X-API-Key authentication."""
-    logger = PasswordLogger()
-    return logger.get_history(limit=limit, search=search)
+    pwd_logger = PasswordLogger()
+    return pwd_logger.get_history(limit=limit, search=search)
 
 @app.delete("/api/history")
 async def clear_history(_ = Depends(verify_api_key)):
     """Clear all history. Requires X-API-Key authentication."""
-    logger = PasswordLogger()
-    logger.clear_history()
+    pwd_logger = PasswordLogger()
+    pwd_logger.clear_history()
     return {"status": "success"}
 
 # Serve Frontend

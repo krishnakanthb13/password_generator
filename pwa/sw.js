@@ -1,10 +1,10 @@
-const CACHE_NAME = 'passforge-v6';
+const CACHE_NAME = 'passforge-v7';
 const CORE_ASSETS = [
     './',
     './index.html',
     './offline.html',
-    './css/style.css?v=32',
-    './js/app.js?v=33',
+    './css/style.css?v=34',
+    './js/app.js?v=34',
     './manifest.json',
     './favicon.png',
     './assets/icon-192.png',

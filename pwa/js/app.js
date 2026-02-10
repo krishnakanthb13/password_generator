@@ -1,5 +1,7 @@
 const AUTH_CONFIG = {
-    apiKey: 'default_secret_key' // Should match PASSFORGE_API_KEY in server.py
+    // This key is used for request validation between the frontend and local server.
+    // In a networked production environment, use a secure session/OAuth2 flow.
+    apiKey: 'default_secret_key'
 };
 
 const state = {
@@ -154,6 +156,15 @@ async function init() {
                 const item = state.history[index];
                 if (item) copyText(item.password);
             }
+        });
+    }
+
+    // Register Service Worker for PWA features
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(() => {
+                // Fail silently in development/non-HTTPS
+            });
         });
     }
 }
@@ -401,14 +412,22 @@ async function generate() {
                 elements.qrContainer.innerHTML = '<div class="qr-placeholder"><i data-lucide="qr-code"></i></div>';
                 if (typeof lucide !== 'undefined') lucide.createIcons();
             }
-            fetchHistory(); // Refresh history
+
+            // Optimization: Append to local state immediately instead of doing a full re-fetch
+            const historyEntry = {
+                password: data.password,
+                generator_type: data.type,
+                timestamp: new Date().toISOString()
+            };
+            state.history.unshift(historyEntry);
+            if (state.history.length > 50) state.history.pop();
+            renderHistory();
         } else {
             const msg = typeof data.detail === 'object' ? JSON.stringify(data.detail) : data.detail;
             showToast("Error: " + msg, "danger");
         }
     } catch (err) {
         showToast("Connection failed", "danger");
-        console.error(err);
     } finally {
         if (elements.generateBtn) {
             elements.generateBtn.disabled = false;
@@ -462,8 +481,7 @@ async function fetchHistory() {
             state.history = data;
             renderHistory();
         } else if (res.status === 401) {
-            console.error("Authentication failed: Invalid API Key");
-            showToast("History Auth Failed: Check API Key", "danger");
+            showToast("History access denied", "danger");
         }
     } catch (err) {
         showToast("Failed to sync history", "danger");
@@ -515,7 +533,6 @@ async function copyText(text) {
         showToast("Copied from history!");
     } catch (err) {
         showToast("Failed to copy from history", "danger");
-        console.error("Clipboard error:", err);
     }
 }
 
