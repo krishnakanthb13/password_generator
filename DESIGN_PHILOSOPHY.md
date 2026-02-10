@@ -33,6 +33,11 @@ Existing solutions often fall into two categories:
 *   **The "One-Line Spacing" Rule**: Exactly one blank line is maintained before and after generated secrets to ensure visual prominence without excessive scrolling.
 *   **Numbered Selection**: In launchers and menus, options are always numbered. Users should never have to type a full filename (e.g., "animals.txt") when they can type "1".
 
+### F. Defense in Depth (Hardening)
+*   **Masked Inputs**: 🛡️ Sensitive operations (like analyzing an existing password) use `getpass` to mask input, preventing shoulder-surfing.
+*   **Source Sequestration**: 🛡️ The PWA server explicitly blocks access to its own source code and system logs via the browser to minimize the local attack surface.
+*   **Resilient Context**: Frontend logic assumes external resources (like CDNs) might fail and provides safe fallbacks to ensure core generation remains functional.
+
 ### E. Human-Centric Design
 *   **Verbal Communication**: Support for NATO phonetic output ensures passwords can be shared over the phone unambiguously.
 *   **Themed Generation**: Allowing users to choose themes (Positive, Biology, Sci-Fi) makes security personal and memorable.

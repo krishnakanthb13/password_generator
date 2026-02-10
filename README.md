@@ -41,10 +41,12 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 - **Balanced Mode**: Ensures readable distribution (60% Letters, 20% Digits, 20% Symbols)
 - **Encrypted History (Vault)**: Automatically encrypts saved passwords using AES-128 (Fernet) with a unique local machine key
 - **Secure Vault Storage**: Dedicated vault handles cryptographic keys with strict 0600 file permissions
+- **Zero-Leakage Architecture**: 🛡️ Source code and logs are blocked from browser access in PWA mode; sensitive inputs are masked in CLI mode.
 - **Redacted Exports**: Security-first history export with automatic password redaction by default
 - **Zero-Indentation UI**: Clean, professional left-aligned output for all modes
 - **Smart Leetspeak**: Probabilistic substitution for more natural, readable passwords
 - **Robust Validation**: Interactive prompts with default values and recursive error handling
+- **Defensive PWA Frontend**: 🛡️ Built-in safety checks for CDN assets to prevent initialization crashes.
 - **Global Modifiers**: `--easy-read` and `--easy-say` modes
 
 ## Installation
@@ -453,6 +455,32 @@ pyinstaller --onefile --name passforge --console main.py
 ```
 
 The executable will be created in the `dist/` folder (~7MB, zero dependencies).
+
+## 🌐 PassForge Web (PWA Add-on)
+
+PassForge now includes a modern, responsive Web Interface (PWA) that provides a visual way to generate and manage passwords while maintaining full parity with the CLI version.
+
+### Key Features
+- **Sidebar Interface**: Easy navigation between all generator types.
+- **Visual Sliders**: Adjust lengths and word counts with interactive sliders.
+- **QR Support**: Instant QR code generation for sharing passwords or OTP secrets.
+- **Dark/Light Mode**: Premium aesthetics with system-aware theme switching.
+- **Installable**: Support for PWA installation on Windows, Linux, and mobile.
+- **Shared History**: Utilizes the same encrypted log file as the CLI.
+
+### Launching the PWA
+To start the web interface, run the launcher script for your OS:
+
+- **Windows**: `passforge_pwa.bat`
+- **Linux/macOS**: `passforge_pwa.sh`
+
+> [!IMPORTANT]
+> **Security Hardening (v28+)**: The PWA now utilizes a `SecureStaticFiles` handler that explicitly blocks browser access to Python source files, logs, and cryptographic keys. Frontend logic also includes defensive wrappers for external CDN assets to ensure functionality even if a CDN is blocked.
+
+> [!TIP]
+> **Build Availability**: The PWA files are included in the **Source Code** and **ZIP/Tarball** distributions. The PWA is *not* embedded in the single-file `.exe` binary.
+
+The launcher will automatically install necessary dependencies (`fastapi`, `uvicorn`), start a local server at `http://127.0.0.1:8093`, and open your browser.
 
 ## License
 

@@ -166,3 +166,25 @@ For developers who want to modify the code.
 1.  `git clone ...`
 2.  `pip install -r requirements.txt`
 3.  `python main.py --interactive`
+
+## 🌐 PWA Architecture (Add-on)
+
+The PassForge PWA is designed as a modular add-on that bridges the existing Python logic with a modern web interface.
+
+### Components in `pwa/`
+- **`server.py`**: A FastAPI-based backend that imports generators from `src/` and exposes them via a REST API. 
+    *   **SecureStaticFiles**: 🛡️ Subclasses `StaticFiles` to block access to sensitive file extensions (`.py`, `.sh`, `.bat`, `.key`, `.log`).
+- **`index.html`**: The main application shell using semantic HTML and Lucide icons.
+- **`css/style.css`**: A premium design system with Glassmorphism and theme variables.
+- **`js/app.js`**: Pure Vanilla Javascript handling state management and UI rendering.
+    *   **Defensive UI**: 🛡️ Wraps all `lucide` calls in safety checks to prevent crashes if the application initializes offline or behind a restrictive firewall.
+- **`manifest.json` / `sw.js`**: Standard PWA manifests for an installable mobile/desktop experience.
+    *   **sw.js (v2)**: Implements atomic caching for external assets to maximize offline resilience.
+
+### API Endpoints
+- `GET /api/generate`: Accepts parameters (type, length, etc.) and returns the generated secret along with entropy and a base64 QR code.
+- `GET /api/history`: Retrieves encrypted history entries.
+- `DELETE /api/history`: Clears local history logs.
+
+### Folder Isolation
+All PWA-specific files are strictly contained within the `pwa/` directory and project root launchers to ensure zero impact on the core CLI functionality.
