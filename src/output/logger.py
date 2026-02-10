@@ -27,8 +27,11 @@ class PasswordLogger:
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.log_file = self.log_dir / "pass_history.log"
         
-        from ..security.vault import Vault
-        self.vault = Vault(self.log_dir)
+        try:
+            from ..security.vault import Vault
+            self.vault = Vault(self.log_dir)
+        except ImportError:
+            self.vault = None
     
     def log(self, result: Any) -> None:
         """
@@ -109,26 +112,46 @@ class PasswordLogger:
         if self.log_file.exists():
             self.log_file.unlink()
     
-    def export_history(self, output_path: str, format: str = "json") -> None:
+    def export_history(self, output_path: str, format: str = "json", redact_passwords: bool = True) -> None:
         """
         Export history to a file.
+        
+        SECURITY WARNING: Exporting without redaction (redact_passwords=False) will 
+        save all your passwords in plain text to the destination file. Use with extreme 
+        caution as this bypasses the security vault.
         
         Args:
             output_path: Path to output file
             format: Export format ('json' or 'csv')
+            redact_passwords: If True (default), passwords are replaced by "<REDACTED>".
         """
+        import logging
+        log_helper = logging.getLogger(__name__)
+
+        if not redact_passwords:
+            log_helper.warning(f"SENSITIVE DATA EXPORT: Exporting history to {output_path} with plaintext passwords.")
+
         entries = self.get_history(limit=10000)
+        
+        # Process entries for export (redaction or formatting)
+        export_data = []
+        for entry in entries:
+            # We create a copy to avoid modifying the in-memory history if cached (though it's currently not)
+            clean_entry = entry.copy()
+            if redact_passwords:
+                clean_entry['password'] = "<REDACTED>"
+            export_data.append(clean_entry)
         
         if format == "json":
             with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(entries, f, indent=2)
+                json.dump(export_data, f, indent=2)
         elif format == "csv":
             import csv
             with open(output_path, 'w', newline='', encoding='utf-8') as f:
-                if entries:
+                if export_data:
                     writer = csv.DictWriter(f, fieldnames=['timestamp', 'generator_type', 'password', 'entropy_bits'])
                     writer.writeheader()
-                    for entry in entries:
+                    for entry in export_data:
                         writer.writerow({
                             'timestamp': entry['timestamp'],
                             'generator_type': entry['generator_type'],

@@ -148,6 +148,7 @@ class InteractiveMenu:
         digits = self.get_bool("Include digits", True)
         symbols = self.get_bool("Include symbols", True)
         easy_read = self.get_bool("Easy to read (no ambiguous chars)", False)
+        balanced = self.get_bool("Balanced ratio (mostly letters)", False)
         count = self.get_int("How many to generate", 1, 1, 10)
         
         generator = RandomPasswordGenerator(easy_read=easy_read)
@@ -158,7 +159,8 @@ class InteractiveMenu:
                 uppercase=uppercase,
                 lowercase=lowercase,
                 digits=digits,
-                symbols=symbols
+                symbols=symbols,
+                balanced=balanced
             )
             self.print_result(result)
     

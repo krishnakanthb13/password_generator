@@ -164,6 +164,11 @@ def create_parser() -> argparse.ArgumentParser:
         help="No repeated characters"
     )
     random_parser.add_argument(
+        "--balanced",
+        action="store_true",
+        help="Use balanced ratio (60%% Letters, 20%% Digits, 20%% Symbols)"
+    )
+    random_parser.add_argument(
         "--min-upper",
         type=int,
         default=0,

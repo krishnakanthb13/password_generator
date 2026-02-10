@@ -114,6 +114,7 @@ def apply_preset(args: Any) -> Any:
         "qr": False,
         "upper": False,
         "grid": 3,
+        "balanced": False,
         "count": 1
     }
 
@@ -178,7 +179,8 @@ def handle_random(args: Any) -> int:
             min_uppercase=args.min_upper,
             min_lowercase=args.min_lower,
             min_digits=args.min_digits,
-            min_symbols=args.min_symbols
+            min_symbols=args.min_symbols,
+            balanced=args.balanced
         )
         
         output_result(result, args)

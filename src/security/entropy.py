@@ -4,17 +4,14 @@ Entropy Calculator - Calculate and display password entropy.
 
 import math
 from typing import Optional
+from ..generators.base import BaseGenerator
 
 
 class EntropyCalculator:
     """Calculate password entropy and strength metrics."""
     
-    # Common character set sizes
-    LOWERCASE_SIZE = 26
-    UPPERCASE_SIZE = 26
-    DIGITS_SIZE = 10
-    SYMBOLS_SIZE = 32  # Common printable symbols
     
+    # Strength thresholds (in bits)
     # Strength thresholds (in bits)
     THRESHOLDS = {
         "very_weak": 28,
@@ -23,6 +20,9 @@ class EntropyCalculator:
         "strong": 80,
         "very_strong": 128
     }
+    
+    # Extended pool for unknown printable characters
+    ASCII_EXTENDED_POOL = 95
     
     @staticmethod
     def calculate_from_pool(pool_size: int, length: int) -> float:
@@ -57,13 +57,25 @@ class EntropyCalculator:
         if not password:
             return 0.0
         
-        from ..generators.base import BaseGenerator
-        
         pool_size = 0
-        has_lower = any(c in BaseGenerator.LOWERCASE for c in password)
-        has_upper = any(c in BaseGenerator.UPPERCASE for c in password)
-        has_digit = any(c in BaseGenerator.DIGITS for c in password)
-        has_symbol = any(c in BaseGenerator.SYMBOLS for c in password)
+        has_lower = False
+        has_upper = False
+        has_digit = False
+        has_symbol = False
+        others = 0
+        
+        # Single-pass analysis for improved efficiency
+        for char in password:
+            if char in BaseGenerator.LOWERCASE:
+                has_lower = True
+            elif char in BaseGenerator.UPPERCASE:
+                has_upper = True
+            elif char in BaseGenerator.DIGITS:
+                has_digit = True
+            elif char in BaseGenerator.SYMBOLS:
+                has_symbol = True
+            else:
+                others += 1
         
         if has_lower:
             pool_size += len(BaseGenerator.LOWERCASE)
@@ -74,15 +86,11 @@ class EntropyCalculator:
         if has_symbol:
             pool_size += len(BaseGenerator.SYMBOLS)
         
-        # Add a fallback for characters not in standard pools but present
-        others = sum(1 for c in password if not (
-            c in BaseGenerator.LOWERCASE or 
-            c in BaseGenerator.UPPERCASE or 
-            c in BaseGenerator.DIGITS or 
-            c in BaseGenerator.SYMBOLS
-        ))
         if others > 0:
-            pool_size += 95 # Approximate printable ASCII range
+            # If characters outside standard pools are used, 
+            # assume at least the full printable ASCII range (95)
+            # but don't double count if we already calculated more.
+            pool_size = max(pool_size, EntropyCalculator.ASCII_EXTENDED_POOL)
             
         return EntropyCalculator.calculate_from_pool(pool_size, len(password))
     

@@ -3,6 +3,7 @@ Random Password Generator - Core alphanumeric + symbols password generation.
 """
 
 import secrets
+import math
 from typing import Optional, Set
 from .base import BaseGenerator, GeneratorResult
 
@@ -35,7 +36,8 @@ class RandomPasswordGenerator(BaseGenerator):
         min_uppercase: int = 0,
         min_lowercase: int = 0,
         min_digits: int = 0,
-        min_symbols: int = 0
+        min_symbols: int = 0,
+        balanced: bool = False
     ) -> GeneratorResult:
         """
         Generate a random password.
@@ -53,6 +55,7 @@ class RandomPasswordGenerator(BaseGenerator):
             min_lowercase: Minimum lowercase characters required
             min_digits: Minimum digits required
             min_symbols: Minimum symbols required
+            balanced: Enable balanced ratio (60% letters, 20% digits, 20% symbols)
             
         Returns:
             GeneratorResult with password and metadata
@@ -98,12 +101,14 @@ class RandomPasswordGenerator(BaseGenerator):
         
         # Generate password with minimum requirements
         password_chars = []
-        used_indices = set() # Track used characters from the pool if no_repeats is True
         
         def pick_from_pool(source_charset):
             available = self.filter_charset(source_charset)
             available = "".join(c for c in available if c not in exclude_chars)
             
+            if not available:
+                raise ValueError("No available characters after filtering exclude_chars")
+                
             if no_repeats:
                 # Filter out already used characters
                 remaining_available = [c for c in available if c not in password_chars]
@@ -135,7 +140,52 @@ class RandomPasswordGenerator(BaseGenerator):
         remaining = length - len(password_chars)
         
         if remaining > 0:
-            if no_repeats:
+            if balanced and not no_repeats:
+                # Balanced Mode (Ratio-based filling)
+                # 60% Letters, 20% Digits, 20% Symbols
+                letter_pool = ""
+                if uppercase: letter_pool += self.UPPERCASE
+                if lowercase: letter_pool += self.LOWERCASE
+                letter_pool = self.filter_charset(letter_pool)
+                letter_pool = "".join(c for c in letter_pool if c not in exclude_chars)
+                
+                digit_pool = self.filter_charset(self.DIGITS)
+                digit_pool = "".join(c for c in digit_pool if c not in exclude_chars)
+                
+                symbol_pool = self.filter_charset(self.SYMBOLS)
+                symbol_pool = "".join(c for c in symbol_pool if c not in exclude_chars)
+
+                for _ in range(remaining):
+                    # Randomly choose which pool based on weights
+                    # Weighting: 60 Letter, 20 Digit, 20 Symbol
+                    # Adjust if some pools are empty
+                    weights = []
+                    pools = []
+                    if letter_pool: 
+                        pools.append(letter_pool)
+                        weights.append(60)
+                    if digit_pool: 
+                        pools.append(digit_pool)
+                        weights.append(20)
+                    if symbol_pool: 
+                        pools.append(symbol_pool)
+                        weights.append(20)
+                    
+                    if not pools:
+                        # Fallback to general charset if specific pools are empty
+                        password_chars.append(secrets.choice(charset))
+                        continue
+
+                    # Manual weighted choice (secrets.choice doesn't support weights directly)
+                    total_weight = sum(weights)
+                    r = secrets.randbelow(total_weight)
+                    upto = 0
+                    for pool, weight in zip(pools, weights):
+                        if upto + weight > r:
+                            password_chars.append(secrets.choice(pool))
+                            break
+                        upto += weight
+            elif no_repeats:
                 # Use proper unique selection - remove used chars and sample
                 available = [c for c in charset if c not in password_chars]
                 # Sample unique characters one by one
@@ -147,7 +197,7 @@ class RandomPasswordGenerator(BaseGenerator):
                     else:
                         raise ValueError("Pool exhausted for unique remaining characters")
             else:
-                # Allow repeats
+                # Allow repeats (standard mode)
                 password_chars.extend(
                     secrets.choice(charset) for _ in range(remaining)
                 )
@@ -162,7 +212,15 @@ class RandomPasswordGenerator(BaseGenerator):
         
         # Calculate entropy
         pool_size = len(charset)
-        entropy_bits = self.calculate_entropy(pool_size, length)
+        if no_repeats:
+            # For sampling without replacement, the number of possibilities is
+            # permutations P(pool_size, length) = pool_size! / (pool_size - length)!
+            # entropy = log2(P(pool_size, length))
+            # We use lgamma for stable computation of log2(n!): log2(n!) = lgamma(n+1) / log(2)
+            entropy_bits = (math.lgamma(pool_size + 1) - math.lgamma(pool_size - length + 1)) / math.log(2)
+        else:
+            # Standard entropy for sampling with replacement
+            entropy_bits = self.calculate_entropy(pool_size, length)
         
         # Store parameters for logging
         parameters = {
@@ -178,6 +236,7 @@ class RandomPasswordGenerator(BaseGenerator):
             "min_lowercase": min_lowercase,
             "min_digits": min_digits,
             "min_symbols": min_symbols,
+            "balanced": balanced,
             "pool_size": pool_size,
             "easy_read": self.easy_read,
             "easy_say": self.easy_say
