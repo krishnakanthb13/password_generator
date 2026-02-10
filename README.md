@@ -37,7 +37,10 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 - **QR Codes for OTP**: Scannable QR codes for authenticator apps
 - **Color-Coded Output**: Visual distinction between character types
 - **JSON Export**: Machine-readable output for scripting
-- **Mandatory Logging**: Automatically records generations for later retrieval (Opt-in in CLI, Always-on in Menu)
+- **Balanced Mode**: Ensures readable distribution (60% Letters, 20% Digits, 20% Symbols)
+- **Encrypted History (Vault)**: Automatically encrypts saved passwords using AES-128 (Fernet) with a unique local machine key
+- **Secure Vault Storage**: Dedicated vault handles cryptographic keys with strict 0600 file permissions
+- **Redacted Exports**: Security-first history export with automatic password redaction by default
 - **Zero-Indentation UI**: Clean, professional left-aligned output for all modes
 - **Smart Leetspeak**: Probabilistic substitution for more natural, readable passwords
 - **Robust Validation**: Interactive prompts with default values and recursive error handling
@@ -50,7 +53,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 git clone https://github.com/krishnakanthb13/password_generator.git
 cd password_generator
 
-# Install dependencies
+# Install dependencies (colorama, cryptography, pyperclip, etc.)
 pip install -r requirements.txt
 ```
 
@@ -92,6 +95,9 @@ python main.py --easy-read random -l 20
 
 # With minimum requirements
 python main.py random -l 16 --min-upper 2 --min-digits 2 --min-symbols 1
+
+# Balanced mode (mostly letters, fewer symbols)
+python main.py random -l 24 --balanced
 ```
 
 ### Passphrases
@@ -150,11 +156,17 @@ python main.py --log random -l 16
 # View last 10 history entries (default)
 python main.py history
 
-# View all history entries
+# View all history entries (decrypted on the fly)
 python main.py history --all
 
 # Search in history
 python main.py history --search random
+
+# Export history (Redacted by default)
+python main.py history --export backup.json
+
+# Export history (Plaintext - requires caution)
+python main.py history --export secrets.csv --no-redact
 
 # JSON output for scripts
 python main.py --json jwt --bits 256
@@ -176,6 +188,7 @@ python main.py --json jwt --bits 256
 | `--no-color` | Disable colored output |
 | `--easy-read` | Exclude ambiguous characters (0/O, 1/l/I) |
 | `--easy-say` | Only pronounceable characters |
+| `--balanced` | Balanced char distribution (mostly letters) |
 
 ### Generator-Specific Options
 
@@ -195,6 +208,7 @@ python main.py --json jwt --bits 256
 | `--min-lower` | 0 | Minimum lowercase characters |
 | `--min-digits` | 0 | Minimum digits |
 | `--min-symbols` | 0 | Minimum symbols |
+| `--balanced` | - | Balanced ratio (60/20/20) |
 | `-n`, `--count` | 1 | Number to generate |
 
 #### Passphrase (`phrase`, `p`)
@@ -301,6 +315,8 @@ python main.py --json jwt --bits 256
 | `--last` | 10 | Show last N entries |
 | `--all`, `-a` | - | Show all history entries (overrides --last) |
 | `--search` | - | Search within history |
+| `--export` | - | Export history to file |
+| `--no-redact` | - | Do not redact passwords in export (Caution!) |
 | `--clear` | - | Clear all history |
 
 ## Entropy Guide
@@ -343,7 +359,8 @@ password_generator/
 │   │   └── phonetic.py       # NATO Phonetic generator
 │   ├── security/
 │   │   ├── entropy.py        # Entropy calculator
-│   │   └── strength_checker.py # zxcvbn integration
+│   │   ├── strength_checker.py # zxcvbn integration
+│   │   └── vault.py          # Secure history encryption
 │   ├── output/
 │   │   ├── formatter.py      # Color-coded output
 │   │   ├── logger.py         # History logging

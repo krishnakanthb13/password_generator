@@ -36,6 +36,8 @@ Existing solutions often fall into two categories:
 ### E. Human-Centric Design
 *   **Verbal Communication**: Support for NATO phonetic output ensures passwords can be shared over the phone unambiguously.
 *   **Themed Generation**: Allowing users to choose themes (Positive, Biology, Sci-Fi) makes security personal and memorable.
+*   **The "Crowding" Problem**: Pure uniform randomness often results in passwords that are 40% symbols, making them feel like "noise" and reducing readability.
+*   **Weighted distribution**: We believe security shouldn't be hostile. Our "Balanced Mode" ensures a distribution that looks "human-generated" (mostly letters) while maintaining the mathematical strength of cryptographically secure selection.
 
 ## 3. Key Design Decisions
 
@@ -51,9 +53,9 @@ Existing solutions often fall into two categories:
 *   Manual configuration of 15+ flags is error-prone. We provide `PRESETS` (`--preset strong`) to codify industry-standard security patterns (e.g., 32 chars for "strong", 40 char alphanumeric for "dev"). This ensures users can generate high-quality credentials with zero cognitive load.
 
 ### Storage Strategy
-*   **History Logs**: We store history in plaintext JSON lines (`~/.passforge/pass_history.log`).
-    *   *Rationale*: This matches the "bash history" model. If an attacker has local access to your machine, you have bigger problems.
-    *   *Updated UX Policy*: While history is still opt-in for CLI power users, it is now **auto-enabled** in the launchers and interactive mode. This prevents information loss for menu-driven users who might forget to copy a secret before the screen clears.
+*   **Encrypted History Vault**: We store history in AES-128 encrypted blocks.
+    *   *Rationale*: While history is essential for convenience, secrets should never reside on disk in plaintext. By using a machine-unique key and `cryptography.fernet`, we protect the user's history against casual data theft (e.g., someone copying the `~/.passforge` folder) while maintaining the seamless UX of a local tool.
+    *   *Consent & Transparency*: History remains opt-in for CLI users but is auto-enabled in launchers to prevent data loss. Export functionality requires explicit flags to bypass redaction, ensuring users make a conscious decision when handling raw secrets.
 
 ## 4. Trade-offs
 

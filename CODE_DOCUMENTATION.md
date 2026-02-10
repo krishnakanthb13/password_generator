@@ -18,7 +18,8 @@ graph TD
     D -->|...| I[Other Generators]
     E & F & G & H & I --> J[GeneratorResult]
     J --> K[Formatter (JSON/Color)]
-    J --> L[Logger (JSON Lines)]
+    J --> L[Logger (Encrypted JSONL)]
+    L --> M[Vault (AES-128)]
 ```
 
 ## 2. File Structure
@@ -26,8 +27,8 @@ graph TD
 | Directory | Purpose | Key Files |
 | :--- | :--- | :--- |
 | `src/generators/` | Core logic for each password type. | `base.py`, `random_password.py`, `otp.py` |
-| `src/security/` | Entropy calculation and pattern analysis. | `entropy.py`, `strength_checker.py` |
-| `src/output/` | Presentation logic and secure utilities. | `formatter.py`, `logger.py`, `clipboard.py`, `qrcode_gen.py` |
+| `src/security/` | Entropy, strength, and encryption. | `entropy.py`, `vault.py` |
+| `src/output/` | Presentation and secure logging. | `formatter.py`, `logger.py` |
 | `src/config/` | Configuration file parsing and presets. | `loader.py`, `presets.py` |
 | `tests/` | Unit tests ensuring generator correctness. | `test_generators.py`, `test_security_output.py` |
 
@@ -55,6 +56,7 @@ class BaseGenerator(ABC):
 *   `calculate_entropy(pool_size, length)`: Computes Shannon entropy bits.
 *   `filter_charset(charset)`: Removes ambiguous characters (`0`, `O`, `1`, `I`, `l`) if `easy_read` is set.
 *   `to_leetspeak(word)`: Specialized logic for Leetspeak using a **50% substitution ratio** to balance security with human readability.
+*   `Balanced Mode`: Implements weighted selection (60% letters, 20% digits, 20% symbols) to prevent "symbol crowding" in random passwords.
 *   `License Key System`: Supports dynamic **AXB formatting** (A segments of B character length).
 *   `Phonetic Conversion`: Maps characters to NATO standard (A -> Alpha) for clear verbal communication.
 
@@ -67,7 +69,8 @@ Utilizes the `data/wordlists/` directory to offer themed generation.
 ### Entropy Calculator (`src/security/entropy.py`)
 Provides the `EntropyCalculator` class with static methods:
 *   `calculate_from_pool(pool_size, length)`: Returns bits based on pool size.
-*   `calculate_from_password(password)`: Estimates entropy based on password composition (upper bound).
+*   `calculate_from_password(password)`: Estimates entropy based on construction using a **single-pass analysis** for high performance.
+*   `no_repeats logic`: Uses **Permutation-based entropy** ($P(n, k)$) via `math.lgamma` instead of standard $n^k$ power logic when character repetition is disabled.
 *   `get_strength_label(bits)`: Maps bits to labels (Weak, Reasonable, Strong, Excellent).
 *   `get_crack_time_estimate(bits)`: Returns human-readable brute-force time estimates.
 
@@ -79,11 +82,18 @@ Handles colorization using `colorama`.
     *   JSON (`--json`): Pure JSON object with metadata.
     *   No-Color (`--no-color`): Plain text output.
 
+### Vault & Security (`src/security/vault.py`)
+Handles local encryption of sensitive history data.
+*   **Encryption**: Uses `cryptography.fernet` (AES-128 in CBC mode with HMAC signatures).
+*   **Key Management**: Generates a machine-unique `.vault.key` file in `~/.passforge/`.
+*   **File Permissions**: Enforces `0600` (Owner Read/Write) on key files atomically during creation.
+*   **Error Handling**: Validates encryption tokens and logs warnings on failure without crashing.
+
 ### Logging (`src/output/logger.py`)
 Writes history to `~/.passforge/pass_history.log` in JSON Lines format.
-*   `entropy_bits`
-*   `parameters` (length, options used)
-*   **Automatic Logging**: To ensure no secret is lost, the platform launchers and interactive menu now enable history logging by default.
+*   **Encrypted Secrets**: Passwords are automatically encrypted via the `Vault` before being written to disk.
+*   **Redacted Export**: The `export_history` method redacts password values by default to prevent accidental data leaks.
+*   **Automatic Logging**: Enabled by default in launchers and interactive mode.
 
 ### Preset System (`src/config/presets.py`)
 Uses `apply_preset(args)` in `command_handler.py` to intercept and override command-line arguments with predefined values.
@@ -123,6 +133,7 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
 *   **Runtime**:
     *   `colorama`: Cross-platform ANSI colors.
     *   `pyperclip` (Optional): Clipboard integration.
+    *   `cryptography`: Secure history encryption (AES-128).
     *   `qrcode` (Optional): QR code generation for OTPs.
     *   `zxcvbn` (Optional): Password strength analysis.
     *   `Pillow` (Optional): Required by `qrcode` (for images).
