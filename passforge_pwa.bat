@@ -19,10 +19,10 @@ if %errorlevel% neq 0 (
 )
 
 :: Kill any existing process on port 8093 to avoid bind errors
-echo [1/4] Checking for existing PWA processes...
+echo [1/3] Checking for existing PWA processes...
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8093.*LISTENING"') do taskkill /f /pid %%a >nul 2>&1
 :: Check for dependencies
-echo [2/4] Verifying dependencies...
+echo [2/3] Verifying dependencies...
 python -c "import fastapi, uvicorn, multipart" >nul 2>&1
 if %errorlevel% neq 0 (
     echo [!] Missing PWA dependencies. Installing...
@@ -35,24 +35,15 @@ if %errorlevel% neq 0 (
     )
 )
 
-:: Start the server in the background
-echo [3/4] Starting PassForge Web Server...
-start /b uvicorn pwa.server:app --host 127.0.0.1 --port 8093 --log-level warning
+:: Open browser in a separate detached process after a short delay
+start "" /min cmd /c "timeout /t 2 /nobreak >nul && start http://127.0.0.1:8093"
 
-:: Wait for server to start
-timeout /t 2 /nobreak >nul
+:: Start the server in the foreground
+echo [3/3] Starting PassForge Web Server...
+echo [INFO] Press Ctrl+C to stop the server.
+python -m uvicorn pwa.server:app --host 127.0.0.1 --port 8093 --log-level warning
 
-:: Open browser
-echo [3/3] Opening browser at http://127.0.0.1:8093
-start http://127.0.0.1:8093
-
+:: When uvicorn exits
 echo.
-echo [OK] PWA is running! 
-echo Keep this window open while using the web interface.
-echo Press Ctrl+C to stop the server when finished.
-echo.
-
-:: Keep window open to see server logs or wait for exit
-:wait
-timeout /t 10 /nobreak >nul
-goto wait
+echo [INFO] Server stopped.
+pause

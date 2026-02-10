@@ -40,7 +40,6 @@ const elements = {
     themeText: document.getElementById('theme-text'),
     qrContainer: document.getElementById('qr-container'),
     historyList: document.getElementById('history-list'),
-    clearHistoryBtn: document.getElementById('clear-history-btn'),
     toast: document.getElementById('toast'),
     toastMessage: document.getElementById('toast-message')
 };
@@ -135,7 +134,6 @@ async function init() {
     // Action Buttons
     if (elements.generateBtn) elements.generateBtn.addEventListener('click', generate);
     if (elements.copyBtn) elements.copyBtn.addEventListener('click', copyToClipboard);
-    if (elements.clearHistoryBtn) elements.clearHistoryBtn.addEventListener('click', clearHistory);
 
     // Click password display to copy
     if (elements.passwordDisplay) {
@@ -196,9 +194,13 @@ function switchTab(type) {
 
         // Setup search listener if not already attached (simple check)
         if (searchInput && !searchInput.dataset.listening) {
+            let searchTimeout;
             searchInput.addEventListener('input', (e) => {
-                state.searchQuery = e.target.value;
-                fetchHistory();
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    state.searchQuery = e.target.value;
+                    fetchHistory();
+                }, 300);
             });
             searchInput.dataset.listening = "true";
         }
@@ -517,25 +519,6 @@ async function copyText(text) {
     }
 }
 
-async function clearHistory() {
-    if (!confirm("Are you sure you want to clear history?")) return;
-    try {
-        const res = await fetch('/api/history', {
-            method: 'DELETE',
-            headers: { 'X-API-Key': AUTH_CONFIG.apiKey }
-        });
-        if (res.ok) {
-            state.history = [];
-            renderHistory();
-            showToast("History cleared");
-        } else {
-            showToast("Server failed to clear history", "danger");
-        }
-    } catch (err) {
-        showToast("Connection error: Failed to clear history", "danger");
-    }
-}
-
 // Theme
 function toggleTheme() {
     const html = document.documentElement;
@@ -556,12 +539,17 @@ function updateThemeIcon(theme) {
     }
 }
 
+let toastTimeout;
 function showToast(message, type = "success") {
     if (!elements.toast || !elements.toastMessage) return;
+
+    // Clear existing timeout to handle rapid toasts
+    if (toastTimeout) clearTimeout(toastTimeout);
+
     elements.toastMessage.textContent = message;
     elements.toast.classList.remove('hidden');
-    // type handling if we had different toast styles, currently ignored/default
-    setTimeout(() => {
+
+    toastTimeout = setTimeout(() => {
         elements.toast.classList.add('hidden');
     }, 3000);
 }

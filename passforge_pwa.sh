@@ -14,7 +14,7 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # Kill any existing process on port 8093
-echo "[1/4] Checking for existing PWA processes..."
+echo "[1/3] Checking for existing PWA processes..."
 if command -v fuser &> /dev/null; then
     fuser -k 8093/tcp &> /dev/null
 elif command -v lsof &> /dev/null; then
@@ -22,7 +22,7 @@ elif command -v lsof &> /dev/null; then
 fi
 
 # Check for dependencies
-echo "[2/4] Verifying dependencies..."
+echo "[2/3] Verifying dependencies..."
 if ! python3 -c "import fastapi, uvicorn, multipart" &> /dev/null; then
     echo "[!] Missing PWA dependencies. Installing..."
     if ! pip3 install fastapi uvicorn python-multipart; then
@@ -31,36 +31,19 @@ if ! python3 -c "import fastapi, uvicorn, multipart" &> /dev/null; then
     fi
 fi
 
-# Start the server in the background
-echo "[3/4] Starting PassForge Web Server..."
-uvicorn pwa.server:app --host 127.0.0.1 --port 8093 --log-level warning &
-SERVER_PID=$!
+# Open browser in background after short delay
+(
+    sleep 2
+    if command -v xdg-open &> /dev/null; then
+        xdg-open "http://127.0.0.1:8093"
+    elif command -v open &> /dev/null; then
+        open "http://127.0.0.1:8093"
+    else
+        echo "[!] Could not detect browser opener. Please visit http://127.0.0.1:8093 manually."
+    fi
+) > /dev/null 2>&1 &
 
-# Wait for server to start
-sleep 2
-
-# Verify server is still running
-if ! kill -0 $SERVER_PID 2>/dev/null; then
-    echo "[ERR] PassForge web server failed to start."
-    exit 1
-fi
-
-# Open browser (cross-platform)
-echo "[3/3] Opening browser at http://127.0.0.1:8093"
-if command -v xdg-open &> /dev/null; then
-    xdg-open "http://127.0.0.1:8093"
-elif command -v open &> /dev/null; then
-    open "http://127.0.0.1:8093"
-else
-    echo "[!] Could not detect browser opener. Please visit http://127.0.0.1:8093 manually."
-fi
-
-echo -e "\n[OK] PWA is running! (PID: $SERVER_PID)"
-echo "Keep this terminal open while using the web interface."
-echo "Press Ctrl+C to stop the server when finished."
-
-# Trap Ctrl+C to kill the background process
-trap "kill $SERVER_PID; echo -e '\nServer stopped.'; exit" SIGINT
-
-# Wait for background process
-wait $SERVER_PID
+# Start the server in the foreground
+echo "[3/3] Starting PassForge Web Server..."
+echo "Press Ctrl+C to stop the server."
+exec python3 -m uvicorn pwa.server:app --host 127.0.0.1 --port 8093 --log-level warning
