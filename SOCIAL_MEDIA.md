@@ -2,6 +2,68 @@
 
 This document contains social media posts for each release.
 
+## [v1.0.14] - 2026-02-10
+
+### 💼 LinkedIn
+
+🛡️ The "Iron Wall" Update: Introducing PassForge v1.0.14 🚀
+
+Security isn't just about the strength of the passwords we generate; it's about the resilience of the tools we use. Today's update for PassForge focuses on "Defense in Depth"—hardening our CLI and Web interfaces against modern security concerns.
+
+Key technical upgrades in v1.0.14:
+- 🛡️ Zero-Leakage Architecture: Our PWA backend now explicitly blocks browser access to Python source code, logs, and cryptographic keys. 
+- 🙈 Masked CLI Analysis: Auditing an existing password? Your input is now masked via `getpass`, ensuring sensitive data never hits the screen.
+- 🧱 CDN Resilience: We've implemented defensive safety wrappers in the frontend. PassForge now initializes flawlessly even when offline or behind restrictive firewalls that block standard CDNs.
+- ⚡ Fetch Integrity: Resolved history loading issues and optimized API key error handling for a smoother, more reliable PWA experience.
+
+At PassForge, we believe security should be uncompromising and tools should be resilient. Whether you're in the terminal or on the web, your secrets are safe with the Iron Wall.
+
+Check out the full release notes:
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #OpenSource #DevSecOps #Privacy #Python #PassForge #WebSecurity
+
+---
+
+### 🤖 Reddit (r/python, r/commandline, r/opensource, r/netsec, r/sysadmin)
+
+**Title: PassForge v1.0.14: Hardening the "Iron Wall" – Masked CLI Inputs, Source Sequestration, and CDN Resilience**
+
+Hey everyone!
+
+Following some great feedback on local security boundaries, I've just pushed **PassForge v1.0.14**. This release is dedicated to "Defense in Depth" – ensuring the tool is not only secure to use but also resilient in restrictive environments.
+
+**What's new in the Iron Wall update?**
+
+1.  🛡️ **Zero-Leakage (PWA)**: I've implemented a custom `SecureStaticFiles` handler in the FastAPI backend. It explicitly forbids the browser from reading `.py`, `.sh`, `.bat`, or `.key` files. No more "local source exposure" risks.
+2.  🙈 **Masked Analysis (CLI)**: When using `passforge analyze`, the input is now masked via `getpass`. You can audit your most sensitive passwords without worrying about shoulder-surfers or terminal logs catching the plaintext.
+3.  🧱 **Defensive Frontend**: The PWA now includes safety checks for Lucide icons and other CDN-delivered assets. If your firewall blocks the CDN or you're offline, the app still initializes gracefully.
+4.  ⚡ **SW v2 & Fetch Fixes**: Improved service worker caching and fixed a bug in the history fetching logic that was causing silent failures in some browsers.
+
+PassForge started as a simple generator; it's now becoming a platform for secure credential orchestration.
+
+**Repo:** https://github.com/krishnakanthb13/password_generator
+
+Audit the code, run it offline, and let me know what you think! 🛠️
+
+---
+
+### 🐦 X (Twitter)
+
+PassForge v1.0.14 is here: The "Iron Wall" Update 🛡️🚀
+
+✨ 🛡️ Zero-Leakage: PWA source code & keys now blocked from browser access
+✨ 🙈 Masked CLI: `analyze` cmd now uses `getpass` for privacy
+✨ 🧱 CDN Resilience: Defensive UI works even when CDNs are blocked
+✨ ⚡ Improved History Loading
+
+Security-first, always.
+https://github.com/krishnakanthb13/password_generator
+
+#Security #Python #OpenSource #DevTools #CLI
+
+---
+
 ## [v1.0.5] - 2026-02-10
 
 ### 💼 LinkedIn

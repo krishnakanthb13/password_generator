@@ -2,6 +2,27 @@
 
 This document tracks all notable changes to the **PassForge** project.
 
+## [v1.0.14] - 2026-02-10
+
+🚀 **the "iron wall" security & stability update**
+
+This release focuses on hardening the PWA/CLI interface against modern attack vectors and fixing critical stability issues in the web-based generator. We've implemented a "Zero-Leakage" architecture that shields sensitive system files from local network exposure.
+
+### 🛡️ Security Hardening
+*   **Zero-Leakage Architecture**: 🛡️ The PWA backend now utilizes a `SecureStaticFiles` handler that explicitly blocks browser access to Python source files (`.py`), internal logs (`.log`), and cryptographic vault keys (`.key`).
+*   **Masked Analysis**: 🛡️ The `analyze` command in CLI and Interactive Mode now uses `getpass` for masked input. Sensitive passwords entered for audit are no longer visible on the terminal screen, protecting against shoulder-surfing.
+*   **Safe Subprocesses**: Refined clipboard wiper to ensure all arguments are properly escaped via `repr()` before being passed to detached processes.
+
+### ⚡ PWA Stability & Robustness
+*   **Defensive Frontend**: 🛡️ Added safety wrappers around the Lucide icon library. The PWA will now initialize gracefully even if CDN assets fail to load or are blocked by a firewall.
+*   **API Key Reliability**: Optimized 401 response handling in `app.js` to provide clearer feedback and state recovery for protected history access.
+*   **Fetch Integrity**: Resolved a bug where the `history` tab would fail to load due to an undefined URL variable.
+*   **Atomic Service Worker**: Updated `sw.js` (v2) for improved caching of critical library assets.
+
+### 📚 Documentation
+*   Updated **Design Philosophy** with new "Defense in Depth" and "Resilient Context" principles.
+*   Enhanced **README.md** with security icons and the new v28 PWA architecture details.
+
 ## [v1.0.5] - 2026-02-10
 
 🚀 **The Security & Privacy Update**

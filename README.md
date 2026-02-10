@@ -4,6 +4,8 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 
 ![PassForge_v1.0.5](assets/release_v1.0.5.png)
 
+![PassForge_v1.0.14](assets/release_v1.0.14.png)
+
 ## Features
 
 ### 17 Generation Modes

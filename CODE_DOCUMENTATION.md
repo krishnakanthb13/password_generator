@@ -146,16 +146,16 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
 
 PassForge is distributed in three formats: Standalone Executable, packaged ZIP/Tarball, and Source Code.
 
-### A. Standalone Executable (`passforge.exe` / `passforge`)
+### A. Standalone Executable (`passforge_v1.0.14.exe` / `passforge_v1.0.14`)
 A single-file binary containing the Python runtime and all dependencies.
-*   **How to use**: Download and double-click to run in Interactive Mode.
-*   **Command Line**: Open a terminal in the folder and run `passforge.exe random -l 20`.
+*   **How to use**: Download and run with `-i` to enter Interactive Mode.
+*   **Command Line**: Open a terminal in the folder and run `passforge_v1.0.14.exe random -l 20`.
 *   **Pros**: Zero installation, fully portable (USB drive ready).
 
-### B. ZIP / Tarball (`passforge_v1.0.0.zip`)
+### B. ZIP / Tarball (`passforge_v1.0.14.zip`)
 Examples: `.zip` (Windows), `.tar.gz` (Linux/macOS).
 Contains the executable plus helper scripts, documentation, and wordlists.
-1.  **Extract**: Right-click -> Extract All (or `unzip passforge.zip`).
+1.  **Extract**: Right-click -> Extract All (or `unzip passforge_v1.0.14.zip`).
 2.  **Run**:
     *   **Windows**: Double-click `passforge_launch.bat` for the full menu experience.
     *   **Linux/Mac**: Run `./passforge_launch.sh` in a terminal.
