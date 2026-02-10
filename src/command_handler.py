@@ -416,7 +416,7 @@ def handle_analyze(args: Any) -> int:
     if not password:
         from .interactive import InteractiveMenu
         menu = InteractiveMenu()
-        password = menu.get_input("Enter password to analyze")
+        password = menu.get_password("Enter password to analyze")
         
     if not password:
         print(f"{Fore.RED}No password provided.{Style.RESET_ALL}")

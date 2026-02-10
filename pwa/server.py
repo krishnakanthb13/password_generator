@@ -284,7 +284,14 @@ async def clear_history(_ = Depends(verify_api_key)):
     return {"status": "success"}
 
 # Serve Frontend
-app.mount("/", StaticFiles(directory=Path(__file__).parent, html=True), name="static")
+# Security: Prevent source code exposure via static mount
+class SecureStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        if path.endswith((".py", ".sh", ".bat", ".key", ".log", "__pycache__")):
+             raise HTTPException(status_code=403, detail="Access denied to system file")
+        return await super().get_response(path, scope)
+
+app.mount("/", SecureStaticFiles(directory=Path(__file__).parent, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn

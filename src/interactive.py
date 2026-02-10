@@ -69,6 +69,12 @@ class InteractiveMenu:
         
         value = input(f"{Style.BRIGHT}{Fore.YELLOW}{prompt}{Style.RESET_ALL}").strip()
         return value if value else (default or "")
+
+    def get_password(self, prompt: str) -> str:
+        """Get masked password input."""
+        import getpass
+        print(f"{Style.BRIGHT}{Fore.YELLOW}{prompt}: {Style.RESET_ALL}", end="", flush=True)
+        return getpass.getpass("")
     
     def get_int(self, prompt: str, default: int, min_val: int = 1, max_val: int = 100) -> int:
         """Get integer input with validation."""
@@ -455,7 +461,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Analyze Password ==={Style.RESET_ALL}")
         
-        password = self.get_input("Enter password to analyze")
+        password = self.get_password("Enter password to analyze")
         if not password:
             return
             
