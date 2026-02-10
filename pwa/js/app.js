@@ -156,7 +156,7 @@ async function fetchPresets() {
         const res = await fetch('/api/presets');
         state.presets = await res.json();
     } catch (err) {
-        console.error("Failed to fetch presets");
+        showToast("Error loading security presets", "danger");
     }
 }
 
@@ -331,7 +331,7 @@ async function generate() {
                 showToast(data.detail, "danger");
             }
         } catch (err) {
-            console.error(err);
+            showToast("Failed to analyze password", "danger");
         } finally {
             if (elements.generateBtn) {
                 elements.generateBtn.disabled = false;
@@ -409,7 +409,7 @@ async function fetchHistory() {
             renderHistory();
         }
     } catch (err) {
-        console.error("Failed to fetch history");
+        showToast("Failed to sync history", "danger");
     }
 }
 

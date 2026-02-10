@@ -119,6 +119,7 @@ body {
     z-index: 100;
     border-radius: 20px;
     /* Modern rounded corners */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 @media (max-width: 768px) {
@@ -301,6 +302,7 @@ body {
     border: 1px solid var(--border-glass);
     border-radius: 16px;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .result-card {
