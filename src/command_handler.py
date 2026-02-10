@@ -376,7 +376,7 @@ def handle_pattern(args: Any) -> int:
 
 
 def handle_otp(args: Any) -> int:
-    """Handle OTP secret generation."""
+    """Handle OTP secret and code generation."""
     from .generators.otp import OtpGenerator
     
     generator = OtpGenerator()
@@ -386,7 +386,14 @@ def handle_otp(args: Any) -> int:
         digits=args.digits,
         period=args.period
     )
+    
+    # Primary output (the current code)
     output_result(result, args)
+    
+    # Supplemental output (the secret)
+    if not args.json:
+        print(f"{Fore.YELLOW}Secret (Base32):{Style.RESET_ALL} {result.parameters['secret']}")
+        print(f"{Fore.YELLOW}OTPAuth URI:{Style.RESET_ALL}   {result.parameters['otpauth_uri']}")
     
     # Generate QR if requested
     if generate_qr:
@@ -401,7 +408,7 @@ def handle_otp(args: Any) -> int:
                 print(f"{Fore.CYAN}Scan this QR code with your authenticator app:{Style.RESET_ALL}")
                 print(qr_output)
         else:
-            print(f"{Fore.YELLOW}QR generation requires 'qrcode' package: pip install qrcode{Style.RESET_ALL}")
+            print(f"\n{Fore.YELLOW}QR generation requires 'qrcode' package: pip install qrcode{Style.RESET_ALL}")
     
     return 0
 

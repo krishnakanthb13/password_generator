@@ -294,11 +294,21 @@ class TestOtpGenerator(unittest.TestCase):
     def setUp(self):
         self.generator = OtpGenerator()
     
-    def test_base32_format(self):
-        """Test secret is base32 encoded."""
+    def test_code_format(self):
+        """Test password is a numeric code of correct length."""
+        result = self.generator.generate(digits=6)
+        self.assertTrue(result.password.isdigit())
+        self.assertEqual(len(result.password), 6)
+        
+        result8 = self.generator.generate(digits=8)
+        self.assertEqual(len(result8.password), 8)
+    
+    def test_secret_base32(self):
+        """Test secret in parameters is base32 encoded."""
         result = self.generator.generate()
+        secret = result.parameters['secret']
         # Base32 characters: A-Z and 2-7
-        self.assertTrue(all(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567' for c in result.password))
+        self.assertTrue(all(c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567' for c in secret))
     
     def test_otpauth_uri(self):
         """Test otpauth URI is generated."""

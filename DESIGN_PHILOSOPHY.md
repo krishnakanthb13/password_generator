@@ -10,7 +10,7 @@ Existing solutions often fall into two categories:
 1.  **Web-based generators**: Convenient but inherently insecure (shipping secrets over the wire, trust in server-side RNG).
 2.  **Fragmented CLI one-liners**: `openssl rand -base64 32` is great, but memorizing syntax for 15 differents use cases is terrible UX.
 
-**PassForge** bridges this gap by providing a **single, secure, offline CLI** for every credential generation need.
+**PassForge** bridges this gap by providing a **single, secure, offline CLI** for every credential generation need, including real-time generation of secondary authentication codes (TOTP).
 
 ## 2. Guiding Principles
 

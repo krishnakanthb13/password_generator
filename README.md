@@ -23,7 +23,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 | **WiFi Key** | `wifi` | WPA2/WPA3 compatible keys (8-63 chars) |
 | **License Key** | `license` | Software license keys (AXB format, e.g. 5x5) |
 | **Recovery Codes** | `recovery` | 2FA backup codes (numeric or word-based) |
-| **OTP Secret** | `otp` | TOTP/HOTP secrets with otpauth URI |
+| **OTP Code/Secret** | `otp` | TOTP/HOTP codes & secrets with otpauth URI |
 | **Pattern** | `pattern` | Visual grid-based pattern passwords |
 | **Themed Phrase** | `phrase` (custom) | Passphrases from themed wordlists (animals, sci-fi, etc.) |
 | **NATO Phonetic** | `phonetic`, `ph` | Convert text/passwords to NATO alphabet (Alpha-Bravo) |
@@ -37,6 +37,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 - **Entropy Transparency**: Real-time entropy calculation and strength analysis
 - **zxcvbn Analysis**: Pattern-based password strength checking (dictionary attacks, sequences)
 - **Secure Clipboard**: Auto-wipe clipboard after configurable timeout
+- **Live OTP Codes**: Generates current 6/8 digit TOTP codes alongside the secret
 - **QR Codes for OTP**: Scannable QR codes for authenticator apps
 - **Color-Coded Output**: Visual distinction between character types
 - **JSON Export**: Machine-readable output for scripting
@@ -396,8 +397,8 @@ python -m pytest tests/test_generators.py::TestRandomPasswordGenerator -v
 python -m pytest tests/ --cov=src --cov-report=html
 ```
 
-All 52 unit tests cover:
-- All 13 generator modules
+All 53 unit tests cover:
+- All 15 specialized generator modes
 - Entropy and zxcvbn strength calculators
 - Clipboard auto-wipe and secure storage
 - QR code ASCII generation logic

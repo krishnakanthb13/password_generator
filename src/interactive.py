@@ -373,7 +373,7 @@ class InteractiveMenu:
         """Handle OTP secret generation."""
         from .generators.otp import OtpGenerator
         
-        print(f"\n{Style.BRIGHT}{Fore.CYAN}=== OTP Secret ==={Style.RESET_ALL}")
+        print(f"\n{Style.BRIGHT}{Fore.CYAN}=== OTP Secret & Code ==={Style.RESET_ALL}")
         
         print("Digits: 6 or 8")
         digits = self.get_int("Digits", 6, 6, 8)
@@ -385,12 +385,20 @@ class InteractiveMenu:
         result = generator.generate(digits=digits, period=period)
         
         print(f"\n{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
-        print(f"{Fore.WHITE}OTP Secret:{Style.RESET_ALL}")
-        print(f"\n  {Fore.CYAN}{result.password}{Style.RESET_ALL}\n")
-        print(f"  {Fore.YELLOW}OTPAuth URI:{Style.RESET_ALL}")
+        print(f"{Fore.WHITE}Current OTP Code ({digits} digits):{Style.RESET_ALL}")
+        print(f"  {Style.BRIGHT}{Fore.GREEN}{result.password}{Style.RESET_ALL}")
+        
+        print(f"\n{Fore.WHITE}OTP Secret (Base32):{Style.RESET_ALL}")
+        print(f"  {Fore.CYAN}{result.parameters['secret']}{Style.RESET_ALL}")
+        
+        print(f"\n{Fore.YELLOW}OTPAuth URI:{Style.RESET_ALL}")
         print(f"  {result.parameters['otpauth_uri']}")
+        
         print(f"\n  {Fore.YELLOW}Entropy:{Style.RESET_ALL} {result.entropy_bits:.2f} bits")
         print(f"{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
+        
+        # Log to history
+        self.logger.log(result)
     
     def handle_pattern(self):
         """Handle pattern generation."""

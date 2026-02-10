@@ -59,6 +59,12 @@ class BaseGenerator(ABC):
 *   `Balanced Mode`: Implements weighted selection (60% letters, 20% digits, 20% symbols) to prevent "symbol crowding" in random passwords.
 *   `License Key System`: Supports dynamic **AXB formatting** (A segments of B character length).
 *   `Phonetic Conversion`: Maps characters to NATO standard (A -> Alpha) for clear verbal communication.
+*   **OTP System**: Implements **RFC 6238 (TOTP)**.
+    *   **Logic**: Uses `hmac` with configurable algorithms (SHA1/256/512) and `struct` to perform dynamic truncation of the hash into a 6 or 8-digit code.
+    *   **Time Drift**: Defaults to a **30-second period**.
+    1.  Secret is generated as cryptographically secure random bytes.
+    2.  Bytes are Base32 encoded for app compatibility.
+    3.  A `GeneratorResult` is returned with the **current code** as the primary password.
 
 ### Themed Passphrases (`src/generators/passphrase.py`)
 Utilizes the `data/wordlists/` directory to offer themed generation.
