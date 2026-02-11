@@ -2,6 +2,8 @@
 
 A production-ready, cryptographically secure password generator CLI with 17 generation modes, entropy transparency, and comprehensive customization options.
 
+![PassForge_v1.2.0](assets/release_v1.2.0.png)
+
 ![PassForge_v1.0.5](assets/release_v1.0.5.png)
 
 ![PassForge_v1.0.14](assets/release_v1.0.14.png)
