@@ -13,8 +13,10 @@
 | :--- | :--- | :--- | :--- |
 | 🛡️ | **API Key Protection** | PassForge now strictly requires/warns about a custom API key. | 🟢 **Secured** |
 | 🛡️ | **Safe Encryption** | AES-256 derived keys from user-set environment variables. | 🟢 **Secured** |
+| 🛡️ | **Auto-Bootstrap** | Secure local-only key provisioning for PWA-CLI handshake. | 🟢 **Secured** |
 | 🛡️ | **Environment Control** | Sensitive config moved to `.env` (ignored by git). | 🟢 **Fixed** |
-| 🛡️ | **File Exposure** | Static server blocks all hidden files and `.env`. | 🟢 **Fixed** |
+| 🛡️ | **File Exposure** | Static server blocks all hidden files and system assets. | 🟢 **Fixed** |
+| 🛡️ | **Dependencies** | Patched `fastapi` and `python-multipart` for known CVEs. | 🟢 **Fixed** |
 | 🟢 | **XSS Mitigation** | UI properly escapes HTML output for generated passwords. | 🟢 **Passed** |
 | 🟢 | **No Code Injection** | No usage of `eval()` or `exec()` found in core logic. | 🟢 **Passed** |
 
@@ -28,7 +30,7 @@ The PWA and CLI now leverage `python-dotenv` to manage secrets.
 - **Remediation**: 
     - A `.env` file is used to store `PASSFORGE_API_KEY`.
     - `Vault` derives a unique encryption key from this user-specific API key.
-    - If no key is set, the CLI proactively prompts the user to generate one, ensuring no history is stored unencrypted by default.
+    - **Local Trust Bootstrap**: A secure endpoint `/api/bootstrap` allows the local PWA to automatically pick up the API key if running on `127.0.0.1`, avoiding hardcoded secrets while maintaining ease of use.
 
 ### ✅ Missing .env in .gitignore
 - **Status**: **Fixed**. 
@@ -36,9 +38,13 @@ The PWA and CLI now leverage `python-dotenv` to manage secrets.
 
 ### ✅ Static File Access Risks
 - **Status**: **Fixed**. 
-- **Remediation**: `SecureStaticFiles` in `server.py` now blocks all files starting with `.` (hidden files like `.git`, `.env`) and all `.py`, `.sh`, `.bat` files.
+- **Remediation**: `SecureStaticFiles` in `server.py` now blocks all files starting with `.` (hidden files like `.git`, `.env`) and all `.py`, `.sh`, `.bat` files. Improved to handle current directory shortcuts safely.
+
+### ✅ Supply Chain Security
+- **Status**: **Fixed**.
+- **Remediation**: Bumped `fastapi` and `python-multipart` to versions addressing known CVEs related to request processing.
 
 ---
 
 ## Verification & Retest
-*Status*: **Audit Complete (Ver. 1.1.8)**. All critical and major findings have been addressed. The system now defaults to a secure-by-default posture regarding password history and configuration.
+*Status*: **Audit Complete (Ver. 1.1.9)**. The system now defaults to a secure-by-default posture across CLI, PWA, and shared encryption layers.

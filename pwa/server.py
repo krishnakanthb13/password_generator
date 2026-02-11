@@ -7,18 +7,23 @@ import tempfile
 from pathlib import Path
 from typing import Optional, Dict, Any, List
 
-from fastapi import FastAPI, HTTPException, Query, Header, Depends, Response
+from fastapi import FastAPI, HTTPException, Query, Header, Depends, Response, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-# Load environment variables from .env if present
-load_dotenv(Path(__file__).parent.parent / ".env")
-
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Load environment variables from .env if present
+env_path = Path(__file__).parent.parent / ".env"
+if env_path.exists():
+    load_dotenv(env_path)
+    logger.info(f"Loaded environment from {env_path}")
+else:
+    logger.warning(f"No .env file found at {env_path}")
 
 # Add parent directory to sys.path to import from src
 sys.path.append(str(Path(__file__).parent.parent))
@@ -70,10 +75,18 @@ if PASSFORGE_API_KEY == "default_secret_key":
     logger.warning("!!! Set PASSFORGE_API_KEY environment variable for production use.")
 
 async def verify_api_key(x_api_key: Optional[str] = Header(None)):
-    if not x_api_key or x_api_key != PASSFORGE_API_KEY:
+    if not x_api_key:
+        logger.warning("Access denied: X-API-Key header missing")
+        raise HTTPException(status_code=401, detail="Header X-API-Key missing")
+        
+    if x_api_key != PASSFORGE_API_KEY:
+        # Mask keys for safer logging
+        expected = f"{PASSFORGE_API_KEY[:4]}...{PASSFORGE_API_KEY[-4:]}" if len(PASSFORGE_API_KEY) > 8 else "****"
+        received = f"{x_api_key[:4]}...{x_api_key[-4:]}" if len(x_api_key) > 8 else "****"
+        logger.warning(f"Access denied: Key mismatch. Expected: {expected}, Received: {received}")
         raise HTTPException(
             status_code=401,
-            detail="Missing or invalid API Key. Protected History access denied."
+            detail="Invalid API Key. Protected History access denied."
         )
     return x_api_key
 
@@ -115,6 +128,34 @@ class PasswordAnalysisRequest(BaseModel):
 async def get_presets():
     return PRESETS
 
+@app.get("/api/auth-status")
+async def get_auth_status():
+    """Diagnostic endpoint to check if custom API key is loaded."""
+    is_default = (PASSFORGE_API_KEY == "default_secret_key")
+    return {
+        "status": "ready",
+        "custom_key_active": not is_default,
+        "message": "Security key is active" if not is_default else "Using default security key (insecure)"
+    }
+
+@app.get("/api/bootstrap")
+async def bootstrap(request: Request):
+    """
+    Securely provide the API key to the local frontend.
+    Strictly restricted to localhost requests to prevent external exposure.
+    """
+    # Security: Ensure no proxy headers are spoofing the identity
+    if request.headers.get("X-Forwarded-For") or request.headers.get("X-Real-IP"):
+        logger.warning(f"Bootstrap blocked: Proxy headers detected from {request.client.host}")
+        raise HTTPException(status_code=403, detail="Local bootstrap cannot be used through a proxy")
+
+    # Only allow from local loopback IPs
+    if request.client.host in ["127.0.0.1", "::1"]:
+        return {"apiKey": PASSFORGE_API_KEY}
+    
+    logger.warning(f"Bootstrap denied: Remote request from {request.client.host}")
+    raise HTTPException(status_code=403, detail="Bootstrap only available via local connection")
+
 @app.get("/api/generate")
 async def generate(
     type: str = "random",
@@ -146,8 +187,14 @@ async def generate(
     text: str = Query("", max_length=1024), # phonetic
     otp_digits: int = Query(6, ge=4, le=10), # OTP specific
     period: int = Query(30, ge=1, le=3600), # OTP
-    log: bool = False
+    log: bool = False,
+    response: Response = None
 ):
+    # Security: Disable caching for generated passwords
+    if response:
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+
     try:
         result = None
         if type == "random":
@@ -282,8 +329,12 @@ async def analyze(request: PasswordAnalysisRequest, response: Response):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.get("/api/history")
-async def get_history(limit: int = 10, search: str = None, _ = Depends(verify_api_key)):
+async def get_history(response: Response, limit: int = 10, search: str = None, _ = Depends(verify_api_key)):
     """Retrieve password history. Requires X-API-Key authentication."""
+    # Security: Disable caching for history logs
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    
     pwd_logger = PasswordLogger()
     return pwd_logger.get_history(limit=limit, search=search)
 
@@ -298,10 +349,18 @@ async def clear_history(_ = Depends(verify_api_key)):
 # Security: Prevent source code exposure via static mount
 class SecureStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
-        # Block access to system files, config, and hidden directories
-        hidden_or_system = path.startswith(".") or path.endswith((".py", ".sh", ".bat", ".key", ".log", ".env"))
-        if hidden_or_system or "__pycache__" in path:
+        # Security: Block access to system files and hidden files
+        p = Path(path)
+        # Check if any component of the path is hidden (starts with .)
+        # but ignore '.' (current directory)
+        is_hidden = any(part.startswith(".") and part != "." for part in p.parts)
+        # Block specific dangerous extensions
+        is_system = p.suffix.lower() in (".py", ".sh", ".bat", ".key", ".log", ".env")
+        
+        if is_hidden or is_system or "__pycache__" in path:
+             logger.warning(f"Blocked access to: {path}")
              raise HTTPException(status_code=403, detail="Access denied to system file")
+             
         return await super().get_response(path, scope)
 
 app.mount("/", SecureStaticFiles(directory=Path(__file__).parent, html=True), name="static")

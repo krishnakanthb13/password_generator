@@ -21,6 +21,6 @@ pytest-cov>=4.1.0        # Coverage reporting
 pyinstaller>=6.0.0       # Building standalone executables
 
 # PWA Dependencies (for web interface addon)
-fastapi>=0.100.0         # Web framework for PWA backend
+fastapi>=0.109.0         # Web framework for PWA backend (security patch)
 uvicorn>=0.23.0          # ASGI server for FastAPI
-python-multipart>=0.0.6  # Support for form data in FastAPI
+python-multipart>=0.0.7  # Support for form data in FastAPI (security patch)

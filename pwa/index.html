@@ -8,9 +8,9 @@
         content="PassForge - Ultimate high-security password generator with entropy analysis, color-coded character types, and 18+ generator modes.">
     <meta name="keywords" content="password generator, security, pwa, entropy, encryption, cyber security tool">
     <title>PassForge - Ultimate Password Generator</title>
-    <link rel="stylesheet" href="css/style.css?v=34">
+    <link rel="stylesheet" href="css/style.css?v=1.1.8">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" href="favicon.png?v=3">
+    <link rel="icon" type="image/png" href="favicon.png?v=1.1.8">
     <link rel="shortcut icon" href="favicon.png?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,11 +140,28 @@
             <!-- Dedicated History Section -->
             <section class="history-section hidden" id="history-section">
                 <div class="glass" style="padding: 1.5rem; border-radius: 16px;">
-                    <div class="panel-header" style="margin-bottom: 1rem;">
-                        <div style="display:flex; align-items:center; gap:1rem; flex:1;">
+                    <div class="panel-header"
+                        style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+                        <div style="display:flex; align-items:center; gap:1rem; flex:1; min-width: 300px;">
                             <h2 style="font-size: 1.25rem; white-space:nowrap;">Request History</h2>
+                            <div id="key-status-badge" class="badge"
+                                style="background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px;">
+                                Locked</div>
                             <input type="text" id="history-search" placeholder="Search history..."
-                                class="glass input-glass" style="max-width:300px;">
+                                class="glass input-glass" style="flex: 1;">
+                        </div>
+                        <div
+                            style="display:flex; align-items:center; gap:0.5rem; background: var(--bg-card); padding: 0.25rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-glass);">
+                            <i data-lucide="key-round" style="width: 14px; opacity: 0.7;"></i>
+                            <input type="password" id="api-key-input" placeholder="Enter API Key to Unlock"
+                                class="glass"
+                                style="background:transparent; border:none; outline:none; color:var(--text-primary); font-size: 0.85rem; width: 180px;">
+                            <button id="save-key-btn" class="icon-btn" title="Save Key">
+                                <i data-lucide="shield-check"></i>
+                            </button>
+                            <button id="force-reload-btn" class="icon-btn" title="Force Refresh App">
+                                <i data-lucide="refresh-cw"></i>
+                            </button>
                         </div>
                     </div>
                     <div id="history-list" class="history-list"
@@ -161,7 +178,7 @@
         <i data-lucide="check-circle"></i> <span id="toast-message">Copied!</span>
     </div>
 
-    <script src="js/app.js?v=34"></script>
+    <script src="js/app.js?v=1.1.8"></script>
     <script>
         lucide.createIcons();
     </script>

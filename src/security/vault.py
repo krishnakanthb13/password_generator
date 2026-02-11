@@ -39,6 +39,7 @@ class Vault:
         self.vault_dir.mkdir(parents=True, exist_ok=True)
         self.key_file = self.vault_dir / ".vault.key"
         self._fernet = None
+        self._legacy_fernet = None
         
         if CRYPTOGRAPHY_AVAILABLE:
             self._init_fernet()
@@ -47,31 +48,31 @@ class Vault:
         """
         Initialize the Fernet encryption instance.
         Prioritizes PASSFORGE_API_KEY from environment/.env.
+        Also loads a legacy key if present for decryption compatibility.
         """
         api_key = os.getenv("PASSFORGE_API_KEY")
-        key = None
-
+        
+        # 1. Initialize primary Fernet from API Key
         if api_key:
-            # Derive Fernet-compatible key (32 bytes base64 encoded) from API key
             key_bytes = hashlib.sha256(api_key.encode()).digest()
-            key = base64.urlsafe_b64encode(key_bytes)
-        elif self.key_file.exists():
-            # Fallback to legacy key file if it exists
+            primary_key = base64.urlsafe_b64encode(key_bytes)
+            try:
+                self._fernet = Fernet(primary_key)
+            except Exception as e:
+                logger.error(f"Failed to initialize primary Fernet: {e}")
+
+        # 2. Initialize legacy Fernet from file (for decryption fallback)
+        if self.key_file.exists():
             try:
                 with open(self.key_file, 'rb') as f:
-                    key = f.read()
+                    legacy_key = f.read()
+                self._legacy_fernet = Fernet(legacy_key)
+                
+                # If no primary was set (no .env yet), use legacy as primary to maintain usage
+                if not self._fernet:
+                    self._fernet = self._legacy_fernet
             except Exception as e:
-                logger.error(f"Failed to read legacy key file: {e}")
-        
-        if not key:
-            # Encryption will be inactive if no key is found
-            return
-        
-        try:
-            self._fernet = Fernet(key)
-        except Exception as e:
-            logger.error(f"Failed to initialize Fernet with key: {e}")
-            self._fernet = None
+                logger.warning(f"Could not load legacy key: {e}")
 
     @staticmethod
     def ensure_secure_mode() -> bool:
@@ -143,19 +144,30 @@ class Vault:
     def decrypt(self, encrypted_text: str, strict: bool = False) -> str:
         """
         Decrypt a base64 encoded string.
-        Falling back to input text by default unless strict=True.
+        Tries primary key first, then legacy key fallback.
         """
         if not self.is_active or not encrypted_text:
             if strict and encrypted_text:
                 raise RuntimeError("Vault is not active, cannot decrypt strictly")
             return encrypted_text
             
+        # Try Primary Key
         try:
             decrypted = self._fernet.decrypt(encrypted_text.encode('ascii'))
             return decrypted.decode('utf-8')
-        except (InvalidToken, Exception) as e:
-            logger.warning(f"Decryption failed: {e}")
+        except (InvalidToken, Exception):
+            # If primary fails, try Legacy Key
+            if self._legacy_fernet and self._legacy_fernet != self._fernet:
+                try:
+                    decrypted = self._legacy_fernet.decrypt(encrypted_text.encode('ascii'))
+                    return decrypted.decode('utf-8')
+                except (InvalidToken, Exception):
+                    pass
+            
+            # Final fallback: return as-is if not strict
             if strict:
-                raise
-            # If decryption fails (e.g. wrong key or plain text), return as is
+                logger.error("Decryption failed strictly")
+                raise RuntimeError("Decryption failed")
+            
+            # Silent fallback for non-strict (prevents log flood during UI rendering)
             return encrypted_text

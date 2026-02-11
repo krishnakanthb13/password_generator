@@ -42,7 +42,11 @@ const elements = {
     qrContainer: document.getElementById('qr-container'),
     historyList: document.getElementById('history-list'),
     toast: document.getElementById('toast'),
-    toastMessage: document.getElementById('toast-message')
+    toastMessage: document.getElementById('toast-message'),
+    apiKeyInput: document.getElementById('api-key-input'),
+    saveKeyBtn: document.getElementById('save-key-btn'),
+    forceReloadBtn: document.getElementById('force-reload-btn'),
+    keyStatusBadge: document.getElementById('key-status-badge')
 };
 
 const controlSchema = {
@@ -113,6 +117,7 @@ const controlSchema = {
 
 async function init() {
     await fetchPresets();
+    await attemptBootstrap();
 
     // Setup Navigation
     elements.navItems.forEach(btn => {
@@ -135,6 +140,9 @@ async function init() {
     // Action Buttons
     if (elements.generateBtn) elements.generateBtn.addEventListener('click', generate);
     if (elements.copyBtn) elements.copyBtn.addEventListener('click', copyToClipboard);
+
+    // Initial Security Check
+    updateKeyStatus();
 
     // Click password display to copy
     if (elements.passwordDisplay) {
@@ -164,6 +172,46 @@ async function init() {
             navigator.serviceWorker.register('./sw.js').catch(() => {
                 // Fail silently in development/non-HTTPS
             });
+        });
+    }
+
+    // Security: API Key Handling
+    if (elements.apiKeyInput) {
+        elements.apiKeyInput.value = localStorage.getItem('passforge_api_key') || '';
+    }
+    if (elements.saveKeyBtn) {
+        elements.saveKeyBtn.addEventListener('click', () => {
+            const newKey = elements.apiKeyInput.value.strip ? elements.apiKeyInput.value.strip() : elements.apiKeyInput.value.trim();
+            localStorage.setItem('passforge_api_key', newKey);
+            AUTH_CONFIG.apiKey = newKey || 'default_secret_key';
+            showToast("Security key updated!");
+            updateKeyStatus();
+            if (state.currentType === 'history') fetchHistory();
+        });
+    }
+
+    if (elements.forceReloadBtn) {
+        elements.forceReloadBtn.addEventListener('click', async () => {
+            showToast("Force refreshing app...", "warning");
+
+            // Unregister Service Workers
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (let registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+
+            // Clear Caches
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                for (let key of keys) {
+                    await caches.delete(key);
+                }
+            }
+
+            // Hard reload
+            window.location.reload(true);
         });
     }
 }
@@ -480,7 +528,8 @@ async function fetchHistory() {
             state.history = data;
             renderHistory();
         } else if (res.status === 401) {
-            showToast("History access denied", "danger");
+            showToast("History access denied. Please enter your API Key.", "danger");
+            updateKeyStatus();
         }
     } catch (err) {
         showToast("Failed to sync history", "danger");
@@ -568,6 +617,52 @@ function showToast(message, type = "success") {
     toastTimeout = setTimeout(() => {
         elements.toast.classList.add('hidden');
     }, 3000);
+}
+
+async function updateKeyStatus() {
+    if (!elements.keyStatusBadge) return;
+
+    try {
+        const url = `/api/history?limit=1`;
+        const res = await fetch(url, {
+            headers: { 'X-API-Key': AUTH_CONFIG.apiKey }
+        });
+
+        if (res.ok) {
+            elements.keyStatusBadge.innerText = "Unlocked";
+            elements.keyStatusBadge.style.background = "rgba(34, 197, 94, 0.2)";
+            elements.keyStatusBadge.style.color = "#22c55e";
+            elements.keyStatusBadge.style.borderColor = "#22c55e";
+        } else {
+            elements.keyStatusBadge.innerText = "Locked";
+            elements.keyStatusBadge.style.background = "rgba(239, 68, 68, 0.2)";
+            elements.keyStatusBadge.style.color = "#ef4444";
+            elements.keyStatusBadge.style.borderColor = "#ef4444";
+        }
+    } catch (err) {
+        // Silent fail
+    }
+}
+
+async function attemptBootstrap() {
+    // Skip if already have a custom key that works
+    if (localStorage.getItem('passforge_api_key')) return;
+
+    try {
+        const res = await fetch('/api/bootstrap');
+        if (res.ok) {
+            const data = await res.json();
+            if (data.apiKey && data.apiKey !== 'default_secret_key') {
+                localStorage.setItem('passforge_api_key', data.apiKey);
+                AUTH_CONFIG.apiKey = data.apiKey;
+                if (elements.apiKeyInput) elements.apiKeyInput.value = data.apiKey;
+                showToast("Authenticated automatically via Local Trust");
+                updateKeyStatus();
+            }
+        }
+    } catch (e) {
+        console.log("Bootstrap skipped: Remote access or server no supports bootstrap");
+    }
 }
 
 // Initialize
