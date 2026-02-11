@@ -282,9 +282,15 @@ def handle_uuid(args: Any) -> int:
     
     generator = UuidGenerator()
     count = getattr(args, 'count', 1)
+    version = getattr(args, 'ver', 4)
+    short = getattr(args, 'short', False)
     
     for i in range(count):
-        result = generator.generate(uppercase=args.upper)
+        result = generator.generate(
+            version=version,
+            short=short,
+            uppercase=args.upper
+        )
         output_result(result, args)
     
     return 0

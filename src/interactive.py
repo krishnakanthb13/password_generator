@@ -292,13 +292,23 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== UUID Token ==={Style.RESET_ALL}")
         
-        uppercase = self.get_bool("Uppercase", False)
+        print("Versions: 1 (Time), 4 (Random), 7 (Time/Sortable)")
+        version = self.get_int("Version", 4, 1, 7)
+        if version not in [1, 4, 7]:
+            version = 4
+            
+        short = self.get_bool("Short format (Base58 encoding)", False)
+        
+        uppercase = False
+        if not short:
+            uppercase = self.get_bool("Uppercase", False)
+            
         count = self.get_int("How many to generate", 1, 1, 10)
         
         generator = UuidGenerator()
         
         for i in range(count):
-            result = generator.generate(uppercase=uppercase)
+            result = generator.generate(version=version, short=short, uppercase=uppercase)
             self.print_result(result)
     
     def handle_base64(self):

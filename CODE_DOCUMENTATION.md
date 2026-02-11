@@ -65,6 +65,14 @@ class BaseGenerator(ABC):
     1.  Secret is generated as cryptographically secure random bytes.
     2.  Bytes are Base32 encoded for app compatibility.
     3.  A `GeneratorResult` is returned with the **current code** as the primary password.
+    
+**UUID Generator (`src/generators/uuid_token.py`):**
+*   **RFC 4122/9562 Support**: Generates UUID versions 1 (Time-based), 4 (Random), and 7 (Unix Epoch sortable).
+*   **Version 7 Implementation**: Uses 48-bit millisecond precision timestamp followed by 74 random bits, ensuring chronological sortability at the database level.
+*   **Short UUID (Base58)**: Supports encoding 128-bit UUIDs into **Base58 (Bitcoin alphabet)**, reducing the character count from 36 (hex) to ~22 while remaining URL-safe and avoiding ambiguous characters (0, O, I, l).
+*   **Entropy**:
+    *   v4: 122 bits of randomness.
+    *   v7: 74 bits of randomness (remaining bits are deterministic time/version/variant).
 
 ### Themed Passphrases (`src/generators/passphrase.py`)
 Utilizes the `data/wordlists/` directory to offer themed generation.

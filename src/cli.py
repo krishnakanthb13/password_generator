@@ -297,12 +297,46 @@ def create_parser() -> argparse.ArgumentParser:
     # UUID generator
     uuid_parser = subparsers.add_parser(
         "uuid",
-        help="Generate UUID token"
+        help="Generate UUID token",
+        aliases=["u"]
+    )
+    uuid_parser.add_argument(
+        "--ver",
+        type=int,
+        default=4,
+        choices=[1, 4, 7],
+        help="UUID version (1: Time, 4: Random, 7: Time/Sortable, default: 4)"
+    )
+    uuid_parser.add_argument(
+        "--v1",
+        action="store_const",
+        dest="ver",
+        const=1,
+        help="Use version 1 (Time-based)"
+    )
+    uuid_parser.add_argument(
+        "--v4",
+        action="store_const",
+        dest="ver",
+        const=4,
+        help="Use version 4 (Random-based)"
+    )
+    uuid_parser.add_argument(
+        "--v7",
+        action="store_const",
+        dest="ver",
+        const=7,
+        help="Use version 7 (Sortable Time-based)"
+    )
+    uuid_parser.add_argument(
+        "--short",
+        action="store_true",
+        help="Use Base58 encoding for a shorter (~22 char) UUID"
     )
     uuid_parser.add_argument(
         "--upper",
         action="store_true",
-        help="Output in uppercase"
+        help="Output in uppercase (only for hex format)"
     )
     uuid_parser.add_argument(
         "-n", "--count",

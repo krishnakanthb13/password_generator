@@ -33,10 +33,14 @@ This document provides context for each password generator type included in Pass
 **When to use it:** On sites with specific, possibly outdated, password complexity requirements.
 
 ## 6. UUID (Universally Unique Identifier)
-**What it is:** Generates a standard 128-bit label formatted as 32 hexadecimal digits in groups (e.g., `550e8400-e29b-41d4-a716-446655440000`).  
-**Who uses it:** Developers, database administrators.  
-**Why is it present:** To provide standard unique identifiers for database records, API keys, or session tokens.  
-**When to use it:** When generating unique IDs for software resource identification.
+**What it is:** Generates a standard 128-bit label. Supports RFC 4122/9562 versions:
+*   **v1**: Time + Node (MAC) based.
+*   **v4**: Completely random (most common).
+*   **v7**: Unix Epoch time-based (chronologically sortable).
+*   **Short**: Base58 encoded (~22 chars) for compact URLs.
+**Who uses it:** Developers, database administrators, system architects.  
+**Why is it present:** To provide standard unique identifiers for database records, API keys, or session tokens. v7 is specifically useful for database primary keys as it preserves insertion order.  
+**When to use it:** Use v4 for general purpose, v7 for database indexing, and Short Base58 for public-facing IDs or compact tokens.
 
 ## 7. Base64 Secret
 **What it is:** Generates cryptographically strong random bytes and encodes them in Base64.  

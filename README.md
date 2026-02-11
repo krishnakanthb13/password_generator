@@ -17,7 +17,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 | **Leetspeak** | `leet`, `l` | Passphrases with character substitution (A→4, E→3, etc.) |
 | **PIN** | `pin` | Numeric PINs of configurable length |
 | **Pronounceable** | `pronounce`, `pr` | Easy-to-speak syllable-based passwords |
-| **UUID** | `uuid` | RFC 4122 v4 random UUIDs |
+| **UUID** | `uuid`, `u` | RFC 4122/9562 UUIDs (v1, v4, v7) & Short (Base58) |
 | **Base64** | `base64`, `b64` | URL-safe base64-encoded secrets |
 | **JWT Secret** | `jwt` | High-entropy secrets for JWT signing (HS256/384/512) |
 | **WiFi Key** | `wifi` | WPA2/WPA3 compatible keys (8-63 chars) |
@@ -153,8 +153,22 @@ python main.py jwt --bits 256
 # Base64 API key
 python main.py base64 -b 32 --url-safe
 
-# UUID token
+# UUID token (v4 Random)
 python main.py uuid --upper
+
+# UUID v7 (Time-based, sortable)
+python main.py uuid --ver 7
+# Or shortcut
+python main.py uuid --v7
+
+# Short UUID (Base58 encoded, ~22 chars)
+python main.py uuid --short
+
+# Generate a v7 UUID using the shortcut
+python main.py u --v7
+
+# Generate 10 short v4 UUIDs
+python main.py uuid --v4 --short -n 10
 
 # NATO Phonetic Conversion
 python main.py phonetic --text "PassForge"
@@ -266,7 +280,9 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--upper` | - | Uppercase output |
+| `--ver` | 4 | UUID Version (1, 4, 7) |
+| `--short` | - | Short format (Base58) |
+| `--upper` | - | Uppercase output (hex only) |
 | `-n`, `--count` | 1 | Number to generate |
 
 #### Base64 (`base64`, `b64`)

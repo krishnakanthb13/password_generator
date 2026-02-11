@@ -119,6 +119,8 @@ class GeneratorParams(BaseModel):
     exclude: str = ""
     no_repeats: bool = False
     text: str = ""  # For phonetic
+    uuid_ver: int = 4
+    uuid_short: bool = False
 
 
 class PasswordAnalysisRequest(BaseModel):
@@ -187,6 +189,8 @@ async def generate(
     text: str = Query("", max_length=1024), # phonetic
     otp_digits: int = Query(6, ge=4, le=10), # OTP specific
     period: int = Query(30, ge=1, le=3600), # OTP
+    uuid_ver: int = Query(4, ge=1, le=7),
+    uuid_short: bool = False,
     log: bool = False,
     response: Response = None
 ):
@@ -228,7 +232,7 @@ async def generate(
             result = gen.generate(word_count=words, separator=separator)
         elif type == "uuid":
             gen = UuidGenerator()
-            result = gen.generate(uppercase=uppercase)
+            result = gen.generate(version=uuid_ver, short=uuid_short, uppercase=uppercase)
         elif type == "base64":
             gen = Base64SecretGenerator()
             result = gen.generate(byte_length=length, url_safe=url_safe)

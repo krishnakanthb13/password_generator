@@ -48,6 +48,10 @@ Existing solutions often fall into two categories:
 
 ## 3. Key Design Decisions
 
+### G. Modern Standards
+*   **Protocol Alignment**: We follow RFC 4122/9562 for UUIDs, ensuring compatibility with modern database systems (UUID v7 sortability) and compact transport formats (Base58 encoding).
+*   **Entropy Modeling**: Our calculations distinguish between full randomness (v4) and structured metadata (v7/v1 timestamps), providing more accurate security assessments.
+
 ### Why Python?
 *   **Auditability**: Python code is highly readable, making it easier for security audits.
 *   **Standard Library**: The `secrets`, `uuid`, `base64`, and `hmac` libraries provide robust primitives out of the box.
