@@ -133,6 +133,10 @@ class EntropyCalculator:
         if entropy_bits <= 0:
             return "Instant"
         
+        # Prevent overflow for extremely high entropy
+        if entropy_bits > 512:
+            return "Billions of years"
+        
         # Total combinations = 2^entropy
         combinations = 2 ** entropy_bits
         # Average attempts = half of total

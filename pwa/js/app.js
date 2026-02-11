@@ -11,13 +11,13 @@ const state = {
         pin: { length: 6 },
         wifi: { length: 16, simple: false },
         otp: { otp_digits: 6, period: 30 },
-        uuid: { uppercase: false },
+        uuid: { uuid_ver: 4, uuid_short: false, uppercase: false },
         leet: { words: 3, separator: '-' },
         pronounce: { length: 12 },
         license: { segments: 4, segment_length: 4 },
         pattern: { grid: 3 },
         phonetic: { text: '', length: 8 },
-        recovery: {},
+        recovery: { rec_count: 10, use_words: false, rec_digits: 8, rec_words_per_code: 3 },
         analyze: { password: '' },
         base64: { length: 32, url_safe: true },
         jwt: { bits: 256, hex: false }
@@ -52,7 +52,7 @@ const elements = {
 const controlSchema = {
     random: [
         { id: 'preset', label: 'Security Preset', type: 'preset' },
-        { id: 'length', label: 'Length', type: 'range', min: 4, max: 128, step: 1 },
+        { id: 'length', label: 'Length', type: 'range', min: 4, max: 1024, step: 1 },
         { id: 'uppercase', label: 'Uppercase', type: 'checkbox' },
         { id: 'lowercase', label: 'Lowercase', type: 'checkbox' },
         { id: 'digits', label: 'Digits', type: 'checkbox' },
@@ -65,54 +65,61 @@ const controlSchema = {
         { id: 'exclude', label: 'Exclude Chars', type: 'text' }
     ],
     phrase: [
-        { id: 'words', label: 'Words', type: 'range', min: 2, max: 12, step: 1 },
+        { id: 'words', label: 'Words', type: 'range', min: 2, max: 64, step: 1 },
         { id: 'separator', label: 'Separator', type: 'select', options: ['-', '_', '.', ' ', ','] },
         { id: 'capitalize', label: 'Capitalize', type: 'checkbox' }
     ],
     pin: [
-        { id: 'length', label: 'Length', type: 'range', min: 4, max: 16, step: 1 }
+        { id: 'length', label: 'Length', type: 'range', min: 4, max: 64, step: 1 }
     ],
     wifi: [
         { id: 'length', label: 'Length', type: 'range', min: 8, max: 63, step: 1 },
         { id: 'simple', label: 'Alpha-only', type: 'checkbox' }
     ],
     leet: [
-        { id: 'words', label: 'Words', type: 'range', min: 2, max: 8, step: 1 },
+        { id: 'words', label: 'Words', type: 'range', min: 2, max: 64, step: 1 },
         { id: 'separator', label: 'Separator', type: 'select', options: ['-', '_', '.', ','] }
     ],
     license: [
-        { id: 'segments', label: 'Segments', type: 'range', min: 2, max: 10, step: 1 },
-        { id: 'segment_length', label: 'Length', type: 'range', min: 2, max: 10, step: 1 }
+        { id: 'segments', label: 'Segments', type: 'range', min: 2, max: 64, step: 1 },
+        { id: 'segment_length', label: 'Length', type: 'range', min: 2, max: 32, step: 1 }
     ],
     pattern: [
         { id: 'grid', label: 'Grid Size', type: 'select', options: [3, 4, 5] }
     ],
     phonetic: [
         { id: 'text', label: 'Text to Phonetic', type: 'text' },
-        { id: 'length', label: 'Random Length', type: 'range', min: 4, max: 32, step: 1 }
+        { id: 'length', label: 'Random Length', type: 'range', min: 4, max: 128, step: 1 }
     ],
     analyze: [
         { id: 'password', label: 'Password to Check', type: 'text' }
     ],
     base64: [
-        { id: 'length', label: 'Byte Length', type: 'range', min: 8, max: 128, step: 1 },
+        { id: 'length', label: 'Byte Length', type: 'range', min: 8, max: 1024, step: 1 },
         { id: 'url_safe', label: 'URL Safe', type: 'checkbox' }
     ],
     jwt: [
-        { id: 'bits', label: 'Bit Length', type: 'range', min: 128, max: 1024, step: 64 },
+        { id: 'bits', label: 'Bit Length', type: 'select', options: [256, 384, 512] },
         { id: 'hex', label: 'Output as Hex', type: 'checkbox' }
     ],
     pronounce: [
-        { id: 'length', label: 'Length', type: 'range', min: 6, max: 32, step: 1 }
+        { id: 'length', label: 'Length', type: 'range', min: 4, max: 128, step: 1 }
     ],
     otp: [
         { id: 'otp_digits', label: 'Digits', type: 'select', options: [6, 8] },
-        { id: 'period', label: 'Period (s)', type: 'range', min: 15, max: 120, step: 15 }
+        { id: 'period', label: 'Period (s)', type: 'range', min: 10, max: 3600, step: 5 }
     ],
     uuid: [
+        { id: 'uuid_ver', label: 'Version', type: 'select', options: [1, 4, 7] },
+        { id: 'uuid_short', label: 'Short (Base58)', type: 'checkbox' },
         { id: 'uppercase', label: 'Uppercase', type: 'checkbox' }
     ],
-    recovery: []
+    recovery: [
+        { id: 'rec_count', label: 'Number of Codes', type: 'range', min: 5, max: 100, step: 1 },
+        { id: 'use_words', label: 'Use Word-based', type: 'checkbox' },
+        { id: 'rec_digits', label: 'Digits per Code', type: 'range', min: 4, max: 32, step: 1 },
+        { id: 'rec_words_per_code', label: 'Words per Code', type: 'range', min: 2, max: 12, step: 1 }
+    ]
 };
 
 async function init() {

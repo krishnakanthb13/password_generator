@@ -166,7 +166,7 @@ async def generate(
     lowercase: bool = True,
     digits: bool = True,
     symbols: bool = True,
-    words: int = Query(4, ge=2, le=20),
+    words: int = Query(4, ge=2, le=64),
     separator: str = Query("-", max_length=5),
     capitalize: bool = False,
     bits: int = Query(256, ge=128, le=4096),
@@ -191,6 +191,10 @@ async def generate(
     period: int = Query(30, ge=1, le=3600), # OTP
     uuid_ver: int = Query(4, ge=1, le=7),
     uuid_short: bool = False,
+    rec_count: int = Query(10, ge=5, le=100),
+    use_words: bool = False,
+    rec_digits: int = Query(8, ge=4, le=32),
+    rec_words_per_code: int = Query(3, ge=2, le=12),
     log: bool = False,
     response: Response = None
 ):
@@ -247,7 +251,12 @@ async def generate(
             result = gen.generate(segments=segments, segment_length=segment_length)
         elif type == "recovery":
             gen = RecoveryCodesGenerator()
-            result = gen.generate(count=10, use_words=False)
+            result = gen.generate(
+                count=rec_count, 
+                use_words=use_words, 
+                digits=rec_digits, 
+                words_per_code=rec_words_per_code
+            )
         elif type == "pattern":
             gen = PatternGenerator()
             result = gen.generate(grid_size=grid)
