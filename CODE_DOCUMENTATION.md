@@ -27,7 +27,7 @@ graph TD
 | Directory | Purpose | Key Files |
 | :--- | :--- | :--- |
 | `src/generators/` | Core logic for each password type. | `base.py`, `random_password.py`, `otp.py` |
-| `src/security/` | Entropy, strength, and encryption. | `entropy.py`, `vault.py` |
+| `src/security/` | Entropy, strength, and encryption. | `entropy.py`, `vault.py`, `jitter.py` |
 | `src/output/` | Presentation and secure logging. | `formatter.py`, `logger.py` |
 | `src/config/` | Configuration file parsing and presets. | `loader.py`, `presets.py` |
 | `tests/` | Unit tests ensuring generator correctness. | `test_generators.py`, `test_security_output.py` |
@@ -80,6 +80,12 @@ Provides the `EntropyCalculator` class with static methods:
 *   `format_entropy_report()`: Generates a visual table in the CLI containing Length, Entropy, Pool Size, Strength, and Crack Time.
 *   `get_strength_label(bits)`: Maps bits to labels (Weak, Reasonable, Strong, Excellent).
 *   `get_crack_time_estimate(bits)`: Returns human-readable brute-force time estimates based on an assumed 10 billion guesses/sec.
+
+### Jitter Entropy Collector (`src/security/jitter.py`)
+Enables "Paranoid Mode" by collecting true user randomness.
+*   **Logic**: Uses `msvcrt.kbhit()` (Windows) or `termios` (Linux) to capture **nanosecond-precision timestamps** of keystrokes.
+*   **Mixing**: The collected timing data is hashed (SHA-256) and then **mixed** into the `secrets` output using HMAC-SHA256, ensuring the final result depends on both the OS CSPRNG and the physical user input.
+*   **Use Case**: For users who want to guarantee entropy beyond what the OS kernel provides.
 
 ### Output Formatting (`src/output/formatter.py`)
 Handles colorization using `colorama`.

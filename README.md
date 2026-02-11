@@ -52,6 +52,7 @@ A production-ready, cryptographically secure password generator CLI with 17 gene
 - **Robust Validation**: Interactive prompts with default values and recursive error handling
 - **Defensive PWA Frontend**: 🛡️ Built-in safety checks for CDN assets to prevent initialization crashes.
 - **Global Modifiers**: `--easy-read` and `--easy-say` modes
+- **Paranoid Mode**: Optional manual entropy collection via keyboard timing jitter for maximum security.
 
 ## Installation
 
@@ -185,6 +186,7 @@ python main.py --json jwt --bits 256
 
 | `--preset` | Use a predefined security profile (strong, memorable, dev, etc.) |
 | `--interactive`, `-i` | Launch interactive menu mode |
+| `--paranoid` | Enable Paranoid Mode (collect manual entropy via keyboard jitter) |
 | `--json` | Output in JSON format |
 | `--show-entropy` | Display entropy analysis |
 | `--check-strength` | Run zxcvbn pattern analysis |
