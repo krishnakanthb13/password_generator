@@ -58,30 +58,30 @@ read_int() {
 show_menu() {
     clear
     echo ""
-    echo -e "${BLUE}==========================================================================${NC}"
-    echo -e "               ${BLUE}PASSFORGE - Password Generator CLI v1.1.6${NC}"
-    echo -e "${BLUE}==========================================================================${NC}"
+    echo -e " ${BLUE}==========================================================================${NC}"
+    echo -e "                ${BLUE}PASSFORGE - Password Generator CLI v1.1.6${NC}"
+    echo -e " ${BLUE}==========================================================================${NC}"
     echo ""
-    echo -e "  ${YELLOW}QUICK GENERATE${NC}                         ${YELLOW}ADVANCED / PRESETS${NC}"
-    echo -e "  ------------------------------         ----------------------------------"
-    echo -e "  [1] Random Password (16 chars)          [8]  JWT Secret"
-    echo -e "  [2] Random Password (custom)            [9]  UUID Token"
-    echo -e "  [3] Passphrase (4 words)               [10] WiFi Key"
-    echo -e "  [4] Passphrase (custom)                [11] License Key"
-    echo -e "  [5] Themed Passphrase                  [12] Recovery Codes"
-    echo -e "  [6] Leetspeak Password                 [13] OTP Secret"
-    echo -e "  [7] PIN Code"
+    echo -e " ${YELLOW}QUICK GENERATE${NC}                         ${YELLOW}ADVANCED / PRESETS${NC}"
+    echo -e " ------------------------------         ----------------------------------"
+    echo -e " [1] Random Password (16 chars)          [8]  JWT Secret"
+    echo -e " [2] Random Password (custom)            [9]  UUID Token"
+    echo -e " [3] Passphrase (4 words)               [10] WiFi Key"
+    echo -e " [4] Passphrase (custom)                [11] License Key"
+    echo -e " [5] Themed Passphrase                  [12] Recovery Codes"
+    echo -e " [6] Leetspeak Password                 [13] OTP Secret"
+    echo -e " [7] PIN Code"
     echo ""
-    echo -e "  ${YELLOW}PRESET PROFILES (One-Click)${NC}            ${YELLOW}TOOLS & SYSTEM${NC}"
-    echo -e "  ------------------------------         ----------------------------------"
-    echo -e "  [P1] Strong (32 chars)                 [14] Interactive Mode"
-    echo -e "  [P2] Memorable (Easy Say)              [15] NATO Phonetic"
-    echo -e "  [P3] Developer (40 char)               [16] View History"
-    echo -e "  [P4] Web Account (16 chars)            [17] Show Help"
-    echo -e "  [P5] WiFi Key (20 chars)               [18] Paranoid Mode"
-    echo -e "  [P6] License Key (5x5)                 [0]  Exit"
+    echo -e " ${YELLOW}PRESET PROFILES (One-Click)${NC}            ${YELLOW}TOOLS & SYSTEM${NC}"
+    echo -e " ------------------------------         ----------------------------------"
+    echo -e " [P1] Strong (32 chars)                 [14] Interactive Mode"
+    echo -e " [P2] Memorable (Easy Say)              [15] NATO Phonetic"
+    echo -e " [P3] Developer (40 char)               [16] View History"
+    echo -e " [P4] Web Account (16 chars)            [17] Show Help"
+    echo -e " [P5] WiFi Key (20 chars)               [18] Paranoid Mode"
+    echo -e " [P6] License Key (5x5)                 [0]  Exit"
     echo ""
-    echo -e "${BLUE}==========================================================================${NC}"
+    echo -e " ${BLUE}==========================================================================${NC}"
     echo ""
 }
 
@@ -98,38 +98,35 @@ while true; do
     case $choice in
         1)
             clear
-            echo "Random Password (16 characters)"
-            echo "================================"
+            echo ""
+            echo "  Random Password (16 characters, all character types)"
+            echo "  ===================================================="
             $PYTHON main.py --log --confirm-copy --show-entropy random -l 16
             echo ""
             ;;
         2)
             clear
             echo ""
-            echo "Random Password (custom length)"
-            echo "==============================="
+            echo "  Random Password (custom length)"
+            echo "  ==============================="
             echo ""
             read_int "Enter password length" 16 8 128 len
-            read -p "Show entropy analysis? (y/n) [n]: " show_ent
-            if [[ "$show_ent" == "y" || "$show_ent" == "Y" ]]; then
-                $PYTHON main.py --log --confirm-copy --show-entropy random -l "$len"
-            else
-                $PYTHON main.py --log --confirm-copy random -l "$len"
-            fi
+            $PYTHON main.py --log --confirm-copy --show-entropy random -l "$len"
             echo ""
             ;;
         3)
             clear
-            echo "Passphrase (4 words)"
-            echo "===================="
+            echo ""
+            echo "  Passphrase (4 words, hyphen-separated)"
+            echo "  ======================================"
             $PYTHON main.py --log --confirm-copy --show-entropy phrase -w 4
             echo ""
             ;;
         4)
             clear
             echo ""
-            echo "Passphrase (custom settings)"
-            echo "============================"
+            echo "  Passphrase (custom settings)"
+            echo "  ============================"
             echo ""
             read_int "Number of words" 4 3 8 words
             read -p "Separator (default -): " sep
@@ -145,16 +142,16 @@ while true; do
         5)
             clear
             echo ""
-            echo "Themed Passphrase"
-            echo "================="
+            echo "  Themed Passphrase"
+            echo "  ================="
             echo ""
-            echo "Available Themes:"
-            echo "-----------------"
+            echo "  Available Themes:"
+            echo "  -----------------"
             i=1
             wordlists=()
             for f in data/wordlists/*.txt; do
                 name=$(basename "$f" .txt)
-                echo "  [$i] $name"
+                echo "  [!$i!] $name"
                 wordlists+=("$name")
                 i=$((i+1))
             done
@@ -184,8 +181,8 @@ while true; do
         6)
             clear
             echo ""
-            echo "Leetspeak Password"
-            echo "=================="
+            echo "  Leetspeak Password"
+            echo "  =================="
             echo ""
             read_int "Number of words" 3 2 5 words
             $PYTHON main.py --log --confirm-copy --show-entropy leet -w "$words"
@@ -194,21 +191,18 @@ while true; do
         7)
             clear
             echo ""
-            echo "PIN Generator"
-            echo "============="
+            echo "  PIN Generator"
+            echo "  ============="
             echo ""
             read_int "PIN length" 6 4 8 len
             $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
             echo ""
             ;;
-            echo ""
-            $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
-            echo ""
-            ;;
         8)
             clear
-            echo "JWT Secret Generator"
-            echo "===================="
+            echo ""
+            echo "  JWT Secret Generator"
+            echo "  ===================="
             echo " [1] HS256 (256 bits)"
             echo " [2] HS384 (384 bits)"
             echo " [3] HS512 (512 bits)"
@@ -224,18 +218,19 @@ while true; do
             ;;
         9)
             clear
-            echo "UUID v4 Token"
-            echo "============="
+            echo ""
+            echo "  UUID v4 Token"
+            echo "  ============="
             $PYTHON main.py --log --confirm-copy --show-entropy uuid
             echo ""
             ;;
         10)
             clear
             echo ""
-            echo "WiFi Key Generator"
-            echo "=================="
+            echo "  WiFi Key Generator"
+            echo "  =================="
             echo ""
-            read_int "WiFi key length" 16 8 63 len
+            read_int "WiFi key length" 24 8 63 len
             read -p "Simple mode (alphanumeric only)? (y/n) [n]: " simple
             if [[ "$simple" == "y" || "$simple" == "Y" ]]; then
                 $PYTHON main.py --log --confirm-copy --show-entropy wifi -l "$len" --simple
@@ -246,8 +241,9 @@ while true; do
             ;;
         11)
             clear
-            echo "License Key Generator (AXB)"
-            echo "==========================="
+            echo ""
+            echo "  License Key Generator (AXB)"
+            echo "  ==========================="
             echo ""
             read_int "Number of segments (A)" 5 2 10 segments
             read_int "Segment length (B)" 5 2 10 length
@@ -258,35 +254,38 @@ while true; do
         12)
             clear
             echo ""
-            echo "Recovery Codes"
-            echo "=============="
+            echo "  Recovery Codes"
+            echo "  =============="
             echo ""
             read_int "Number of recovery codes" 8 6 12 count
             read -p "Word-based codes? (y/n) [n]: " word_based
             if [[ "$word_based" == "y" || "$word_based" == "Y" ]]; then
-                $PYTHON main.py --log --confirm-copy recovery -n "$count" --words
+                $PYTHON main.py --log --confirm-copy --show-entropy recovery -n "$count" --words
             else
-                $PYTHON main.py --log --confirm-copy recovery -n "$count"
+                $PYTHON main.py --log --confirm-copy --show-entropy recovery -n "$count"
             fi
             echo ""
             ;;
         13)
             clear
-            echo "OTP Secret (for 2FA apps)"
-            echo "========================="
+            echo ""
+            echo "  OTP Secret (for 2FA apps)"
+            echo "  ========================="
             $PYTHON main.py --log --confirm-copy --show-entropy otp
             echo ""
             ;;
         14)
             clear
-            echo "Interactive Mode"
-            echo "================"
+            echo ""
+            echo "  Interactive Mode"
+            echo "  ================"
             $PYTHON main.py --log --confirm-copy --interactive
             ;;
         15)
             clear
-            echo "NATO Phonetic Alphabet"
-            echo "======================"
+            echo ""
+            echo "  NATO Phonetic Alphabet"
+            echo "  ======================"
             echo ""
             read -p "Text to convert (leave empty for random): " text
             if [[ -z "$text" ]]; then
@@ -296,34 +295,34 @@ while true; do
                 $PYTHON main.py --log --confirm-copy phonetic --text "$text"
             fi
             echo ""
-            pause
             ;;
         16)
             clear
-            echo "Generation History"
-            echo "=================="
+            echo ""
+            echo "  Generation History"
+            echo "  =================="
             read_int "Show last N entries" 10 1 100 num
             [[ -z "$num" ]] && num=10
-            $PYTHON main.py --confirm-copy history --last "$num"
+            $PYTHON main.py history --last "$num"
             echo ""
             pause
             ;;
         17)
             clear
-            echo "Command Line Help"
-            echo "================="
-            $PYTHON main.py --confirm-copy --help
+            echo ""
+            echo "  Command Line Help"
+            echo "  ================="
+            $PYTHON main.py --help
             echo ""
             pause
             ;;
         18)
             clear
             echo ""
-            echo "Paranoid Mode (High-Security Generator)"
-            echo "======================================="
+            echo "  Paranoid Mode (High-Security Generator)"
+            echo "  ======================================="
             $PYTHON main.py --log --confirm-copy --show-entropy --paranoid random -l 32
             echo ""
-            pause
             ;;
         0)
             echo ""
@@ -333,48 +332,48 @@ while true; do
         [Pp]1)
             clear
             echo ""
-            echo "Preset: STRONG (32 chars, max security)"
-            echo "========================================="
+            echo "  Preset: STRONG (32 chars, max security)"
+            echo "  ========================================="
             $PYTHON main.py --log --confirm-copy --preset strong --show-entropy
             echo ""
             ;;
         [Pp]2)
             clear
             echo ""
-            echo "Preset: MEMORABLE (easy to say)"
-            echo "================================="
+            echo "  Preset: MEMORABLE (easy to say)"
+            echo "  ================================="
             $PYTHON main.py --log --confirm-copy --preset memorable --show-entropy
             echo ""
             ;;
         [Pp]3)
             clear
             echo ""
-            echo "Preset: DEVELOPER (40 char alphanumeric)"
-            echo "========================================="
+            echo "  Preset: DEVELOPER (40 char alphanumeric)"
+            echo "  ========================================="
             $PYTHON main.py --log --confirm-copy --preset dev --show-entropy
             echo ""
             ;;
         [Pp]4)
             clear
             echo ""
-            echo "Preset: WEB ACCOUNT (16 chars mixed)"
-            echo "====================================="
+            echo "  Preset: WEB ACCOUNT (16 chars mixed)"
+            echo "  ====================================="
             $PYTHON main.py --log --confirm-copy --preset web --show-entropy
             echo ""
             ;;
         [Pp]5)
             clear
             echo ""
-            echo "Preset: WIFI KEY (20 chars)"
-            echo "============================"
+            echo "  Preset: WIFI KEY (20 chars)"
+            echo "  ============================"
             $PYTHON main.py --log --confirm-copy --preset wifi --show-entropy
             echo ""
             ;;
         [Pp]6)
             clear
             echo ""
-            echo "Preset: LICENSE KEY (5x5 format)"
-            echo "================================="
+            echo "  Preset: LICENSE KEY (5x5 format)"
+            echo "  ================================="
             $PYTHON main.py --log --confirm-copy --preset key --show-entropy
             echo ""
             ;;

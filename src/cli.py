@@ -523,30 +523,7 @@ def create_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def colorize_password(password: str, no_color: bool = False) -> str:
-    """
-    Apply color coding to password characters.
-    
-    - Letters: Blue/Cyan
-    - Digits: Green
-    - Symbols: Red/Magenta
-    """
-    if no_color:
-        return password
-    
-    colored = []
-    for char in password:
-        if char.isalpha():
-            if char.isupper():
-                colored.append(f"{Style.BRIGHT}{Fore.CYAN}{char}{Style.RESET_ALL}")
-            else:
-                colored.append(f"{Style.BRIGHT}{Fore.BLUE}{char}{Style.RESET_ALL}")
-        elif char.isdigit():
-            colored.append(f"{Style.BRIGHT}{Fore.GREEN}{char}{Style.RESET_ALL}")
-        else:
-            colored.append(f"{Style.BRIGHT}{Fore.MAGENTA}{char}{Style.RESET_ALL}")
-    
-    return "".join(colored)
+# Removed redundant colorize_password, use src.output.formatter.colorize_password instead.
 
 
 def print_banner():

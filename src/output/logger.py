@@ -111,7 +111,7 @@ class PasswordLogger:
                     entry = json.loads(line)
                     
                     # Decrypt password for viewing/searching
-                    if 'password' in entry:
+                    if 'password' in entry and self.vault:
                         entry['password'] = self.vault.decrypt(entry['password'])
                     
                     # Apply filters

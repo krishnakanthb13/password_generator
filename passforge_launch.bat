@@ -97,12 +97,7 @@ echo  Random Password (custom length)
 echo  ===============================
 echo.
 call :read_int "Enter password length" 16 8 128 len
-set /p show_entropy="Show entropy analysis? (Y/N) [N]: "
-if /i "%show_entropy%"=="Y" (
-    python main.py --log --confirm-copy --show-entropy random -l %len%
-) else (
-    python main.py --log --confirm-copy random -l %len%
-)
+python main.py --log --confirm-copy --show-entropy random -l %len%
 goto menu
 
 :phrase_default
@@ -246,9 +241,9 @@ echo.
 call :read_int "Number of recovery codes" 8 6 12 count
 set /p words="Word-based codes? (Y/N) [N]: "
 if /i "%words%"=="Y" (
-    python main.py --log --confirm-copy recovery -n %count% --words
+    python main.py --log --confirm-copy --show-entropy recovery -n %count% --words
 ) else (
-    python main.py --log --confirm-copy recovery -n %count%
+    python main.py --log --confirm-copy --show-entropy recovery -n %count%
 )
 goto menu
 
@@ -281,8 +276,6 @@ if "%text%"=="" (
 ) else (
     python main.py --log --confirm-copy phonetic --text "%text%"
 )
-echo.
-pause
 goto menu
 
 :history
@@ -312,8 +305,6 @@ echo.
 echo  Paranoid Mode (High-Security Generator)
 echo  =======================================
 python main.py --log --confirm-copy --show-entropy --paranoid random -l 32
-echo.
-pause
 goto menu
 
 :preset_strong
