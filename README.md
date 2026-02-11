@@ -191,22 +191,21 @@ python main.py --json jwt --bits 256
 
 ## Command Reference
 
-### Global Options
-
-| `--preset` | Use a predefined security profile (strong, memorable, dev, etc.) |
-| `--interactive`, `-i` | Launch interactive menu mode |
-| `--paranoid` | Enable Paranoid Mode (collect manual entropy via keyboard jitter) |
+| Flag | Description |
+|------|-------------|
+| `--preset` | Use a predefined security profile (strong, memorable, dev, pin, web, wifi, key) |
+| `-i`, `--interactive` | Launch interactive menu mode |
+| `--paranoid` | Enable Paranoid Mode (manual entropy collection) |
 | `--json` | Output in JSON format |
-| `--show-entropy` | Display entropy analysis |
+| `--show-entropy` | Display entropy analysis (enabled by default in launchers) |
 | `--check-strength` | Run zxcvbn pattern analysis |
-| `--clipboard`, `-c` | Copy to clipboard |
+| `-c`, `--clipboard` | Copy result to clipboard |
 | `--confirm-copy` | Prompt to confirm copying result to clipboard |
 | `--clipboard-timeout` | Auto-wipe clipboard after N seconds (default: 30) |
-| `--log` | Log password to history |
+| `--log` | Log password to history (AES-128 encrypted) |
 | `--no-color` | Disable colored output |
 | `--easy-read` | Exclude ambiguous characters (0/O, 1/l/I) |
-| `--easy-say` | Only pronounceable characters |
-| `--balanced` | Balanced char distribution (mostly letters) |
+| `--easy-say` | Only pronounceable characters (no symbols) |
 
 ### Generator-Specific Options
 
@@ -245,9 +244,9 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-w`, `--words` | 4 | Number of words (2-12) |
-| `-s`, `--separator` | `-` | Word separator |
-| `max_subs` | 0 | Max substitutions (internal logic) |
+| `-w`, `--words` | 3 | Number of words (2-12) |
+| `-s`, `--separator` | `-` | Word separator ( - _ . , ) |
+| `-n`, `--count` | 1 | Number to generate |
 
 #### PIN (`pin`)
 
@@ -288,23 +287,22 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 24 | Key length (8-63) |
+| `-l`, `--length` | 24 | Key length (8-63, default: 24) |
 | `--simple` | - | Alphanumeric only (no symbols) |
 
 #### License Key (`license`)
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--segments` | 4 | Number of segments |
-| `--segment-length` | 4 | Characters per segment |
-| `--separator` | `-` | Segment separator |
+| `--segments` | 4 | Number of segments (2-10) |
+| `--segment-length` | 4 | Characters per segment (2-10) |
 
 #### Recovery Codes (`recovery`)
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-n`, `--count` | 8 | Number of codes (5-20) |
-| `-l`, `--length` | 10 | Length of each code |
+| `-n`, `--count` | 10 | Number of codes (5-20, default: 10) |
+| `-l`, `--length` | 10 | Code length (digits or words, default: 10/3) |
 | `--words` | - | Use word-based codes |
 
 #### OTP Secret (`otp`)
@@ -332,14 +330,13 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--last` | 10 | Show last N entries (1-100) |
+| `--last` | 10 | Show last N entries (1-100, default: 10) |
 | `--all`, `-a` | - | Show all history entries (overrides --last) |
-| `--search` | - | Search within history |
-| `--redact` | - | Redact passwords in terminal output |
-| `--export` | - | Export history to file |
-| `--no-redact` | - | Do not redact passwords in export (Caution!) |
-| `--clear` | - | Clear all history |
 | `--search` | - | Filter history by keyword |
+| `--redact` | - | Redact passwords in terminal output |
+| `--export` | - | Export history to file (JSON/CSV) |
+| `--no-redact` | - | Do not redact passwords in export (Caution!) |
+| `--clear` | - | Clear all history entries |
 
 ## Entropy Guide
 

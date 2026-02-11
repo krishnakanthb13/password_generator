@@ -400,8 +400,8 @@ def create_parser() -> argparse.ArgumentParser:
     wifi_parser.add_argument(
         "-l", "--length",
         type=int,
-        default=16,
-        help="Key length (8-63, default: 16)"
+        default=24,
+        help="Key length (8-63, default: 24)"
     )
     wifi_parser.add_argument(
         "--simple",
@@ -437,6 +437,12 @@ def create_parser() -> argparse.ArgumentParser:
         type=int,
         default=10,
         help="Number of codes (default: 10)"
+    )
+    recovery_parser.add_argument(
+        "-l", "--length",
+        type=int,
+        default=10,
+        help="Length of each code (digits for numeric, words for word-based, default: 10/3)"
     )
     recovery_parser.add_argument(
         "--words",

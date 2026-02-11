@@ -15,14 +15,14 @@ class WifiKeyGenerator(BaseGenerator):
     
     def generate(
         self,
-        length: int = 16,
+        length: int = 24,
         simple: bool = False
     ) -> GeneratorResult:
         """
         Generate a WiFi/WPA key.
         
         Args:
-            length: Key length (8-63, default: 16)
+            length: Key length (8-63, default: 24)
             simple: Use only alphanumeric (no symbols)
             
         Returns:

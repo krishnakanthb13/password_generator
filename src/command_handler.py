@@ -359,10 +359,16 @@ def handle_recovery(args: Any) -> int:
     
     generator = RecoveryCodesGenerator()
     use_words = getattr(args, 'words', False)
-    
+    # If length is default (10), but we are using words, use words_per_code=3
+    length = args.length
+    if use_words and length == 10:
+        length = 3
+        
     result = generator.generate(
         count=args.count,
-        use_words=use_words
+        use_words=use_words,
+        digits=length if not use_words else 8,
+        words_per_code=length if use_words else 3
     )
     output_result(result, args)
     
