@@ -79,7 +79,8 @@ show_menu() {
     echo -e " [P3] Developer (40 char)               [16] View History"
     echo -e " [P4] Web Account (16 chars)            [17] Show Help"
     echo -e " [P5] WiFi Key (20 chars)               [18] Paranoid Mode"
-    echo -e " [P6] License Key (5x5)                 [0]  Exit"
+    echo -e " [P6] License Key (5x5)                 [19] Base64 Secret"
+    echo -e " [0]  Exit                              [20] Pronounceable"
     echo ""
     echo -e " ${BLUE}==========================================================================${NC}"
     echo ""
@@ -110,7 +111,7 @@ while true; do
             echo "  Random Password (custom length)"
             echo "  ==============================="
             echo ""
-            read_int "  Password length (8-128)" 16 8 128 len
+            read_int "  Password length (4-1024)" 16 4 1024 len
             $PYTHON main.py --log --confirm-copy --show-entropy random -l "$len"
             echo ""
             ;;
@@ -128,7 +129,7 @@ while true; do
             echo "  Passphrase (custom settings)"
             echo "  ============================"
             echo ""
-            read_int "  Number of words (2-12)" 4 2 12 words
+            read_int "  Number of words (2-64)" 4 2 64 words
             read -p "  Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: " style
             style=${style:-n}
             
@@ -186,7 +187,7 @@ while true; do
             
             echo ""
             echo "Selected: $theme"
-            read_int "  Number of words (2-12)" 4 2 12 words
+            read_int "  Number of words (2-64)" 4 2 64 words
             read -p "  Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: " style
             style=${style:-n}
             
@@ -223,7 +224,7 @@ while true; do
             echo "  Leetspeak Password"
             echo "  =================="
             echo ""
-            read_int "  Number of words (2-12)" 3 2 12 words
+            read_int "  Number of words (2-64)" 3 2 64 words
             $PYTHON main.py --log --confirm-copy --show-entropy leet -w "$words"
             echo ""
             ;;
@@ -233,7 +234,7 @@ while true; do
             echo "  PIN Generator"
             echo "  ============="
             echo ""
-            read_int "  PIN length (4-20)" 6 4 20 len
+            read_int "  PIN length (4-64)" 6 4 64 len
             $PYTHON main.py --log --confirm-copy --show-entropy pin -l "$len"
             echo ""
             ;;
@@ -284,8 +285,8 @@ while true; do
             echo "  License Key Generator (AXB)"
             echo "  ==========================="
             echo ""
-            read_int "  Number of segments (2-10)" 5 2 10 segments
-            read_int "  Segment length (2-10)" 5 2 10 length
+            read_int "  Number of segments (2-64)" 5 2 64 segments
+            read_int "  Segment length (2-32)" 5 2 32 length
             echo ""
             $PYTHON main.py --log --confirm-copy --show-entropy license --segments "$segments" --segment-length "$length"
             echo ""
@@ -296,7 +297,7 @@ while true; do
             echo "  Recovery Codes"
             echo "  =============="
             echo ""
-            read_int "  Number of codes (5-20)" 8 5 20 count
+            read_int "  Number of codes (5-100)" 8 5 100 count
             read -p "Word-based codes? (y/n) [n]: " word_based
             if [[ "$word_based" == "y" || "$word_based" == "Y" ]]; then
                 $PYTHON main.py --log --confirm-copy --show-entropy recovery -n "$count" --words
@@ -328,7 +329,7 @@ while true; do
             echo ""
             read -p "Text to convert (leave empty for random): " text
             if [[ -z "$text" ]]; then
-                read_int "  Random length (4-64)" 8 4 64 len
+                read_int "  Random length (4-128)" 8 4 128 len
                 $PYTHON main.py --log --confirm-copy phonetic -l "$len"
             else
                 $PYTHON main.py --log --confirm-copy phonetic --text "$text"
@@ -361,6 +362,26 @@ while true; do
             echo "  Paranoid Mode (High-Security Generator)"
             echo "  ======================================="
             $PYTHON main.py --log --confirm-copy --show-entropy --paranoid random -l 32
+            echo ""
+            ;;
+        19)
+            clear
+            echo ""
+            echo "  Base64 Secret Generator"
+            echo "  ======================="
+            echo ""
+            read_int "  Number of bytes (8-1024)" 32 8 1024 byt
+            $PYTHON main.py --log --confirm-copy --show-entropy base64 -b "$byt"
+            echo ""
+            ;;
+        20)
+            clear
+            echo ""
+            echo "  Pronounceable Password"
+            echo "  ======================"
+            echo ""
+            read_int "  Password length (4-128)" 12 4 128 len
+            $PYTHON main.py --log --confirm-copy --show-entropy pronounce -l "$len"
             echo ""
             ;;
         0)

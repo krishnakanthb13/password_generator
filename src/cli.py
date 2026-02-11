@@ -132,7 +132,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-l", "--length",
         type=int,
         default=16,
-        help="Password length (default: 16)"
+        help="Password length (4-1024, default: 16)"
     )
     random_parser.add_argument(
         "--no-uppercase",
@@ -217,7 +217,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-w", "--words",
         type=int,
         default=4,
-        help="Number of words (default: 4)"
+        help="Number of words (2-64, default: 4)"
     )
     phrase_parser.add_argument(
         "-s", "--separator",
@@ -261,7 +261,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-l", "--length",
         type=int,
         default=6,
-        help="PIN length (default: 6)"
+        help="PIN length (4-64, default: 6)"
     )
     pin_parser.add_argument(
         "-n", "--count",
@@ -355,7 +355,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-l", "--length",
         type=int,
         default=12,
-        help="Password length (default: 12)"
+        help="Password length (4-128, default: 12)"
     )
     pronounce_parser.add_argument(
         "-n", "--count",
@@ -374,7 +374,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-w", "--words",
         type=int,
         default=3,
-        help="Number of words (default: 3)"
+        help="Number of words (2-64, default: 3)"
     )
     leet_parser.add_argument(
         "-s", "--separator",
@@ -400,7 +400,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-b", "--bytes",
         type=int,
         default=32,
-        help="Number of random bytes (default: 32)"
+        help="Number of random bytes (8-1024, default: 32)"
     )
     b64_parser.add_argument(
         "--url-safe",
@@ -452,13 +452,13 @@ def create_parser() -> argparse.ArgumentParser:
         "--segments",
         type=int,
         default=4,
-        help="Number of segments (default: 4)"
+        help="Number of segments (2-64, default: 4)"
     )
     license_parser.add_argument(
         "--segment-length",
         type=int,
         default=4,
-        help="Characters per segment (default: 4)"
+        help="Characters per segment (2-32, default: 4)"
     )
     
     # Recovery codes
@@ -470,7 +470,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-n", "--count",
         type=int,
         default=10,
-        help="Number of codes (default: 10)"
+        help="Number of codes (5-100, default: 10)"
     )
     recovery_parser.add_argument(
         "-l", "--length",
@@ -512,7 +512,7 @@ def create_parser() -> argparse.ArgumentParser:
         "-l", "--length",
         type=int,
         default=8,
-        help="Length of random sequence if --text not provided (default: 8)"
+        help="Length of random sequence (4-128) if --text not provided (default: 8)"
     )
 
     # Analyze existing password

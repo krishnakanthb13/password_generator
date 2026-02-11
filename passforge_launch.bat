@@ -47,7 +47,8 @@ echo  [P2] Memorable (Easy Say)              [15] NATO Phonetic
 echo  [P3] Developer (40 char)               [16] View History
 echo  [P4] Web Account (16 chars)            [17] Show Help
 echo  [P5] WiFi Key (20 chars)               [18] Paranoid Mode
-echo  [P6] License Key (5x5)                 [0]  Exit
+echo  [P6] License Key (5x5)                 [19] Base64 Secret
+echo  [0]  Exit                              [20] Pronounceable
 echo.
 echo  ==========================================================================
 echo.
@@ -71,6 +72,8 @@ if "%choice%"=="15" goto phonetic
 if "%choice%"=="16" goto history
 if "%choice%"=="17" goto help
 if "%choice%"=="18" goto paranoid
+if "%choice%"=="19" goto base64
+if "%choice%"=="20" goto pronounceable
 if /i "%choice%"=="P1" goto preset_strong
 if /i "%choice%"=="P2" goto preset_memorable
 if /i "%choice%"=="P3" goto preset_dev
@@ -96,7 +99,7 @@ echo.
 echo  Random Password (custom length)
 echo  ===============================
 echo.
-call :read_int "Password length (8-128)" 16 8 128 len
+call :read_int "Password length (4-1024)" 16 4 1024 len
 python main.py --log --confirm-copy --show-entropy random -l %len%
 goto menu
 
@@ -114,7 +117,7 @@ echo.
 echo  Passphrase (custom settings)
 echo  ============================
 echo.
-call :read_int "Number of words (2-12)" 4 2 12 words
+call :read_int "Number of words (2-64)" 4 2 64 words
 set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
 if /i "%style%"=="S" (
     set sep=_
@@ -160,7 +163,7 @@ endlocal & set theme=%theme%
 echo.
 echo  Selected: %theme%
 echo.
-call :read_int "Number of words (2-12)" 4 2 12 words
+call :read_int "Number of words (2-64)" 4 2 64 words
 set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
 if /i "%style%"=="S" (
     set sep=_
@@ -188,7 +191,7 @@ echo.
 echo  Leetspeak Password
 echo  ==================
 echo.
-call :read_int "Number of words (2-12)" 3 2 12 words
+call :read_int "Number of words (2-64)" 3 2 64 words
 python main.py --log --confirm-copy --show-entropy leet -w %words%
 goto menu
 
@@ -198,8 +201,18 @@ echo.
 echo  PIN Generator
 echo  =============
 echo.
-call :read_int "PIN length (4-20)" 6 4 20 len
+call :read_int "PIN length (4-64)" 6 4 64 len
 python main.py --log --confirm-copy --show-entropy pin -l %len%
+goto menu
+
+:pronounceable
+cls
+echo.
+echo  Pronounceable Password
+echo  ======================
+echo.
+call :read_int "Password length (4-128)" 12 4 128 len
+python main.py --log --confirm-copy --show-entropy pronounce -l %len%
 goto menu
 
 :jwt
@@ -248,8 +261,8 @@ echo.
 echo  License Key Generator (AXB)
 echo  ===========================
 echo.
-call :read_int "Number of segments (2-10)" 5 2 10 segments
-call :read_int "Segment length (2-10)" 5 2 10 length
+call :read_int "Number of segments (2-64)" 5 2 64 segments
+call :read_int "Segment length (2-32)" 5 2 32 length
 echo.
 python main.py --log --confirm-copy --show-entropy license --segments %segments% --segment-length %length%
 goto menu
@@ -260,7 +273,7 @@ echo.
 echo  Recovery Codes
 echo  ==============
 echo.
-call :read_int "Number of codes (5-20)" 8 5 20 count
+call :read_int "Number of codes (5-100)" 8 5 100 count
 set /p words="Word-based codes? (Y/N) [N]: "
 if /i "%words%"=="Y" (
     python main.py --log --confirm-copy --show-entropy recovery -n %count% --words
@@ -275,6 +288,16 @@ echo.
 echo  OTP Secret (for 2FA apps)
 echo  =========================
 python main.py --log --confirm-copy --show-entropy otp
+goto menu
+
+:base64
+cls
+echo.
+echo  Base64 Secret Generator
+echo  =======================
+echo.
+call :read_int "Number of bytes (8-1024)" 32 8 1024 byt
+python main.py --log --confirm-copy --show-entropy base64 -b %byt%
 goto menu
 
 :interactive
@@ -293,7 +316,7 @@ echo  ======================
 echo.
 set /p text="Text to convert (leave empty for random): "
 if "%text%"=="" (
-    call :read_int "Random length (4-64)" 8 4 64 len
+    call :read_int "Random length (4-128)" 8 4 128 len
     python main.py --log --confirm-copy phonetic -l %len%
 ) else (
     python main.py --log --confirm-copy phonetic --text "%text%"

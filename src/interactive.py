@@ -165,7 +165,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Passphrase ==={Style.RESET_ALL}")
         
-        words = self.get_int("Number of words", 4, 2, 12)
+        words = self.get_int("Number of words", 4, 2, 64)
         separator = self.get_input("Separator", "-")
         capitalize = self.get_bool("Capitalize words", False)
         count = self.get_int("How many to generate", 1, 1, 10)
@@ -218,7 +218,7 @@ class InteractiveMenu:
         
         print(f"\n{Fore.CYAN}Selected: {wordlists[choice-1]}{Style.RESET_ALL}\n")
         
-        words = self.get_int("Number of words", 4, 2, 12)
+        words = self.get_int("Number of words", 4, 2, 64)
         separator = self.get_input("Separator", "-")
         capitalize = self.get_bool("Capitalize words", True)
         count = self.get_int("How many to generate", 1, 1, 10)
@@ -240,7 +240,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Leetspeak Passphrase ==={Style.RESET_ALL}")
         
-        words = self.get_int("Number of words", 3, 2, 8)
+        words = self.get_int("Number of words", 3, 2, 64)
         print("Separator options: - _ . ,")
         separator = self.get_input("Separator", "-")
         if separator not in ["-", "_", ".", ","]:
@@ -262,7 +262,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== PIN ==={Style.RESET_ALL}")
         
-        length = self.get_int("PIN length", 6, 4, 20)
+        length = self.get_int("PIN length", 6, 4, 64)
         count = self.get_int("How many to generate", 1, 1, 10)
         
         generator = PinGenerator()
@@ -277,7 +277,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Pronounceable Password ==={Style.RESET_ALL}")
         
-        length = self.get_int("Length", 12, 4, 32)
+        length = self.get_int("Length", 12, 4, 128)
         count = self.get_int("How many to generate", 1, 1, 10)
         
         generator = PronounceableGenerator()
@@ -317,7 +317,7 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Base64 Secret ==={Style.RESET_ALL}")
         
-        bytes_len = self.get_int("Bytes length", 32, 8, 128)
+        bytes_len = self.get_int("Bytes length", 32, 8, 1024)
         url_safe = self.get_bool("URL-safe encoding", True)
         
         generator = Base64SecretGenerator()
@@ -359,8 +359,8 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== License Key ==={Style.RESET_ALL}")
         
-        segments = self.get_int("Number of segments", 4, 2, 8)
-        segment_len = self.get_int("Characters per segment", 4, 3, 6)
+        segments = self.get_int("Number of segments", 4, 2, 64)
+        segment_len = self.get_int("Characters per segment", 4, 2, 32)
         
         generator = LicenseKeyGenerator()
         result = generator.generate(segments=segments, segment_length=segment_len)
@@ -372,11 +372,24 @@ class InteractiveMenu:
         
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Recovery Codes ==={Style.RESET_ALL}")
         
-        count = self.get_int("Number of codes", 10, 5, 20)
+        count = self.get_int("Number of codes", 10, 5, 100)
         use_words = self.get_bool("Use word-based codes", False)
         
+        digits = 8
+        words_per_code = 3
+        
+        if not use_words:
+            digits = self.get_int("Digits per code", 8, 4, 32)
+        else:
+            words_per_code = self.get_int("Words per code", 3, 2, 12)
+            
         generator = RecoveryCodesGenerator()
-        result = generator.generate(count=count, use_words=use_words)
+        result = generator.generate(
+            count=count, 
+            use_words=use_words,
+            digits=digits,
+            words_per_code=words_per_code
+        )
         
         print(f"\n{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         print(f"{Fore.WHITE}Recovery Codes:{Style.RESET_ALL}\n")
