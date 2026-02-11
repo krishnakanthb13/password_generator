@@ -59,6 +59,8 @@ class LeetspeakGenerator(BaseGenerator):
         """
         if word_count < 2:
             raise ValueError("Word count must be at least 2")
+        if word_count > 64:
+            raise ValueError("Word count must be at most 64")
         if separator not in ["-", "_", ".", ","]:
             raise ValueError("Separator must be one of: - _ . ,")
         

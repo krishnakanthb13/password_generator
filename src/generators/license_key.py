@@ -42,12 +42,12 @@ class LicenseKeyGenerator(BaseGenerator):
         """
         if segments < 2:
             raise ValueError("Must have at least 2 segments")
-        if segments > 8:
-            raise ValueError("Must have at most 8 segments")
-        if segment_length < 3:
-            raise ValueError("Segment length must be at least 3")
-        if segment_length > 6:
-            raise ValueError("Segment length must be at most 6")
+        if segments > 64:
+            raise ValueError("Must have at most 64 segments")
+        if segment_length < 2:
+            raise ValueError("Segment length must be at least 2")
+        if segment_length > 32:
+            raise ValueError("Segment length must be at most 32")
         
         # Generate segments
         key_segments = []

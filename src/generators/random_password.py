@@ -61,6 +61,11 @@ class RandomPasswordGenerator(BaseGenerator):
         Returns:
             GeneratorResult with password and metadata
         """
+        if length < 4:
+            raise ValueError("Password length must be at least 4")
+        if length > 1024:
+            raise ValueError("Password length must be at most 1024")
+
         # Build character pool
         charset = ""
         

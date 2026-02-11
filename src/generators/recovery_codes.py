@@ -29,25 +29,32 @@ class RecoveryCodesGenerator(BaseGenerator):
         self,
         count: int = 10,
         use_words: bool = False,
-        digits: int = 8,
-        words_per_code: int = 3
-    ) -> GeneratorResult:
+            digits: int = 8,
+            words_per_code: int = 3
+        ) -> GeneratorResult:
         """
         Generate a set of recovery codes.
         
         Args:
             count: Number of codes (default: 10)
             use_words: Use word-based codes instead of numeric
-            digits: Digits per numeric code (default: 8)
-            words_per_code: Words per word-based code (default: 3)
+            digits: Digits per numeric code (4-32, default: 8)
+            words_per_code: Words per word-based code (2-12, default: 3)
             
         Returns:
             GeneratorResult with recovery codes
         """
         if count < 5:
             raise ValueError("Must generate at least 5 codes")
-        if count > 20:
-            raise ValueError("Must generate at most 20 codes")
+        if count > 100:
+            raise ValueError("Must generate at most 100 codes")
+        
+        if not use_words:
+            if digits < 4 or digits > 32:
+                raise ValueError("Digits per code must be between 4 and 32")
+        else:
+            if words_per_code < 2 or words_per_code > 12:
+                raise ValueError("Words per code must be between 2 and 12")
         
         codes: List[str] = []
         

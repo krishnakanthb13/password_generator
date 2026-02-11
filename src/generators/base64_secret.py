@@ -31,8 +31,8 @@ class Base64SecretGenerator(BaseGenerator):
         """
         if byte_length < 8:
             raise ValueError("Byte length must be at least 8")
-        if byte_length > 128:
-            raise ValueError("Byte length must be at most 128")
+        if byte_length > 1024:
+            raise ValueError("Byte length must be at most 1024")
         
         random_bytes = secrets.token_bytes(byte_length)
         

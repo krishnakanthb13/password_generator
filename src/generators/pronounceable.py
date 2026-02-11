@@ -57,8 +57,8 @@ class PronounceableGenerator(BaseGenerator):
         """
         if length < 4:
             raise ValueError("Length must be at least 4")
-        if length > 32:
-            raise ValueError("Length must be at most 32")
+        if length > 128:
+            raise ValueError("Length must be at most 128")
         
         password = []
         

@@ -288,8 +288,8 @@ class PassphraseGenerator(BaseGenerator):
         """
         if word_count < 2:
             raise ValueError("Word count must be at least 2")
-        if word_count > 12:
-            raise ValueError("Word count must be at most 12")
+        if word_count > 64:
+            raise ValueError("Word count must be at most 64")
         
         wordlist = self.load_wordlist(wordlist_path)
         

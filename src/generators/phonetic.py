@@ -48,6 +48,10 @@ class PhoneticGenerator(BaseGenerator):
         Returns:
             GeneratorResult with phonetic representation
         """
+        if length < 4:
+            raise ValueError("Sequence length must be at least 4")
+        if length > 128:
+            raise ValueError("Sequence length must be at most 128")
         import secrets
         import string
         

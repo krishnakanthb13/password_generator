@@ -28,8 +28,8 @@ class PinGenerator(BaseGenerator):
         """
         if length < 4:
             raise ValueError("PIN length must be at least 4")
-        if length > 20:
-            raise ValueError("PIN length must be at most 20")
+        if length > 64:
+            raise ValueError("PIN length must be at most 64")
         
         pin = "".join(secrets.choice(self.DIGITS) for _ in range(length))
         
