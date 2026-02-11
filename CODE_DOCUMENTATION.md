@@ -73,6 +73,7 @@ Utilizes the `data/wordlists/` directory to offer themed generation.
 *   **Selection**: Interactive menus (Python & Shell) present a **numbered list** for easy user selection.
 *   **Launcher Logic**: 🛠️ Launcher scripts (`.bat`/`.sh`) implement a "Style-First" prompt flow:
     *   Prompting for **Style** before **Separator** allows for smart-skipping (e.g., selecting *Snake_case* automatically sets the separator to `_` and skips the next prompt).
+    *   **Range-Aware Prompts**: Inputs now explicitly display supported ranges (e.g., `(8-128)`, `(2-12)`) and validate numeric input to prevent generator overflows.
 *   **Execution**: Passes flags to `PassphraseGenerator.generate(..., capitalize=True, alternate=True)`.
 
 ### Entropy Calculator (`src/security/entropy.py`)

@@ -96,7 +96,7 @@ echo.
 echo  Random Password (custom length)
 echo  ===============================
 echo.
-call :read_int "Enter password length" 16 8 128 len
+call :read_int "Password length (8-128)" 16 8 128 len
 python main.py --log --confirm-copy --show-entropy random -l %len%
 goto menu
 
@@ -114,7 +114,7 @@ echo.
 echo  Passphrase (custom settings)
 echo  ============================
 echo.
-call :read_int "Number of words" 4 3 8 words
+call :read_int "Number of words (2-12)" 4 2 12 words
 set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
 if /i "%style%"=="S" (
     set sep=_
@@ -160,7 +160,7 @@ endlocal & set theme=%theme%
 echo.
 echo  Selected: %theme%
 echo.
-call :read_int "Number of words" 4 2 12 words
+call :read_int "Number of words (2-12)" 4 2 12 words
 set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
 if /i "%style%"=="S" (
     set sep=_
@@ -188,7 +188,7 @@ echo.
 echo  Leetspeak Password
 echo  ==================
 echo.
-call :read_int "Number of words" 3 2 5 words
+call :read_int "Number of words (2-12)" 3 2 12 words
 python main.py --log --confirm-copy --show-entropy leet -w %words%
 goto menu
 
@@ -198,7 +198,7 @@ echo.
 echo  PIN Generator
 echo  =============
 echo.
-call :read_int "PIN length" 6 4 8 len
+call :read_int "PIN length (4-20)" 6 4 20 len
 python main.py --log --confirm-copy --show-entropy pin -l %len%
 goto menu
 
@@ -233,7 +233,7 @@ echo.
 echo  WiFi Key Generator
 echo  ==================
 echo.
-call :read_int "WiFi key length" 24 8 63 len
+call :read_int "WiFi key length (8-63)" 24 8 63 len
 set /p simple="Simple mode (alphanumeric only)? (Y/N) [N]: "
 if /i "%simple%"=="Y" (
     python main.py --log --confirm-copy --show-entropy wifi -l %len% --simple
@@ -248,8 +248,8 @@ echo.
 echo  License Key Generator (AXB)
 echo  ===========================
 echo.
-call :read_int "Number of segments (A)" 5 2 10 segments
-call :read_int "Segment length (B)" 5 2 10 length
+call :read_int "Number of segments (2-10)" 5 2 10 segments
+call :read_int "Segment length (2-10)" 5 2 10 length
 echo.
 python main.py --log --confirm-copy --show-entropy license --segments %segments% --segment-length %length%
 goto menu
@@ -260,7 +260,7 @@ echo.
 echo  Recovery Codes
 echo  ==============
 echo.
-call :read_int "Number of recovery codes" 8 6 12 count
+call :read_int "Number of codes (5-20)" 8 5 20 count
 set /p words="Word-based codes? (Y/N) [N]: "
 if /i "%words%"=="Y" (
     python main.py --log --confirm-copy --show-entropy recovery -n %count% --words
@@ -293,7 +293,7 @@ echo  ======================
 echo.
 set /p text="Text to convert (leave empty for random): "
 if "%text%"=="" (
-    call :read_int "Random length" 8 4 32 len
+    call :read_int "Random length (4-64)" 8 4 64 len
     python main.py --log --confirm-copy phonetic -l %len%
 ) else (
     python main.py --log --confirm-copy phonetic --text "%text%"
@@ -305,7 +305,7 @@ cls
 echo.
 echo  Generation History
 echo  ==================
-call :read_int "Show last N entries" 10 1 100 num
+call :read_int "Show last N entries (1-100)" 10 1 100 num
 python main.py history --last %num%
 echo.
 pause

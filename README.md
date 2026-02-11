@@ -214,7 +214,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 16 | Password length |
+| `-l`, `--length` | 16 | Password length (8-128) |
 | `--no-uppercase` | - | Exclude uppercase letters |
 | `--no-lowercase` | - | Exclude lowercase letters |
 | `--no-digits` | - | Exclude digits |
@@ -233,7 +233,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-w`, `--words` | 4 | Number of words |
+| `-w`, `--words` | 4 | Number of words (2-12) |
 | `-s`, `--separator` | `-` | Word separator |
 | `--capitalize` | - | Capitalize each word |
 | `--uppercase` | - | All words in uppercase |
@@ -245,7 +245,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-w`, `--words` | 4 | Number of words |
+| `-w`, `--words` | 4 | Number of words (2-12) |
 | `-s`, `--separator` | `-` | Word separator |
 | `max_subs` | 0 | Max substitutions (internal logic) |
 
@@ -253,7 +253,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 6 | PIN length |
+| `-l`, `--length` | 6 | PIN length (4-20) |
 | `-n`, `--count` | 1 | Number to generate |
 
 #### Pronounceable (`pronounce`, `pr`)
@@ -303,7 +303,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-n`, `--count` | 8 | Number of codes |
+| `-n`, `--count` | 8 | Number of codes (5-20) |
 | `-l`, `--length` | 10 | Length of each code |
 | `--words` | - | Use word-based codes |
 
@@ -326,13 +326,13 @@ python main.py --json jwt --bits 256
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--text` | - | Text to convert to NATO alphabet |
-| `-l`, `--length` | 8 | Length of random string to generate if text not provided |
+| `-l`, `--length` | 8 | Random sequence length (4-64) |
 
 #### History (`history`)
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--last` | 10 | Show last N entries |
+| `--last` | 10 | Show last N entries (1-100) |
 | `--all`, `-a` | - | Show all history entries (overrides --last) |
 | `--search` | - | Search within history |
 | `--redact` | - | Redact passwords in terminal output |
