@@ -264,6 +264,8 @@ class PassphraseGenerator(BaseGenerator):
         word_count: int = 4,
         separator: str = "-",
         capitalize: bool = False,
+        uppercase: bool = False,
+        alternate: bool = False,
         wordlist_path: Optional[str] = None,
         min_word_length: int = 3,
         max_word_length: int = 10
@@ -275,6 +277,8 @@ class PassphraseGenerator(BaseGenerator):
             word_count: Number of words (default: 4)
             separator: Word separator (default: -)
             capitalize: Capitalize each word
+            uppercase: All uppercase words
+            alternate: Alternate case (aLtErNaTe)
             wordlist_path: Path to custom wordlist
             min_word_length: Minimum word length
             max_word_length: Maximum word length
@@ -299,8 +303,12 @@ class PassphraseGenerator(BaseGenerator):
         # Select random words
         words = [secrets.choice(filtered) for _ in range(word_count)]
         
-        if capitalize:
+        if uppercase:
+            words = [w.upper() for w in words]
+        elif capitalize:
             words = [w.capitalize() for w in words]
+        elif alternate:
+            words = ["".join(c.upper() if i % 2 != 0 else c.lower() for i, c in enumerate(w)) for w in words]
         
         passphrase = separator.join(words)
         
@@ -312,6 +320,8 @@ class PassphraseGenerator(BaseGenerator):
             "word_count": word_count,
             "separator": separator,
             "capitalize": capitalize,
+            "uppercase": uppercase,
+            "alternate": alternate,
             "wordlist_size": pool_size,
             "pool_size": pool_size,
             "custom_wordlist": wordlist_path is not None

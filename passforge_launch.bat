@@ -115,11 +115,22 @@ echo  Passphrase (custom settings)
 echo  ============================
 echo.
 call :read_int "Number of words" 4 3 8 words
-set /p sep="Separator (default -): "
-set /p cap="Capitalize words? (Y/N) [N]: "
-if "%sep%"=="" set sep=-
-if /i "%cap%"=="Y" (
+set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
+if /i "%style%"=="S" (
+    set sep=_
+) else (
+    echo Suggested separators: - _ . / \ +
+    set "sep=-"
+    set /p sep="Separator (default -): "
+)
+if /i "%style%"=="C" (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize
+) else if /i "%style%"=="S" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s _
+) else if /i "%style%"=="A" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --alternate
+) else if /i "%style%"=="U" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --uppercase
 ) else (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep%
 )
@@ -150,11 +161,22 @@ echo.
 echo  Selected: %theme%
 echo.
 call :read_int "Number of words" 4 2 12 words
-set /p sep="Separator (default -): "
-if "%sep%"=="" set sep=-
-set /p cap="Capitalize words? (Y/N) [N]: "
-if /i "%cap%"=="Y" (
+set /p style="Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: "
+if /i "%style%"=="S" (
+    set sep=_
+) else (
+    echo Suggested separators: - _ . / \ +
+    set "sep=-"
+    set /p sep="Separator (default -): "
+)
+if /i "%style%"=="C" (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --capitalize --wordlist "data\wordlists\%theme%.txt"
+) else if /i "%style%"=="S" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s _ --wordlist "data\wordlists\%theme%.txt"
+) else if /i "%style%"=="A" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --alternate --wordlist "data\wordlists\%theme%.txt"
+) else if /i "%style%"=="U" (
+    python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --uppercase --wordlist "data\wordlists\%theme%.txt"
 ) else (
     python main.py --log --confirm-copy --show-entropy phrase -w %words% -s %sep% --wordlist "data\wordlists\%theme%.txt"
 )

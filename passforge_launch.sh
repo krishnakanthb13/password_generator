@@ -129,14 +129,34 @@ while true; do
             echo "  ============================"
             echo ""
             read_int "Number of words" 4 3 8 words
-            read -p "Separator (default -): " sep
-            read -p "Capitalize words? (y/n) [n]: " cap
-            [[ -z "$sep" ]] && sep="-"
-            if [[ "$cap" == "y" || "$cap" == "Y" ]]; then
-                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize
+            read -p "  Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: " style
+            style=${style:-n}
+            
+            if [[ "$style" =~ ^[sS] ]]; then
+                sep="_"
             else
-                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep"
+                echo "  Suggested separators: - _ . / \ +"
+                read -p "  Separator (default -): " sep
+                sep=${sep:--}
             fi
+            
+            case $style in
+                [cC]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize
+                    ;;
+                [sS]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "_" 
+                    ;;
+                [aA]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --alternate
+                    ;;
+                [uU]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --uppercase
+                    ;;
+                *)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep"
+                    ;;
+            esac
             echo ""
             ;;
         5)
@@ -167,15 +187,34 @@ while true; do
             echo ""
             echo "Selected: $theme"
             read_int "Number of words" 4 2 12 words
-            read -p "Separator (default -): " sep
-            [[ -z "$sep" ]] && sep="-"
-            read -p "Capitalize words? (y/n) [n]: " cap
+            read -p "  Style: [N]one, [C]apitalize, [S]nake_case, [A]lternate, [U]ppercase [N]: " style
+            style=${style:-n}
             
-            if [[ "$cap" == "y" || "$cap" == "Y" ]]; then
-                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize --wordlist "data/wordlists/$theme.txt"
+            if [[ "$style" =~ ^[sS] ]]; then
+                sep="_"
             else
-                $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --wordlist "data/wordlists/$theme.txt"
+                echo "  Suggested separators: - _ . / \ +"
+                read -p "  Separator (default -): " sep
+                sep=${sep:--}
             fi
+            
+            case $style in
+                [cC]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --capitalize --wordlist "data/wordlists/$theme.txt"
+                    ;;
+                [sS]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "_" --wordlist "data/wordlists/$theme.txt"
+                    ;;
+                [aA]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --alternate --wordlist "data/wordlists/$theme.txt"
+                    ;;
+                [uU]*)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --uppercase --wordlist "data/wordlists/$theme.txt"
+                    ;;
+                *)
+                    $PYTHON main.py --log --confirm-copy --show-entropy phrase -w "$words" -s "$sep" --wordlist "data/wordlists/$theme.txt"
+                    ;;
+            esac
             echo ""
             ;;
         6)

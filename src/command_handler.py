@@ -109,6 +109,8 @@ def apply_preset(args: Any) -> Any:
         "words": 4,
         "separator": "-",
         "capitalize": False,
+        "uppercase": False,
+        "alternate": False,
         "wordlist": None,
         "bytes": 32,
         "url_safe": False,
@@ -219,6 +221,8 @@ def handle_phrase(args: Any) -> int:
             word_count=args.words,
             separator=args.separator,
             capitalize=args.capitalize,
+            uppercase=args.uppercase,
+            alternate=args.alternate,
             wordlist_path=wordlist_path
         )
         

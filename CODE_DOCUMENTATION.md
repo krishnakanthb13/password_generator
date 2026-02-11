@@ -68,9 +68,12 @@ class BaseGenerator(ABC):
 
 ### Themed Passphrases (`src/generators/passphrase.py`)
 Utilizes the `data/wordlists/` directory to offer themed generation.
+*   **Case Styles**: Supports `capitalize`, `uppercase`, and `alternate` (e.g., `aLtErNaTe`) transformations.
 *   **Scanning**: Use `os.listdir` to find `.txt` files.
 *   **Selection**: Interactive menus (Python & Shell) present a **numbered list** for easy user selection.
-*   **Execution**: Passes the full path to `PassphraseGenerator(wordlist_path=...)`.
+*   **Launcher Logic**: 🛠️ Launcher scripts (`.bat`/`.sh`) implement a "Style-First" prompt flow:
+    *   Prompting for **Style** before **Separator** allows for smart-skipping (e.g., selecting *Snake_case* automatically sets the separator to `_` and skips the next prompt).
+*   **Execution**: Passes flags to `PassphraseGenerator.generate(..., capitalize=True, alternate=True)`.
 
 ### Entropy Calculator (`src/security/entropy.py`)
 Provides the `EntropyCalculator` class with static methods:
@@ -131,6 +134,7 @@ Uses `apply_preset(args)` in `command_handler.py` to intercept and override comm
     *   Prints to stdout with **strictly one blank line** for visual separation.
     *   (Optional) Logs to history if `--log` is present.
 7.  **Loop**: In Interactive Mode, the system pauses with a "Press Enter" prompt to prevent screen-clearing before the user has viewed the result.
+8.  **Automated UX**: 🛡️ Platform launchers now explicitly enable `--show-entropy` by default for custom random password generation to ensure full security transparency without needing extra flags.
 
 ## 5. Adding a New Generator
 

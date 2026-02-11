@@ -16,13 +16,14 @@ Existing solutions often fall into two categories:
 
 ### A. Security First, Always
 *   **CSPRNG Only**: We exclusively use Python's `secrets` module (backed by the OS CSPRNG). The standard `random` module is strictly forbidden for generation logic.
-*   **Entropy Transparency**: Users should know *exactly* how strong a generated secret is. We calculate and display Shannon entropy for every result.
+*   **Entropy Transparency**: Users should know *exactly* how strong a generated secret is. We calculate and display Shannon entropy for every result. In platform launchers, entropy analysis is **enabled by default** for custom generation to remove friction.
 *   **Offline by Default**: No network calls are made during generation. The tool must be safe to run on air-gapped machines.
 
 ### B. Developer Experience (DX)
 *   **Memorability**: Commands should be intuitive (`passforge random`, `passforge pin`).
 *   **Composability**: The tool should work well in pipes and scripts. Support for JSON output (`--json`) and silent mode is crucial.
-*   **Cross-Platform Consistency**: A script written on macOS should work identically on Windows and Linux.
+*   **Prompt Optimization**: 📈 In interactive scripts, we prioritize high-impact decisions. For example, asking for **Style** before **Separator** allows the system to intelligently skip redundant prompts (like the separator for `snake_case`), reducing visual noise.
+*   **Cross-Platform Consistency**: A script written on macOS should work identically on Windows and Linux. Launchers (`.bat`/`.sh`) are kept in strict synchronization.
 
 ### C. Modularity & Extensibility
 *   **Plugin-like Architecture**: Each generator (`random`, `uuid`, `otp`) is an isolated module inheriting from a `BaseGenerator`. Adding a new generator should never require modifying existing core logic.

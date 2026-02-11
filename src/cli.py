@@ -231,6 +231,16 @@ def create_parser() -> argparse.ArgumentParser:
         help="Capitalize each word"
     )
     phrase_parser.add_argument(
+        "--uppercase",
+        action="store_true",
+        help="All words in uppercase"
+    )
+    phrase_parser.add_argument(
+        "--alternate",
+        action="store_true",
+        help="Alternate case (aLtErNaTe)"
+    )
+    phrase_parser.add_argument(
         "--wordlist",
         type=str,
         help="Path to custom wordlist file"

@@ -117,8 +117,17 @@ python main.py phrase -w 4
 # Capitalized with underscore separator
 python main.py phrase -w 5 -s _ --capitalize
 
+# Alternate case (High Entropy)
+python main.py phrase -w 4 -s . --alternate
+# Output: aPpLe.bAnAnA.cHeRrY.dAtE
+
+# Uppercase with hyphen separator (High Entropy)
+python main.py phrase -w 4 -s . --uppercase
+# Output: APPLE-BANANA-CHERRY-DATE
+
 # Leetspeak version (Smart 50% substitution)
 python main.py leet -w 4 -s -
+# Output: 4PPl3.8@N@N@.c3rrY.d4t3
 
 # Themed Passphrase (using 'animals.txt')
 python main.py phrase -w 4 --capitalize --wordlist data/wordlists/animals.txt
@@ -227,6 +236,8 @@ python main.py --json jwt --bits 256
 | `-w`, `--words` | 4 | Number of words |
 | `-s`, `--separator` | `-` | Word separator |
 | `--capitalize` | - | Capitalize each word |
+| `--uppercase` | - | All words in uppercase |
+| `--alternate` | - | Alternate case (aLtErNaTe) |
 | `--wordlist` | - | Path to custom wordlist |
 | `-n`, `--count` | 1 | Number to generate |
 
@@ -277,7 +288,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 20 | Key length |
+| `-l`, `--length` | 24 | Key length (8-63) |
 | `--simple` | - | Alphanumeric only (no symbols) |
 
 #### License Key (`license`)
