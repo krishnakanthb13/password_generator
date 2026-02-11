@@ -51,7 +51,9 @@ class PhoneticGenerator(BaseGenerator):
         import secrets
         import string
         
+        is_generated = False
         if not text:
+            is_generated = True
             # Generate random alphanumeric string first
             chars = string.ascii_lowercase + string.digits
             text = "".join(secrets.choice(chars) for _ in range(length))
@@ -65,7 +67,7 @@ class PhoneticGenerator(BaseGenerator):
         # Assuming only alphanumeric for random generation
         pool_size = 36 # 26 letters + 10 digits
         import math
-        entropy_bits = length * math.log2(pool_size) if not text else 0
+        entropy_bits = length * math.log2(pool_size) if is_generated else 0
         
         parameters = {
             "original": original,

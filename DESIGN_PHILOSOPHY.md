@@ -59,7 +59,7 @@ Existing solutions often fall into two categories:
 
 ### Storage Strategy
 *   **Encrypted History Vault**: We store history in AES-128 encrypted blocks.
-    *   *Rationale*: While history is essential for convenience, secrets should never reside on disk in plaintext. By using a machine-unique key and `cryptography.fernet`, we protect the user's history against casual data theft while maintaining the seamless UX of a local tool.
+    *   *Rationale*: While history is essential for convenience, secrets should never reside on disk in plaintext. By using a secure key (via `.env` or legacy file) and `cryptography.fernet`, we protect the user's history against casual data theft while maintaining the seamless UX of a local tool.
     *   *Shared Persistence*: The PWA and CLI share the same encrypted vault, providing a unified experience across terminal and browser.
     *   *Consent & Transparency*: History remains opt-in for CLI users but is auto-enabled in launchers to prevent data loss. Export functionality requires explicit flags to bypass redaction, ensuring users make a conscious decision when handling raw secrets.
 

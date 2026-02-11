@@ -92,7 +92,7 @@ Handles colorization using `colorama`.
 ### Vault & Security (`src/security/vault.py`)
 Handles local encryption of sensitive history data.
 *   **Encryption**: Uses `cryptography.fernet` (AES-128 in CBC mode with HMAC signatures).
-*   **Key Management**: Generates a machine-unique `.vault.key` file in `~/.passforge/`.
+*   **Key Management**: Prioritizes `PASSFORGE_API_KEY` from `.env`. Fallbacks to legacy `.vault.key` in `~/.passforge/` for backward compatibility.
 *   **File Permissions**: Enforces `0600` (Owner Read/Write) on key files atomically during creation.
 *   **Error Handling**: Validates encryption tokens and logs warnings on failure without crashing.
 
