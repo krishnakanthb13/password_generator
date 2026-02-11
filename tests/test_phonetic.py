@@ -42,5 +42,22 @@ class TestPhoneticGenerator(unittest.TestCase):
         # Check entropy is calculated
         self.assertGreater(result.entropy_bits, 0)
 
+    def test_extreme_lengths(self):
+        """Test extreme phonetic length constraints (Min: 4, Max: 128)."""
+        # Minimum
+        res_min = self.generator.generate(length=4)
+        self.assertEqual(len(res_min.password.split()), 4)
+
+        # Maximum
+        res_max = self.generator.generate(length=128)
+        self.assertEqual(len(res_max.password.split()), 128)
+
+    def test_invalid_lengths(self):
+        """Test that invalid lengths raise ValueError."""
+        with self.assertRaises(ValueError):
+            self.generator.generate(length=3)
+        with self.assertRaises(ValueError):
+            self.generator.generate(length=129)
+
 if __name__ == '__main__':
     unittest.main()

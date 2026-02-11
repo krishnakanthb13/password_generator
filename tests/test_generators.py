@@ -35,6 +35,27 @@ class TestRandomPasswordGenerator(unittest.TestCase):
         """Test custom password length."""
         result = self.generator.generate(length=24)
         self.assertEqual(len(result.password), 24)
+
+    def test_extreme_lengths(self):
+        """Test extreme password length constraints (Min: 4, Max: 1024)."""
+        # Minimum
+        res_min = self.generator.generate(length=4)
+        self.assertEqual(len(res_min.password), 4)
+
+        # Middle
+        res_mid = self.generator.generate(length=512)
+        self.assertEqual(len(res_mid.password), 512)
+
+        # Maximum
+        res_max = self.generator.generate(length=1024)
+        self.assertEqual(len(res_max.password), 1024)
+
+    def test_invalid_lengths(self):
+        """Test that invalid lengths raise ValueError."""
+        with self.assertRaises(ValueError):
+            self.generator.generate(length=3)
+        with self.assertRaises(ValueError):
+            self.generator.generate(length=1025)
     
     def test_no_uppercase(self):
         """Test excluding uppercase letters."""
@@ -104,6 +125,20 @@ class TestPassphraseGenerator(unittest.TestCase):
         result = self.generator.generate(word_count=6)
         words = result.password.split('-')
         self.assertEqual(len(words), 6)
+
+    def test_extreme_word_counts(self):
+        """Test extreme word count constraints (Min: 2, Max: 64)."""
+        # Minimum
+        res_min = self.generator.generate(word_count=2)
+        self.assertEqual(len(res_min.password.split('-')), 2)
+
+        # Middle
+        res_mid = self.generator.generate(word_count=33)
+        self.assertEqual(len(res_mid.password.split('-')), 33)
+
+        # Maximum
+        res_max = self.generator.generate(word_count=64)
+        self.assertEqual(len(res_max.password.split('-')), 64)
     
     def test_custom_separator(self):
         """Test custom separator."""
@@ -161,6 +196,20 @@ class TestPinGenerator(unittest.TestCase):
         result = self.generator.generate(length=8)
         self.assertEqual(len(result.password), 8)
 
+    def test_extreme_lengths(self):
+        """Test extreme PIN length constraints (Min: 4, Max: 64)."""
+        # Minimum
+        res_min = self.generator.generate(length=4)
+        self.assertEqual(len(res_min.password), 4)
+
+        # Middle
+        res_mid = self.generator.generate(length=34)
+        self.assertEqual(len(res_mid.password), 34)
+
+        # Maximum
+        res_max = self.generator.generate(length=64)
+        self.assertEqual(len(res_max.password), 64)
+
 
 class TestPronounceableGenerator(unittest.TestCase):
     """Tests for PronounceableGenerator."""
@@ -177,6 +226,20 @@ class TestPronounceableGenerator(unittest.TestCase):
         """Test pronounceable passwords are alphabetic."""
         result = self.generator.generate()
         self.assertTrue(result.password.isalpha())
+
+    def test_extreme_lengths(self):
+        """Test extreme pronounceable length constraints (Min: 4, Max: 128)."""
+        # Minimum
+        res_min = self.generator.generate(length=4)
+        self.assertEqual(len(res_min.password), 4)
+
+        # Middle
+        res_mid = self.generator.generate(length=64)
+        self.assertEqual(len(res_mid.password), 64)
+
+        # Maximum
+        res_max = self.generator.generate(length=128)
+        self.assertEqual(len(res_max.password), 128)
 
 
 class TestUuidGenerator(unittest.TestCase):
@@ -208,6 +271,20 @@ class TestBase64SecretGenerator(unittest.TestCase):
         result = self.generator.generate(byte_length=32)
         # Base64 encoding expands by ~4/3, minus padding
         self.assertGreater(len(result.password), 32)
+
+    def test_extreme_byte_counts(self):
+        """Test extreme byte count constraints (Min: 8, Max: 1024)."""
+        # Minimum
+        res_min = self.generator.generate(byte_length=8)
+        self.assertGreaterEqual(len(res_min.password), 8)
+
+        # Middle
+        res_mid = self.generator.generate(byte_length=512)
+        self.assertGreaterEqual(len(res_mid.password), 512)
+
+        # Maximum
+        res_max = self.generator.generate(byte_length=1024)
+        self.assertGreaterEqual(len(res_max.password), 1024)
     
     def test_entropy(self):
         """Test entropy matches byte count."""
@@ -263,6 +340,26 @@ class TestLicenseKeyGenerator(unittest.TestCase):
         segments = result.password.split('-')
         self.assertEqual(len(segments), 4)
         self.assertTrue(all(len(s) == 4 for s in segments))
+
+    def test_extreme_configurations(self):
+        """Test extreme license key configurations."""
+        # Minimum (2x2)
+        res_min = self.generator.generate(segments=2, segment_length=2)
+        segs_min = res_min.password.split('-')
+        self.assertEqual(len(segs_min), 2)
+        self.assertTrue(all(len(s) == 2 for s in segs_min))
+
+        # Middle (33x17)
+        res_mid = self.generator.generate(segments=33, segment_length=17)
+        segs_mid = res_mid.password.split('-')
+        self.assertEqual(len(segs_mid), 33)
+        self.assertTrue(all(len(s) == 17 for s in segs_mid))
+
+        # Maximum (64x32)
+        res_max = self.generator.generate(segments=64, segment_length=32)
+        segs_max = res_max.password.split('-')
+        self.assertEqual(len(segs_max), 64)
+        self.assertTrue(all(len(s) == 32 for s in segs_max))
     
     def test_uppercase_output(self):
         """Test output is uppercase."""
@@ -280,6 +377,20 @@ class TestRecoveryCodesGenerator(unittest.TestCase):
         """Test default 10 codes."""
         result = self.generator.generate()
         self.assertEqual(len(result.parameters['codes']), 10)
+
+    def test_extreme_counts(self):
+        """Test extreme recovery code counts (Min: 5, Max: 100)."""
+        # Minimum
+        res_min = self.generator.generate(count=5)
+        self.assertEqual(len(res_min.parameters['codes']), 5)
+
+        # Middle
+        res_mid = self.generator.generate(count=52)
+        self.assertEqual(len(res_mid.parameters['codes']), 52)
+
+        # Maximum
+        res_max = self.generator.generate(count=100)
+        self.assertEqual(len(res_max.parameters['codes']), 100)
     
     def test_word_based_codes(self):
         """Test word-based recovery codes."""

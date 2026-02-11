@@ -1,30 +1,43 @@
 # Test Report - PassForge CLI
 
-**Date:** 2026-02-10
-**Total Tests:** 52
+**Date:** 2026-02-11
+**Total Tests:** 68
 **Status:** PASS (100%)
 
 ## Summary
 
 | Category | Passed | Failed | Total |
 | :--- | :--- | :--- | :--- |
-| Generators | 41 | 0 | 41 |
-| Security (Entropy/Strength) | 4 | 0 | 4 |
-| Output (QR/Clipboard) | 3 | 0 | 3 |
-| Vault (Encryption) | 4 | 0 | 4 |
-| **Total** | **52** | **0** | **52** |
+| Generators (Primary & Boundary) | 57 | 0 | 57 |
+| Security (Entropy/Strength) | 6 | 0 | 6 |
+| Vault (AES-128 Encryption) | 5 | 0 | 5 |
+| **Total** | **68** | **0** | **68** |
+
+| Generator | Operational Range | Verified in CLI | Verified in Launchers | Verified in Tests |
+| :--- | :--- | :---: | :---: | :---: |
+| **Random** | 4 - 1,024 chars | ✅ | ✅ | ✅ |
+| **Passphrase** | 2 - 64 words | ✅ | ✅ | ✅ |
+| **Leetspeak** | 2 - 64 words | ✅ | ✅ | ✅ |
+| **PIN** | 4 - 64 digits | ✅ | ✅ | ✅ |
+| **Pronounceable** | 4 - 128 chars | ✅ | ✅ | ✅ |
+| **Base64** | 8 - 1,024 bytes | ✅ | ✅ | ✅ |
+| **License Key** | 2-64 segs / 2-32 len | ✅ | ✅ | ✅ |
+| **Recovery** | 5 - 100 codes | ✅ | ✅ | ✅ |
+| **Recovery Size** | 4-32 digits / 2-12 words | ✅ | ✅ | ✅ |
+| **NATO Phonetic** | 4 - 128 items | ✅ | ✅ | ✅ |
 
 ## Test Inventory
 
 ### 1. Password Generators
-- **Random**: Length, character set inclusion/exclusion, minimum requirements, balanced mode, and non-repeat logic.
-- **Passphrase**: Word count, capitalization, separators, and custom wordlist loading.
+- **Random**: Length (4-1024), character set inclusion/exclusion, minimum requirements, balanced mode, and non-repeat logic.
+- **Passphrase**: Word count (2-64), capitalization, separators, and custom wordlist loading.
 - **Leetspeak**: Substitution logic and pattern preservation.
-- **PIN**: Numeric constraints and length.
-- **Pronounceable**: Phonetic syllable generation rules.
-- **UUID**: RFC 4122 v4 compliance.
-- **Base64/JWT**: Bit-length and URL-safe encoding.
-- **WiFi/License/Recovery/OTP/Pattern/Phonetic**: Domain-specific logic and formatting.
+- **PIN**: Numeric constraints and length (4-64).
+- **Pronounceable**: Phonetic syllable generation rules (4-128 chars).
+- **UUID**: RFC 4122 v4 compliance and v7/short formats.
+- **Base64/JWT**: Bit-length (up to 1024 bytes) and URL-safe encoding.
+- **WiFi/License/Recovery/OTP/Pattern/Phonetic**: Domain-specific logic, formatting, and extreme segments (e.g. 64x32 Licenses).
+- **Boundary Validation**: Explicit testing of minimum, maximum, and out-of-bounds configurations for all core generators.
 
 ### 2. Security Suite
 - **Entropy Calculator**: 
