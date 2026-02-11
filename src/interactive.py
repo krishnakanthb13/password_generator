@@ -36,8 +36,10 @@ class InteractiveMenu:
     
     def __init__(self):
         from .output.logger import PasswordLogger
+        from .security.vault import Vault
         self.running = True
         self.logger = PasswordLogger()
+        self.vault = Vault()
     
     def print_menu(self):
         """Print the main menu."""
@@ -53,10 +55,10 @@ class InteractiveMenu:
         print(f"{Style.BRIGHT}{Fore.CYAN}{'═' * 50}{Style.RESET_ALL}")
         
         # Display security status
-        if self.logger.vault and self.logger.vault.is_active:
-            print(f"  {Fore.GREEN}● Secure History Active (AES-128){Style.RESET_ALL}")
+        if self.vault.is_active:
+            print(f"  {Fore.GREEN}● Secure History Active (AES-256 derived){Style.RESET_ALL}")
         else:
-            print(f"  {Fore.YELLOW}○ History Unencrypted (Install 'cryptography' for security){Style.RESET_ALL}")
+            print(f"  {Fore.YELLOW}○ History Disabled (No Encryption Key){Style.RESET_ALL}")
         
         print(f"{Style.BRIGHT}{Fore.CYAN}{'═' * 50}{Style.RESET_ALL}")
     
@@ -103,8 +105,12 @@ class InteractiveMenu:
         from .output.formatter import colorize_password
         from .security.entropy import EntropyCalculator
         
-        # Log to history
-        self.logger.log(result)
+        # Log to history if secure mode is active
+        if self.vault.is_active:
+            self.logger.log(result)
+            history_msg = f"{Fore.GREEN}✓ Saved to history{Style.RESET_ALL}"
+        else:
+            history_msg = f"{Fore.YELLOW}⚠ History not saved (Encryption key missing){Style.RESET_ALL}"
         
         print(f"\n{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         print(f"{Style.BRIGHT}{Fore.WHITE}Generated:{Style.RESET_ALL}")
@@ -118,7 +124,7 @@ class InteractiveMenu:
             print(f"{Style.BRIGHT}{Fore.YELLOW}Crack Time:{Style.RESET_ALL} {crack_time}")
         
         print(f"{Style.BRIGHT}{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}✓ Saved to history{Style.RESET_ALL}")
+        print(f"  {history_msg}")
         
         from .output.formatter import prompt_interactive_actions
         from .output.clipboard import DEFAULT_CLIPBOARD_TIMEOUT
@@ -397,8 +403,9 @@ class InteractiveMenu:
         print(f"\n  {Fore.YELLOW}Entropy:{Style.RESET_ALL} {result.entropy_bits:.2f} bits")
         print(f"{Fore.GREEN}{'─' * 50}{Style.RESET_ALL}")
         
-        # Log to history
-        self.logger.log(result)
+        # Log to history if possible
+        if self.vault.is_active:
+            self.logger.log(result)
     
     def handle_pattern(self):
         """Handle pattern generation."""
@@ -467,7 +474,11 @@ class InteractiveMenu:
         """Handle history viewing with privacy masking."""
         from .output.logger import PasswordLogger
         from .output.formatter import colorize_password
+        from .security.vault import Vault
         
+        if not Vault.ensure_secure_mode():
+            return
+            
         print(f"\n{Style.BRIGHT}{Fore.CYAN}=== Password History ==={Style.RESET_ALL}")
         
         logger = PasswordLogger()

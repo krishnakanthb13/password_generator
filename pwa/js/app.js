@@ -1,7 +1,6 @@
 const AUTH_CONFIG = {
-    // This key is used for request validation between the frontend and local server.
-    // In a networked production environment, use a secure session/OAuth2 flow.
-    apiKey: 'default_secret_key'
+    // Priority: 1. LocalStorage (custom) -> 2. Environment (default)
+    apiKey: localStorage.getItem('passforge_api_key') || 'default_secret_key'
 };
 
 const state = {

@@ -40,5 +40,9 @@ htmlcov/
 Thumbs.db
 *.log
 
+# Environment variables
+.env
+.env.*
+
 # PassForge specific
 .passforge/

@@ -11,6 +11,10 @@ from fastapi import FastAPI, HTTPException, Query, Header, Depends, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# Load environment variables from .env if present
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 # Initialize logger
 logging.basicConfig(level=logging.INFO)
@@ -59,6 +63,11 @@ app.add_middleware(
 # Security: Basic API Key Authentication
 # In production, use a more robust auth system (OAuth2, Sessions, etc.)
 PASSFORGE_API_KEY = os.getenv("PASSFORGE_API_KEY", "default_secret_key")
+
+# Warn if using default key
+if PASSFORGE_API_KEY == "default_secret_key":
+    logger.warning("!!! SECURITY WARNING: Using default API Key for history protection.")
+    logger.warning("!!! Set PASSFORGE_API_KEY environment variable for production use.")
 
 async def verify_api_key(x_api_key: Optional[str] = Header(None)):
     if not x_api_key or x_api_key != PASSFORGE_API_KEY:
@@ -289,7 +298,9 @@ async def clear_history(_ = Depends(verify_api_key)):
 # Security: Prevent source code exposure via static mount
 class SecureStaticFiles(StaticFiles):
     async def get_response(self, path: str, scope):
-        if path.endswith((".py", ".sh", ".bat", ".key", ".log", "__pycache__")):
+        # Block access to system files, config, and hidden directories
+        hidden_or_system = path.startswith(".") or path.endswith((".py", ".sh", ".bat", ".key", ".log", ".env"))
+        if hidden_or_system or "__pycache__" in path:
              raise HTTPException(status_code=403, detail="Access denied to system file")
         return await super().get_response(path, scope)
 

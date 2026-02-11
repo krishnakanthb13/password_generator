@@ -11,6 +11,8 @@ from colorama import Fore, Style
 from .generators.random_password import RandomPasswordGenerator
 from .security.entropy import EntropyCalculator
 from .output.formatter import colorize_password
+from .security.vault import Vault
+
 
 
 def handle_command(args: Any) -> int:
@@ -470,6 +472,9 @@ def handle_history(args: Any) -> int:
     """Handle history viewing and export."""
     from .output.logger import PasswordLogger
     
+    if not Vault.ensure_secure_mode():
+        return 1
+        
     logger = PasswordLogger()
     
     if args.clear:
@@ -584,10 +589,13 @@ def output_result(result: Any, args: Any) -> None:
     
     # Logging
     if args.log:
-        from .output.logger import PasswordLogger
-        logger = PasswordLogger()
-        logger.log(result)
-        print(f"{Fore.GREEN}[OK] Logged to history{Style.RESET_ALL}")
+        if Vault.ensure_secure_mode():
+            from .output.logger import PasswordLogger
+            logger = PasswordLogger()
+            logger.log(result)
+            print(f"{Fore.GREEN}[OK] Logged to history{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}[SKIP] History logging failed: No encryption key set.{Style.RESET_ALL}")
 
     # Confirm Copy (Interactive Post-Generation Flow)
     if getattr(args, 'confirm_copy', False):

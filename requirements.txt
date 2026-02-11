@@ -3,6 +3,7 @@
 
 # Core Dependencies (Required for basic operation)
 colorama>=0.4.6          # Cross-platform colored terminal output
+python-dotenv>=1.0.0     # Load environment variables from .env
 
 # Feature Dependencies (Highly Recommended)
 pyperclip>=1.8.2         # Clipboard support and auto-wipe functionality
