@@ -227,7 +227,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 16 | Password length (8-128) |
+| `-l`, `--length` | 16 | Password length (4-1024) |
 | `--no-uppercase` | - | Exclude uppercase letters |
 | `--no-lowercase` | - | Exclude lowercase letters |
 | `--no-digits` | - | Exclude digits |
@@ -246,7 +246,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-w`, `--words` | 4 | Number of words (2-12) |
+| `-w`, `--words` | 4 | Number of words (2-64) |
 | `-s`, `--separator` | `-` | Word separator |
 | `--capitalize` | - | Capitalize each word |
 | `--uppercase` | - | All words in uppercase |
@@ -258,7 +258,7 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-w`, `--words` | 3 | Number of words (2-12) |
+| `-w`, `--words` | 3 | Number of words (2-64) |
 | `-s`, `--separator` | `-` | Word separator ( - _ . , ) |
 | `-n`, `--count` | 1 | Number to generate |
 
@@ -266,14 +266,14 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 6 | PIN length (4-20) |
+| `-l`, `--length` | 6 | PIN length (4-64) |
 | `-n`, `--count` | 1 | Number to generate |
 
 #### Pronounceable (`pronounce`, `pr`)
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `-l`, `--length` | 12 | Password length |
+| `-l`, `--length` | 12 | Password length (4-128) |
 | `-n`, `--count` | 1 | Number to generate |
 
 #### UUID (`uuid`)
@@ -310,8 +310,8 @@ python main.py --json jwt --bits 256
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--segments` | 4 | Number of segments (2-10) |
-| `--segment-length` | 4 | Characters per segment (2-10) |
+| `--segments` | 4 | Number of segments (2-64) |
+| `--segment-length` | 4 | Characters per segment (2-32) |
 
 #### Recovery Codes (`recovery`)
 

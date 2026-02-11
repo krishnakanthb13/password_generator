@@ -23,7 +23,7 @@ Existing solutions often fall into two categories:
 *   **Memorability**: Commands should be intuitive (`passforge random`, `passforge pin`).
 *   **Composability**: The tool should work well in pipes and scripts. Support for JSON output (`--json`) and silent mode is crucial.
 *   **Prompt Optimization**: 📈 In interactive scripts, we prioritize high-impact decisions. For example, asking for **Style** before **Separator** allows the system to intelligently skip redundant prompts (like the separator for `snake_case`), reducing visual noise.
-*   **Explicit Operational Limits**: ⚖️ We favor transparency over hidden boundaries. All interactive inputs explicitly communicate their supported ranges (e.g., `(8-128)`), ensuring users understand the operational constraints without trial-and-error.
+*   **Explicit Operational Limits**: ⚖️ We favor transparency over hidden boundaries. All interactive inputs explicitly communicate their supported ranges (e.g., `(4-1024)`), ensuring users understand the operational constraints without trial-and-error.
 *   **Cross-Platform Consistency**: A script written on macOS should work identically on Windows and Linux. Launchers (`.bat`/`.sh`) are kept in strict synchronization.
 
 ### C. Modularity & Extensibility
