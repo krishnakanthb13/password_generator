@@ -59,7 +59,7 @@ show_menu() {
     clear
     echo ""
     echo -e " ${BLUE}==========================================================================${NC}"
-    echo -e "                ${BLUE}PASSFORGE - Password Generator CLI v1.1.6${NC}"
+    echo -e "                ${BLUE}PASSFORGE - Password Generator CLI v1.2.0${NC}"
     echo -e " ${BLUE}==========================================================================${NC}"
     echo ""
     echo -e " ${YELLOW}QUICK GENERATE${NC}                         ${YELLOW}ADVANCED / PRESETS${NC}"

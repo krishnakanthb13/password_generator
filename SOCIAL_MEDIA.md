@@ -2,6 +2,72 @@
 
 This document contains social media posts for each release.
 
+## [v1.2.0] - 2026-02-11
+
+### 💼 LinkedIn
+
+🛡️ PassForge v1.2.0: The "Extreme Ranges" Milestone is Here! 🚀
+
+We've just pushed the limits of our credential generator to the absolute max. PassForge v1.2.0 expands the operational boundaries of every single mode, ensuring that whether you're securing a home router or a hyperscale production environment, you have the bits you need.
+
+Key technical upgrades in v1.2.0:
+- 🚀 Extreme Lengths: Generate up to 1,024-character passwords and 1,024-byte Base64 secrets. 
+- 📖 Passphrase Power: Expanded word counts to 64 words for "Paranoid-Level" mnemonics.
+- 🛡️ Math Hardening: Squashed numeric overflow bugs in our entropy logic—PassForge now handles passwords of astronomical scale with grace.
+- 🌐 PWA Sync: 100% feature parity reached. Every extreme limit and configuration option in the CLI is now available in our glassmorphic PWA.
+- 🔒 Secure Bootstrap: Enhanced localhost-only API key provisioning for a safer PWA-CLI handshake.
+
+At PassForge, we build tools that scale with your security requirements. v1.2.0 represents our commitment to robustness, transparency, and high-entropy standards.
+
+Check out the full release on GitHub:
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #OpenSource #DevTools #Encryption #OpenSource #SecurityUpdate #PWA #Python
+
+---
+
+### 🤖 Reddit (r/programming, r/commandline, r/webdev, r/opensource, r/netsec, r/sysadmin)
+
+**Title: PassForge v1.2.0 - Extreme 1024-Char Limits, 64-Word Passphrases, and 100% PWA Sync**
+
+Hey r/commandline and r/programming!
+
+I've just released **PassForge v1.2.0**, and it's all about "Extreme Limits." What started as a standard generator has now evolved into a high-capacity engine for high-entropy secrets of any size.
+
+**What's new in the Extreme update?**
+
+1.  🚀 **Astronomical Limits**: We've expanded the UI and internal logic to support generating **1,024-character** passwords and **1,024-byte** Base64 secrets. 
+2.  📖 **Passphrase Expansion**: You can now generate passphrases up to **64 words** (for those ultra-long, high-entropy sentences).
+3.  🛡️ **Overflow Patching**: Calculating brute-force crack time for a 1024-char password involves numbers like 2^6000, which crashes standard float math. I've implemented logic to cap crack-time estimates safely while maintaining precision.
+4.  🌐 **PWA Full-Parity**: The web interface now supports every single feature found in the CLI, including custom Recovery Code counts, UUID v1/4/7 versions, and the new extreme ranges.
+5.  🔐 **Hardened API**: The PWA backend now blocks all source code exposure and sensitive system files using a new `SecureStaticFiles` handler.
+
+PassForge is built for those who want total control over their local secrets. It's 100% offline, uses OS-level CSPRNGs, and gives you deep entropy analysis on every secret.
+
+**Repo:** https://github.com/krishnakanthb13/password_generator
+
+Let me know what you think of the new ranges! 🛠️
+
+---
+
+### 🐦 X (Twitter)
+
+🛡️ PassForge v1.2.0 is LIVE! 🚀
+
+✨ Extreme: 1,024-char passwords & 1,024-byte secrets
+✨ Massive: 64-word passphrases & leetspeak
+✨ Parity: Full synchronization between CLI & PWA
+✨ Security: Capped entropy math for astronomical scale
+✨ Safety: Hardened static file serving
+
+The ultimate high-entropy swiss army knife just got bigger.
+
+https://github.com/krishnakanthb13/password_generator
+
+#CyberSecurity #Python #OpenSource #DevTools #PasswordGenerator #CLI
+
+---
+
 ## [v1.1.6] - 2026-02-10
 
 ### 💼 LinkedIn

@@ -2,6 +2,33 @@
 
 This document tracks all notable changes to the **PassForge** project.
 
+## [v1.2.0] - 2026-02-11
+
+🚀 **The "Extreme Ranges & PWA Sync" Update**
+
+This major update pushes PassForge into the "Extreme" category, expanding the operational limits of every generator and achieving 100% feature parity between the CLI and the PWA. We've also hardened the core math to handle passwords of astronomical size (1,024+ characters) without numeric overflow.
+
+### 🚀 New Features (v1.1.7 - v1.1.21)
+*   **Massive Length Support**: You can now generate passwords up to **1,024 characters** and Base64 secrets up to **1,024 bytes**.
+*   **Pro-Level Passphrases**: Expanded word counts to **64 words** for both standard Passphrases and Leetspeak.
+*   **Recovery Customization**: Full control over Recovery Code generation: up to **100 codes**, with **32 digits** or **12 words** per code.
+*   **UUID Versatility**: Added support for UUID Versions **1, 4, and 7** and **Short (Base58)** formatting in both CLI and PWA.
+*   **Enhanced PWA Controls**: The PWA now includes full controls for Recovery Code types and strict selection for JWT bit lengths (256/384/512).
+
+### ⚡ Improvements & Security
+*   **Entropy Overflow Protection**: Capped crack-time calculation at 512 bits to prevent numeric overflow crashes when generating extremely long (1,024-char) credentials.
+*   **Full PWA Synchronization**: Every slider and range in the web interface now matches the new CLI "Extreme Limits."
+*   **PWA API Hardening**: implemented restricted CORS and a secure localhost-only bootstrap for API key provisioning.
+*   **Secure Static Hosting**: PWA server now strictly blocks access to all `.py`, `.sh`, `.bat`, `.key`, and hidden files.
+
+### 🏗️ Infrastructure
+*   Updated all build scripts (`passforge_build.bat/sh`) and launchers (`passforge_launch.bat/sh`) to **v1.2.0**.
+*   Synchronized asset versioning across the PWA stack for seamless updates.
+
+### 📚 Documentation
+*   Updated `SECURITY.md` with the latest audit findings (V1.2.0).
+*   Refreshed `CODE_DOCUMENTATION.md` and `DESIGN_PHILOSOPHY.md` to reflect the expanded operational ranges.
+
 ## [v1.1.6] - 2026-02-10
 
 🚀 **the performance & paranoid security update**

@@ -21,7 +21,7 @@ echo.
 REM Build the executable
 call pyinstaller --onefile ^
     --clean ^
-    --name passforge_v1.1.6 ^
+    --name passforge_v1.2.0 ^
     --console ^
     --add-data "src;src" ^
     --hidden-import colorama ^
@@ -30,6 +30,10 @@ call pyinstaller --onefile ^
     --hidden-import base64 ^
     --hidden-import math ^
     --hidden-import uuid ^
+    --hidden-import cryptography ^
+    --hidden-import zxcvbn ^
+    --hidden-import qrcode ^
+    --hidden-import dotenv ^
     --add-data "data;data" ^
     --icon NONE ^
     main.py
@@ -49,7 +53,7 @@ echo.
 
 REM Create Release Package
 echo Step 2: Creating Release Package...
-set VERSION=1.1.6
+set VERSION=1.2.0
 set RELEASE_NAME=passforge_v%VERSION%
 set RELEASE_DIR=dist\%RELEASE_NAME%
 set ZIP_FILE=dist\%RELEASE_NAME%.zip
@@ -61,13 +65,20 @@ if exist %RELEASE_DIR% rd /s /q %RELEASE_DIR%
 mkdir %RELEASE_DIR%
 
 echo Copying artifacts...
-copy dist\passforge_v1.1.6.exe "%RELEASE_DIR%\" >nul
+copy dist\passforge_v1.2.0.exe "%RELEASE_DIR%\" >nul
 copy README.md "%RELEASE_DIR%\" >nul
 copy LICENSE "%RELEASE_DIR%\" >nul
 copy passforge.example.json "%RELEASE_DIR%\" >nul
+copy .example.env "%RELEASE_DIR%\" >nul
 copy passforge_quick.bat "%RELEASE_DIR%\" >nul
 copy passforge_launch.bat "%RELEASE_DIR%\" >nul
+copy passforge_pwa.bat "%RELEASE_DIR%\" >nul
+copy DESIGN_PHILOSOPHY.md "%RELEASE_DIR%\" >nul
+copy CODE_DOCUMENTATION.md "%RELEASE_DIR%\" >nul
+copy SECURITY.md "%RELEASE_DIR%\" >nul
+copy RELEASE_NOTES.md "%RELEASE_DIR%\" >nul
 xcopy /E /I /Y data "%RELEASE_DIR%\data" >nul
+xcopy /E /I /Y pwa "%RELEASE_DIR%\pwa" >nul
 
 if errorlevel 1 (
     echo [ERROR] Failed to copy files to release directory.
@@ -95,16 +106,16 @@ echo ============================================
 echo   Build and Packaging Successful!
 echo ============================================
 echo.
-echo Binary:   dist\passforge_v1.1.6.exe
+echo Binary:   dist\passforge_v1.2.0.exe
 echo Folder:   %RELEASE_DIR%\
-echo ZIP:      dist\passforge_v1.1.6.zip
-echo TAR.GZ:   dist\passforge_v1.1.6.tar.gz
+echo ZIP:      dist\passforge_v1.2.0.zip
+echo TAR.GZ:   dist\passforge_v1.2.0.tar.gz
 echo.
 
 REM Test the executable
 echo Testing the binary...
-dist\passforge_v1.1.6.exe --version
-dist\passforge_v1.1.6.exe random -l 12
+dist\passforge_v1.2.0.exe --version
+dist\passforge_v1.2.0.exe random -l 12
 
 echo.
 echo Process complete!

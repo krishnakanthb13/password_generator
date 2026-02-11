@@ -26,7 +26,7 @@ REM Display Menu
 :menu
 cls
 echo  ==========================================================================
-echo                 PASSFORGE - Password Generator CLI v1.1.6
+echo                 PASSFORGE - Password Generator CLI v1.2.0
 echo  ==========================================================================
 echo.
 echo  QUICK GENERATE                         ADVANCED / PRESETS
