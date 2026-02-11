@@ -32,6 +32,65 @@ pyinstaller --onefile \
     --hidden-import zxcvbn \
     --hidden-import qrcode \
     --hidden-import dotenv \
+    --exclude-module yt_dlp \
+    --exclude-module tensorflow \
+    --exclude-module boto3 \
+    --exclude-module botocore \
+    --exclude-module google \
+    --exclude-module grpc \
+    --exclude-module shapely \
+    --exclude-module orjson \
+    --exclude-module websockets \
+    --exclude-module mutagen \
+    --exclude-module brotli \
+    --exclude-module certifi \
+    --exclude-module secretstorage \
+    --exclude-module curl_cffi \
+    --exclude-module baidubce \
+    --exclude-module qianfan \
+    --exclude-module fake_useragent \
+    --exclude-module notebook \
+    --exclude-module jupyter \
+    --exclude-module IPython \
+    --exclude-module pygments \
+    --exclude-module zmq \
+    --exclude-module pygame \
+    --exclude-module numpy \
+    --exclude-module matplotlib \
+    --exclude-module pandas \
+    --exclude-module scipy \
+    --exclude-module pydantic \
+    --exclude-module langchain \
+    --exclude-module anyio \
+    --exclude-module opentelemetry \
+    --exclude-module pyarrow \
+    --exclude-module dask \
+    --exclude-module fsspec \
+    --exclude-module jinja2 \
+    --exclude-module regex \
+    --exclude-module jsonschema \
+    --exclude-module lark \
+    --exclude-module nbformat \
+    --exclude-module zoneinfo \
+    --exclude-module tkinter \
+    --exclude-module tcl \
+    --exclude-module tk \
+    --exclude-module qtpy \
+    --exclude-module PyQt5 \
+    --exclude-module PyQt6 \
+    --exclude-module PySide2 \
+    --exclude-module PySide6 \
+    --exclude-module sklearn \
+    --exclude-module scikit-learn \
+    --exclude-module torch \
+    --exclude-module torchvision \
+    --exclude-module cv2 \
+    --exclude-module sqlalchemy \
+    --exclude-module flask \
+    --exclude-module django \
+    --exclude-module unittest \
+    --exclude-module docutils \
+    --exclude-module PIL.ImageQt \
     main.py
 
 if [ $? -ne 0 ]; then
