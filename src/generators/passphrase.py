@@ -253,7 +253,9 @@ class PassphraseGenerator(BaseGenerator):
     
     def load_wordlist(self, path: Optional[str] = None) -> List[str]:
         """Load wordlist from file or use default."""
-        if path and os.path.exists(path):
+        if path:
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Wordlist file not found: {path}")
             with open(path, 'r', encoding='utf-8') as f:
                 words = [line.strip().lower() for line in f if line.strip()]
                 return [w for w in words if len(w) >= 3]
